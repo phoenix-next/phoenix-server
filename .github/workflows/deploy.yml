@@ -1,0 +1,45 @@
+name: deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: clone
+        uses: actions/checkout@v2
+
+      - name: setup
+        uses: actions/setup-go@v2
+        with:
+          go-version: "1.17"
+
+      - name: build
+        run: |
+          cd ${{github.workspace}}
+          go env -w GO111MODULE=on
+          go env -w GOPROXY=https://goproxy.cn
+          go mod tidy
+          go build .
+
+      - name: stop
+        run: |
+          sshpass -p ${{secrets.PASSWORD}} ssh -o StrictHostKeyChecking=no ${{secrets.USERNAME}}@${{secrets.IP}} "ps -ef | grep phoenix-server | awk '{print $2}' | xargs kill -9"
+
+      - name: transfer
+        uses: garygrossgarten/github-action-scp@release
+        with:
+          local: ${{github.workspace}}/phoenix-server
+          remote: ${{secrets.DST_FOLDER}}/phoenix-server
+          host: ${{secrets.IP}}
+          username: ${{secrets.USERNAME}}
+          password: ${{secrets.PASSWORD}}
+          rmRemote: true
+          dotfiles: true
+
+      - name: start
+        run: |
+          sshpass -p ${{secrets.PASSWORD}} ssh -o StrictHostKeyChecking=no ${{secrets.USERNAME}}@${{secrets.IP}} "nohup ${{secrets.DST_FOLDER}}/phoenix-server &"

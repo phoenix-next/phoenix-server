@@ -16,6 +16,7 @@ vendor/
 .env
 bin
 .DS_Store
+.vscode
 .idea
 .idea/modules.xml
 .idea/vcs.xml
