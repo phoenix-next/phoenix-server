@@ -25,8 +25,13 @@ jobs:
           go build .
 
       - name: stop
-        run: |
-          (sshpass -p ${{secrets.PASSWORD}} ssh ${{secrets.USERNAME}}@${{secrets.IP}} "ps -ef | grep phoenix-server | awk '{print $2}' | xargs kill -9") || true
+        uses: nerd4ever/ssh-action@master
+        with:
+          command: |
+            "ps -ef | grep phoenix-server | awk '{print $2}' | xargs kill -9"
+          host: ${{ secrets.IP }}
+          user: root
+          pass: ${{ secrets.PASSWORD}}
 
       - name: transfer
         uses: garygrossgarten/github-action-scp@release
@@ -39,6 +44,12 @@ jobs:
           rmRemote: true
           dotfiles: true
 
-      - name: restart
-        run: |
-          sshpass -p ${{secrets.PASSWORD}} ssh ${{secrets.USERNAME}}@${{secrets.IP}} "/var/phoenix/deploy.sh"
+      - name: stop
+        uses: nerd4ever/ssh-action@master
+        with:
+          command: |
+            chmod +x ${{secrets.DST_FOLDER}}/phoenix-server
+            nohup ${{secrets.DST_FOLDER}}/phoenix-server &
+          host: ${{ secrets.IP }}
+          user: root
+          pass: ${{ secrets.PASSWORD}}
