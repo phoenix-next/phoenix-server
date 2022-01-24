@@ -1,10 +1,13 @@
 package global
 
 import (
+	"github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 	"gorm.io/gorm"
 )
 
 var (
-	// 全局变量 DB
-	DB *gorm.DB
+	DB  *gorm.DB       // MySQL实例
+	VP  *viper.Viper   // Viper实例
+	LOG *logrus.Logger // Logrus实例
 )
