@@ -41,4 +41,4 @@ jobs:
 
       - name: restart
         run: |
-          sshpass -p ${{secrets.PASSWORD}} ssh ${{secrets.USERNAME}}@${{secrets.IP}} "chmod +x ${{secrets.DST_FOLDER}}/phoenix-server; nohup ${{secrets.DST_FOLDER}}/phoenix-server &"
+          sshpass -p ${{secrets.PASSWORD}} ssh ${{secrets.USERNAME}}@${{secrets.IP}} "chmod +x ${{secrets.DST_FOLDER}}/phoenix-server"
