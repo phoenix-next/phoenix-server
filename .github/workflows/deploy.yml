@@ -41,4 +41,4 @@ jobs:
 
       - name: restart
         run: |
-          sshpass -p ${{secrets.PASSWORD}} ssh ${{secrets.USERNAME}}@${{secrets.IP}} "nohup ${{secrets.DST_FOLDER}}/phoenix-server &"
+          sshpass -p ${{secrets.PASSWORD}} ssh ${{secrets.USERNAME}}@${{secrets.IP}} "${{secrets.DST_FOLDER}}/deploy.sh"
