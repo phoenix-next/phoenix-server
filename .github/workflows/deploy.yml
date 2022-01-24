@@ -28,7 +28,7 @@ jobs:
         uses: nerd4ever/ssh-action@master
         with:
           command: |
-            ps -ef | grep phoenix-server | awk '{print $2}' | xargs kill -9
+            (ps -ef | grep phoenix-server | awk '{print $2}' | xargs kill -9) || true
           host: ${{ secrets.IP }}
           user: root
           pass: ${{ secrets.PASSWORD}}
