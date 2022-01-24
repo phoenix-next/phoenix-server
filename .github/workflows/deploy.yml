@@ -21,13 +21,12 @@ jobs:
         run: |
           cd ${{github.workspace}}
           go env -w GO111MODULE=on
-          go env -w GOPROXY=https://goproxy.cn
           go mod tidy
           go build .
 
       - name: stop
         run: |
-          sshpass -p ${{secrets.PASSWORD}} ssh ${{secrets.USERNAME}}@${{secrets.IP}} "ps -ef | grep phoenix-server | awk '{print $2}' | xargs kill -9"
+          (sshpass -p ${{secrets.PASSWORD}} ssh ${{secrets.USERNAME}}@${{secrets.IP}} "ps -ef | grep phoenix-server | awk '{print $2}' | xargs kill -9") || true
 
       - name: transfer
         uses: garygrossgarten/github-action-scp@release
