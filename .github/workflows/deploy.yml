@@ -27,7 +27,7 @@ jobs:
 
       - name: stop
         run: |
-          sshpass -p ${{secrets.PASSWORD}} ssh StrictHostKeyChecking=no ${{secrets.USERNAME}}@${{secrets.IP}} "ps -ef | grep phoenix-server | awk '{print $2}' | xargs kill -9"
+          sshpass -p ${{secrets.PASSWORD}} ssh ${{secrets.USERNAME}}@${{secrets.IP}} "ps -ef | grep phoenix-server | awk '{print $2}' | xargs kill -9"
 
       - name: transfer
         uses: garygrossgarten/github-action-scp@release
@@ -40,6 +40,6 @@ jobs:
           rmRemote: true
           dotfiles: true
 
-      - name: start
+      - name: restart
         run: |
-          sshpass -p ${{secrets.PASSWORD}} ssh StrictHostKeyChecking=no ${{secrets.USERNAME}}@${{secrets.IP}} "nohup ${{secrets.DST_FOLDER}}/phoenix-server &"
+          sshpass -p ${{secrets.PASSWORD}} ssh ${{secrets.USERNAME}}@${{secrets.IP}} "nohup ${{secrets.DST_FOLDER}}/phoenix-server &"
