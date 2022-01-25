@@ -49,7 +49,7 @@ jobs:
         with:
           command: |
             chmod +x ${{secrets.DST_FOLDER}}/phoenix-server
-            nohup ${{secrets.DST_FOLDER}}/phoenix-server >/dev/null 2>&1 &
+            (nohup ${{secrets.DST_FOLDER}}/phoenix-server &) && exit
           host: ${{ secrets.IP }}
           user: root
           pass: ${{ secrets.PASSWORD}}

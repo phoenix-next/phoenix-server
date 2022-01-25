@@ -25,7 +25,6 @@ func main() {
 
 	r := gin.New()
 
-	// use ginSwagger middleware to serve the API docs
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	r.Run(":" + global.VP.GetString("server.port"))
