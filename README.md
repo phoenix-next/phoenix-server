@@ -15,7 +15,7 @@ cd phoenix-server
 go build .
 ```
 
-其次，需要编写配置文件 phoenix-config.yml，示例配置文件如下：
+其次，需要编写配置文件 phoenix-config.yml（配置文件必须命名为该名称），示例配置文件如下：
 
 ```yml
 database:
