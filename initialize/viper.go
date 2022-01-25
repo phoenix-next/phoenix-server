@@ -8,7 +8,7 @@ import (
 )
 
 func InitViper() *viper.Viper {
-	// 获取文件路径
+	// 获取配置文件路径
 	path, err := os.Getwd()
 	if err != nil {
 		panic("初始化失败：工作目录获取失败")

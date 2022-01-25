@@ -21,11 +21,12 @@ import (
 func main() {
 	global.VP = initialize.InitViper()
 	global.LOG = initialize.InitLogger()
+	global.DB = initialize.InitMySQL()
 
 	r := gin.New()
 
 	// use ginSwagger middleware to serve the API docs
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	r.Run()
+	r.Run(":" + global.VP.GetString("server.port"))
 }
