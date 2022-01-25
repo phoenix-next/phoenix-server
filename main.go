@@ -24,8 +24,7 @@ func main() {
 	global.DB = initialize.InitMySQL()
 
 	r := gin.New()
-
+	initialize.InitRouter(r)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-
 	r.Run(":" + global.VP.GetString("server.port"))
 }
