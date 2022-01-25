@@ -21,7 +21,7 @@ jobs:
         run: |
           cd ${{github.workspace}}
           go env -w GO111MODULE=on
-          go mod tidy
+          go mod tidy -compat="1.17"
           go build .
 
       - name: stop
