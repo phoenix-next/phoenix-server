@@ -9,7 +9,6 @@ type Competition struct {
 
 // 题目
 type Problem struct {
-	ID    uint64 `gorm:"primary_key; not null;" json:"id"`
-	Title string `gorm:"size:32; not null;" json:"title"`
-	Name  string `gorm:"size:32; not null; unique" json:"name"`
+	ID   uint64 `gorm:"primary_key; not null;" json:"id"`
+	Name string `gorm:"size:32; not null; unique" json:"name"`
 }

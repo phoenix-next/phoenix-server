@@ -64,6 +64,10 @@ func InitMySQL() *gorm.DB {
 		&model.Organization{},
 		&model.Comment{},
 		&model.Post{},
+
+		&model.CompProbRel{},
+		&model.CompOrgRel{},
+		&model.UserOrgRel{},
 	)
 	return db
 }
