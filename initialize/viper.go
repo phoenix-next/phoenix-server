@@ -1,6 +1,7 @@
 package initialize
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -14,14 +15,16 @@ func InitViper() *viper.Viper {
 		panic("初始化失败：可执行程序路径获取失败")
 	}
 	path = filepath.Dir(path)
-	path = filepath.Join(path, "phoenix-config.yml")
+	path = filepath.Join(path, "utils", "phoenix-config.yml")
 	// 初始化viper
 	v := viper.New()
 	v.SetConfigFile(path)
 	v.SetConfigType("yaml")
 	err = v.ReadInConfig()
 	if err != nil {
-		panic("初始化失败：读取配置文件失败")
+		fmt.Println(err)
+		panic(err)
+		//panic("初始化失败：读取配置文件失败")
 	}
 	return v
 }
