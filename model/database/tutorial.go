@@ -1,4 +1,4 @@
-package request
+package database
 
 // 教程
 type Tutorial struct {

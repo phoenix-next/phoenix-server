@@ -1,4 +1,4 @@
-package request
+package database
 
 // 比赛
 type Competition struct {
