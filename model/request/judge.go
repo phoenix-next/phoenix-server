@@ -1,13 +1,13 @@
-package model
+package request
 
-// 帖子
-type Post struct {
+// 比赛
+type Competition struct {
 	ID   uint64 `gorm:"primary_key; not null;" json:"id"`
 	Name string `gorm:"size:32; not null; unique" json:"name"`
 }
 
-// 评论
-type Comment struct {
+// 题目
+type Problem struct {
 	ID   uint64 `gorm:"primary_key; not null;" json:"id"`
 	Name string `gorm:"size:32; not null; unique" json:"name"`
 }

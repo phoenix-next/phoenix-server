@@ -1,4 +1,4 @@
-package model
+package database
 
 // 教程
 type Tutorial struct {

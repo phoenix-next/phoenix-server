@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/phoenix-next/phoenix-server/global"
-	"github.com/phoenix-next/phoenix-server/model"
+	"github.com/phoenix-next/phoenix-server/model/database"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -41,8 +41,8 @@ func InitMySQL() *gorm.DB {
 	port := global.VP.GetString("database.port")
 	user := global.VP.GetString("database.user")
 	password := global.VP.GetString("database.password")
-	database := global.VP.GetString("database.database")
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", user, password, addr, port, database)
+	dbstr := global.VP.GetString("database.database")
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", user, password, addr, port, dbstr)
 	// 连接MySQL数据库
 	var db *gorm.DB
 	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
@@ -57,13 +57,13 @@ func InitMySQL() *gorm.DB {
 	// 更新MySQL数据库内容
 	db.Set("gorm:table_options", "ENGINE=InnoDB")
 	db.AutoMigrate(
-		&model.User{},
-		&model.Problem{},
-		&model.Tutorial{},
-		&model.Competition{},
-		&model.Organization{},
-		&model.Comment{},
-		&model.Post{},
+		&database.User{},
+		&database.Problem{},
+		&database.Tutorial{},
+		&database.Competition{},
+		&database.Organization{},
+		&database.Comment{},
+		&database.Post{},
 	)
 	return db
 }
