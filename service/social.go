@@ -8,17 +8,17 @@ import (
 	"gorm.io/gorm"
 )
 
-// CreateAUser 创建用户
-func CreateAUser(user *database.User) (err error) {
-	if err = global.DB.Create(&user).Error; err != nil {
+// CreateUser 创建用户
+func CreateUser(user *database.User) (err error) {
+	if err = global.DB.Create(user).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-// QueryAUserByID 根据用户 ID 查询某个用户
-func QueryAUserByID(userID uint64) (user database.User, notFound bool) {
-	err := global.DB.Where("user_id = ?", userID).First(&user).Error
+// GetUserByID 根据用户 ID 查询某个用户
+func GetUserByID(ID uint64) (user database.User, notFound bool) {
+	err := global.DB.First(&user, ID).Error
 	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
 		return user, true
 	} else if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
@@ -28,9 +28,9 @@ func QueryAUserByID(userID uint64) (user database.User, notFound bool) {
 	}
 }
 
-// QueryAUserByUsername 根据用户 username 查询某个用户
-func QueryAUserByUsername(username string) (user database.User, notFound bool) {
-	err := global.DB.Where("username = ?", username).First(&user).Error
+// GetUserByName 根据用户 name 查询某个用户
+func GetUserByName(name string) (user database.User, notFound bool) {
+	err := global.DB.Where("name = ?", name).First(&user).Error
 	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
 		return user, true
 	} else if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
@@ -40,8 +40,8 @@ func QueryAUserByUsername(username string) (user database.User, notFound bool) {
 	}
 }
 
-// QueryAllUser 查询所有用户
-func QueryAllUser() (users []database.User) {
+// GetAllUser 查询所有用户
+func GetAllUser() (users []database.User) {
 	users = make([]database.User, 0)
 	global.DB.Find(&users)
 	return users

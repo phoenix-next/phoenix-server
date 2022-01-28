@@ -9,9 +9,9 @@ import (
 	"github.com/swaggo/gin-swagger/swaggerFiles"
 )
 
-// @title           PhoeniX API
-// @version         1.0
-// @description     PhoeniX学习平台的后端API接口
+// @title        PhoeniX API
+// @version      1.0
+// @description  PhoeniX学习平台的后端API接口
 
 // @contact.name   Matrix53
 // @contact.url    https://github.com/matrix53

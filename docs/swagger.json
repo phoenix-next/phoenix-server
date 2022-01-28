@@ -17,7 +17,7 @@
     "paths": {
         "/api/v1/user": {
             "post": {
-                "description": "plus",
+                "description": "注册新用户",
                 "consumes": [
                     "application/json"
                 ],
@@ -25,34 +25,54 @@
                     "application/json"
                 ],
                 "tags": [
-                    "example"
+                    "社交模块"
                 ],
-                "summary": "calc example",
-                "responses": {
-                    "200": {
-                        "description": "answer",
+                "summary": "注册",
+                "parameters": [
+                    {
+                        "description": "用户名, 邮箱, 密码, 验证码",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
                         "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    "400": {
-                        "description": "ok",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "404": {
-                        "description": "ok",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "ok",
-                        "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/api.RegisterQ"
                         }
                     }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "用户注册账号,返回注册成功信息",
+                        "schema": {
+                            "$ref": "#/definitions/api.RegisterA"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "api.RegisterA": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "api.RegisterQ": {
+            "type": "object",
+            "properties": {
+                "captcha": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
                 }
             }
         }
