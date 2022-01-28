@@ -1,7 +1,15 @@
 package initialize
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	v1 "github.com/phoenix-next/phoenix-server/api/v1"
+)
 
 func InitRouter(r *gin.Engine) {
-	// basicRouter := r.Group("/api/v1")
+	basicRouter := r.Group("/api/v1")
+
+	userRouter := basicRouter.Group("/user")
+	{
+		userRouter.POST("", v1.Register)
+	}
 }

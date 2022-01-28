@@ -1,4 +1,40 @@
 info:
-  contact: {}
-paths: {}
+  contact:
+    email: 1079207272@qq.com
+    name: Matrix53
+    url: https://github.com/matrix53
+  description: PhoeniX学习平台的后端API接口
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: PhoeniX API
+  version: "1.0"
+paths:
+  /user:
+    get:
+      consumes:
+      - application/json
+      description: plus
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: answer
+          schema:
+            type: integer
+        "400":
+          description: ok
+          schema:
+            type: string
+        "404":
+          description: ok
+          schema:
+            type: string
+        "500":
+          description: ok
+          schema:
+            type: string
+      summary: calc example
+      tags:
+      - example
 swagger: "2.0"

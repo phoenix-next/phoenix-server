@@ -1,7 +1,60 @@
 {
     "swagger": "2.0",
     "info": {
-        "contact": {}
+        "description": "PhoeniX学习平台的后端API接口",
+        "title": "PhoeniX API",
+        "contact": {
+            "name": "Matrix53",
+            "url": "https://github.com/matrix53",
+            "email": "1079207272@qq.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
     },
-    "paths": {}
+    "paths": {
+        "/user": {
+            "get": {
+                "description": "plus",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "example"
+                ],
+                "summary": "calc example",
+                "responses": {
+                    "200": {
+                        "description": "answer",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    "400": {
+                        "description": "ok",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "ok",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "ok",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
