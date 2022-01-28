@@ -15,8 +15,8 @@
         "version": "1.0"
     },
     "paths": {
-        "/user": {
-            "get": {
+        "/api/v1/user": {
+            "post": {
                 "description": "plus",
                 "consumes": [
                     "application/json"

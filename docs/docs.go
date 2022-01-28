@@ -31,8 +31,8 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/user": {
-            "get": {
+        "/api/v1/user": {
+            "post": {
                 "description": "plus",
                 "consumes": [
                     "application/json"

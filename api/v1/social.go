@@ -16,7 +16,7 @@ import (
 // @Failure      400   {string}   string  "ok"
 // @Failure      404   {string}   string  "ok"
 // @Failure      500   {string}   string  "ok"
-// @Router       /user [get]
+// @Router       /api/v1/user [post]
 func Register(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": "ok", "name": 1})
 }
