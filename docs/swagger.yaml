@@ -34,7 +34,7 @@ info:
   title: PhoeniX API
   version: "1.0"
 paths:
-  /api/v1/captcha:
+  /api/v1/user/captcha:
     post:
       consumes:
       - application/json
@@ -55,7 +55,7 @@ paths:
             $ref: '#/definitions/api.RegisterA'
       tags:
       - 社交模块
-  /api/v1/user:
+  /api/v1/user/register:
     post:
       consumes:
       - application/json

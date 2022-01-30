@@ -31,7 +31,7 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/v1/captcha": {
+        "/api/v1/user/captcha": {
             "post": {
                 "description": "根据邮箱发送验证吗，并更新数据库",
                 "consumes": [
@@ -64,7 +64,7 @@ var doc = `{
                 }
             }
         },
-        "/api/v1/user": {
+        "/api/v1/user/register": {
             "post": {
                 "description": "注册新用户",
                 "consumes": [

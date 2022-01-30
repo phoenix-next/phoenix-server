@@ -2,6 +2,9 @@ package service
 
 import (
 	"errors"
+	"fmt"
+	"github.com/phoenix-next/phoenix-server/middleware"
+	"strconv"
 
 	"github.com/phoenix-next/phoenix-server/global"
 	"github.com/phoenix-next/phoenix-server/model/database"
@@ -73,4 +76,19 @@ func DeleteCaptchaByEmail(email string) (err error) {
 		return err
 	}
 	return nil
+}
+
+func SendRegisterEmail(themail string, number int) {
+	subject := "欢迎注册phoenix    xxxx代填"
+	// 邮件正文
+	mailTo := []string{
+		themail,
+	}
+	body := "Hello,This is a email,这是你的注册码" + strconv.Itoa(number)
+	err := middleware.SendMail(mailTo, subject, body)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("sendRegisterEmail successfully")
+	return
 }

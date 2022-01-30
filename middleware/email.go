@@ -1,28 +1,11 @@
 package middleware
 
 import (
-	"fmt"
 	"github.com/phoenix-next/phoenix-server/global"
-	"log"
+	"gopkg.in/gomail.v2"
 	"strconv"
 )
 
-func SendRegisterEmail(themail string, number int) {
-	subject := "欢迎注册Slime学术成果分享平台"
-	// 邮件正文
-	mailTo := []string{
-		themail,
-	}
-	body := "Hello,This is a email,这是你的注册码" + strconv.Itoa(number)
-	err := SendMail(mailTo, subject, body)
-	if err != nil {
-		log.Println(err)
-		fmt.Println("send fail")
-		return
-	}
-	fmt.Println("sendRegisterEmail successfully")
-	return
-}
 func SendMail(mailTo []string, subject string, body string) error {
 	//定义邮箱服务器连接信息，如果是网易邮箱 pass填密码，qq邮箱填授权码
 	// 具体信息可在secret.go 中填写
