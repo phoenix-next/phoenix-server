@@ -1,6 +1,13 @@
 definitions:
+  api.CaptchaValidQ:
+    properties:
+      email:
+        type: string
+    type: object
   api.RegisterA:
     properties:
+      code:
+        type: integer
       message:
         type: string
     type: object
@@ -27,6 +34,27 @@ info:
   title: PhoeniX API
   version: "1.0"
 paths:
+  /api/v1/captcha:
+    post:
+      consumes:
+      - application/json
+      description: 根据邮箱发送验证吗，并更新数据库
+      parameters:
+      - description: 邮箱
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/api.CaptchaValidQ'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 用户注册账号,返回注册成功信息
+          schema:
+            $ref: '#/definitions/api.RegisterA'
+      tags:
+      - 社交模块
   /api/v1/user:
     post:
       consumes:
@@ -46,7 +74,6 @@ paths:
           description: 用户注册账号,返回注册成功信息
           schema:
             $ref: '#/definitions/api.RegisterA'
-      summary: 注册
       tags:
       - 社交模块
 swagger: "2.0"

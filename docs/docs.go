@@ -31,6 +31,39 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v1/captcha": {
+            "post": {
+                "description": "根据邮箱发送验证吗，并更新数据库",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "社交模块"
+                ],
+                "parameters": [
+                    {
+                        "description": "邮箱",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.CaptchaValidQ"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "用户注册账号,返回注册成功信息",
+                        "schema": {
+                            "$ref": "#/definitions/api.RegisterA"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/user": {
             "post": {
                 "description": "注册新用户",
@@ -43,7 +76,6 @@ var doc = `{
                 "tags": [
                     "社交模块"
                 ],
-                "summary": "注册",
                 "parameters": [
                     {
                         "description": "用户名, 邮箱, 密码, 验证码",
@@ -67,9 +99,20 @@ var doc = `{
         }
     },
     "definitions": {
+        "api.CaptchaValidQ": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                }
+            }
+        },
         "api.RegisterA": {
             "type": "object",
             "properties": {
+                "code": {
+                    "type": "integer"
+                },
                 "message": {
                     "type": "string"
                 }
@@ -146,5 +189,5 @@ func (s *s) ReadDoc() string {
 }
 
 func init() {
-	swag.Register("swagger", &s{})
+	swag.Register(swag.Name, &s{})
 }

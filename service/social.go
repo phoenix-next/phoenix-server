@@ -46,3 +46,31 @@ func GetAllUser() (users []database.User) {
 	global.DB.Find(&users)
 	return users
 }
+
+// CreateUser 创建用户
+func CreateCaptcha(captcha *database.Captcha) (err error) {
+	if err = global.DB.Create(captcha).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+// GetCaptchaByNEmail 根据邮箱删得到验证码
+func GetCaptchaByNEmail(name string) (captcha database.Captcha, notFound bool) {
+	err := global.DB.Where("email = ?", name).First(&captcha).Error
+	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
+		return captcha, true
+	} else if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		panic(err)
+	} else {
+		return captcha, false
+	}
+}
+
+//根据邮箱删除验证码
+func DeleteCaptchaByEmail(email string) (err error) {
+	if err = global.DB.Where("email = ?", email).Delete(database.Captcha{}).Error; err != nil {
+		return err
+	}
+	return nil
+}
