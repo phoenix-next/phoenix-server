@@ -14,7 +14,7 @@ definitions:
   api.RegisterQ:
     properties:
       captcha:
-        type: string
+        type: integer
       email:
         type: string
       name:

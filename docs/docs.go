@@ -122,7 +122,7 @@ var doc = `{
             "type": "object",
             "properties": {
                 "captcha": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "email": {
                     "type": "string"

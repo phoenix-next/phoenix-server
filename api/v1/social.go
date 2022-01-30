@@ -28,11 +28,15 @@ func Register(c *gin.Context) {
 		c.JSON(http.StatusOK, api.RegisterA{Message: "用户已存在", Code: 401})
 		return
 	}
+	if !service.ValidEmailCaptcha(data.Email, data.Captcha) {
+		c.JSON(http.StatusOK, api.RegisterA{Message: "验证码错误", Code: 402})
+		return
+	}
 	err := service.CreateUser(&database.User{Name: data.Name, Password: data.Password, Email: data.Email})
 	if err != nil {
 		panic(err)
 	}
-	c.JSON(http.StatusOK, api.RegisterA{Message: "创建用户成功"})
+	c.JSON(http.StatusOK, api.RegisterA{Message: "创建用户成功", Code: 200})
 }
 
 // CaptchaValid      邮箱验证

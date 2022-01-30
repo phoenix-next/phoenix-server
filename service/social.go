@@ -50,7 +50,7 @@ func GetAllUser() (users []database.User) {
 	return users
 }
 
-// CreateUser 创建用户
+// CreateCaptcha CreateUser 创建用户
 func CreateCaptcha(captcha *database.Captcha) (err error) {
 	if err = global.DB.Create(captcha).Error; err != nil {
 		return err
@@ -70,7 +70,7 @@ func GetCaptchaByNEmail(name string) (captcha database.Captcha, notFound bool) {
 	}
 }
 
-//根据邮箱删除验证码
+// DeleteCaptchaByEmail 根据邮箱删除验证码
 func DeleteCaptchaByEmail(email string) (err error) {
 	if err = global.DB.Where("email = ?", email).Delete(database.Captcha{}).Error; err != nil {
 		return err
@@ -78,6 +78,7 @@ func DeleteCaptchaByEmail(email string) (err error) {
 	return nil
 }
 
+// SendRegisterEmail 发送注册验证码邮件
 func SendRegisterEmail(themail string, number int) {
 	subject := "欢迎注册phoenix    xxxx代填"
 	// 邮件正文
@@ -91,4 +92,12 @@ func SendRegisterEmail(themail string, number int) {
 	}
 	fmt.Println("sendRegisterEmail successfully")
 	return
+}
+
+// 验证邮箱验证码是否正确
+func ValidEmailCaptcha(email string, number int) bool {
+	if captcha, notFound := GetCaptchaByNEmail(email); !notFound {
+		return captcha.Captcha == number
+	}
+	return false
 }
