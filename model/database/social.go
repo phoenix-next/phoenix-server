@@ -2,7 +2,7 @@ package database
 
 import "time"
 
-// 用户
+// User 用户
 type User struct {
 	ID       uint64    `gorm:"primary_key; autoIncrement; not null;" json:"id"`
 	Name     string    `gorm:"size:32; not null;" json:"name"`
@@ -14,7 +14,7 @@ type User struct {
 	UserType uint64    `gorm:"default:0;" json:"user_type"` // 0为普通用户，1为至少为某一组织的管理员
 }
 
-// 邮箱验证码
+// Captcha 邮箱验证码
 type Captcha struct {
 	ID       uint64    `gorm:"primary_key; autoIncrement; not null;" json:"id"`
 	Email    string    `gorm:"size:32; not null; unique;" json:"email"`
@@ -22,7 +22,7 @@ type Captcha struct {
 	Captcha  int       `gorm:"not null;" json:"captcha"`
 }
 
-// 组织
+// Organization 组织
 type Organization struct {
 	ID          uint64    `gorm:"primary_key; not null;" json:"id"`
 	Name        string    `gorm:"size:32; not null; unique" json:"name"`

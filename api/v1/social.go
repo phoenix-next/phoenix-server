@@ -12,6 +12,7 @@ import (
 	"github.com/phoenix-next/phoenix-server/utils"
 )
 
+// Register
 // @Summary      注册
 // @Description  注册新用户
 // @Tags         社交模块
@@ -40,6 +41,7 @@ func Register(c *gin.Context) {
 	c.JSON(http.StatusOK, api.RegisterA{Message: "创建用户成功"})
 }
 
+// GetCaptcha
 // @Summary      发送验证码
 // @Description  根据邮箱发送验证码，并更新数据库
 // @Tags         社交模块

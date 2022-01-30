@@ -44,7 +44,7 @@ func SendMail(mailTo []string, subject string, body string) error {
 
 }
 
-// 发送注册验证码邮件
+// SendRegisterEmail 发送注册验证码邮件
 func SendRegisterEmail(themail string, number int) {
 	subject := "欢迎注册phoenix    xxxx代填"
 	// 邮件正文
