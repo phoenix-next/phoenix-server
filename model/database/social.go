@@ -14,6 +14,14 @@ type User struct {
 	UserType uint64    `gorm:"default:0;" json:"user_type"` // 0为普通用户，1为至少为某一组织的管理员
 }
 
+// 邮箱验证码
+type Captcha struct {
+	ID       uint64    `gorm:"primary_key; autoIncrement; not null;" json:"id"`
+	Email    string    `gorm:"size:32; not null; unique;" json:"email"`
+	SendTime time.Time `gorm:"autoCreateTime" json:"send_time"`
+	Captcha  int       `gorm:"not null;" json:"captcha"`
+}
+
 // 组织
 type Organization struct {
 	ID          uint64    `gorm:"primary_key; not null;" json:"id"`
