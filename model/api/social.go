@@ -1,11 +1,5 @@
 package api
 
-type NormalResponse struct {
-	Message string      `json:"message"`
-	Code    int         `json:"code"`
-	Data    interface{} `json:"data"`
-}
-
 type RegisterQ struct {
 	Name     string `json:"name"`
 	Email    string `json:"email"`
@@ -15,9 +9,12 @@ type RegisterQ struct {
 
 type RegisterA struct {
 	Message string `json:"message"`
-	Code    int    `json:"code"`
 }
 
-type CaptchaValidQ struct {
+type GetCaptchaQ struct {
 	Email string `json:"email"`
+}
+
+type GetCaptchaA struct {
+	Message string `json:"message"`
 }

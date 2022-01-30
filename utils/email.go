@@ -1,9 +1,11 @@
-package middleware
+package utils
 
 import (
+	"fmt"
+	"strconv"
+
 	"github.com/phoenix-next/phoenix-server/global"
 	"gopkg.in/gomail.v2"
-	"strconv"
 )
 
 func SendMail(mailTo []string, subject string, body string) error {
@@ -40,4 +42,19 @@ func SendMail(mailTo []string, subject string, body string) error {
 	err := d.DialAndSend(m)
 	return err
 
+}
+
+// 发送注册验证码邮件
+func SendRegisterEmail(themail string, number int) {
+	subject := "欢迎注册phoenix    xxxx代填"
+	// 邮件正文
+	mailTo := []string{
+		themail,
+	}
+	body := "Hello,This is a email,这是你的注册码" + strconv.Itoa(number)
+	err := SendMail(mailTo, subject, body)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("sendRegisterEmail successfully")
 }

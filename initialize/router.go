@@ -11,6 +11,6 @@ func InitRouter(r *gin.Engine) {
 	userRouter := basicRouter.Group("/user")
 	{
 		userRouter.POST("/register", v1.Register)
-		userRouter.POST("/captcha", v1.CaptchaValid)
+		userRouter.POST("/captcha", v1.GetCaptcha)
 	}
 }

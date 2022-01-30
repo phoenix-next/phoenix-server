@@ -9,9 +9,10 @@ import (
 	"github.com/phoenix-next/phoenix-server/model/api"
 	"github.com/phoenix-next/phoenix-server/model/database"
 	"github.com/phoenix-next/phoenix-server/service"
+	"github.com/phoenix-next/phoenix-server/utils"
 )
 
-// Register      注册
+// @Summary      注册
 // @Description  注册新用户
 // @Tags         社交模块
 // @Accept       json
@@ -25,30 +26,30 @@ func Register(c *gin.Context) {
 		panic(err)
 	}
 	if _, notFound := service.GetUserByName(data.Name); !notFound {
-		c.JSON(http.StatusOK, api.RegisterA{Message: "用户已存在", Code: 401})
+		c.JSON(http.StatusForbidden, api.RegisterA{Message: "用户已存在"})
 		return
 	}
 	if !service.ValidEmailCaptcha(data.Email, data.Captcha) {
-		c.JSON(http.StatusOK, api.RegisterA{Message: "验证码错误", Code: 402})
+		c.JSON(http.StatusForbidden, api.RegisterA{Message: "验证码错误"})
 		return
 	}
 	err := service.CreateUser(&database.User{Name: data.Name, Password: data.Password, Email: data.Email})
 	if err != nil {
 		panic(err)
 	}
-	c.JSON(http.StatusOK, api.RegisterA{Message: "创建用户成功", Code: 200})
+	c.JSON(http.StatusOK, api.RegisterA{Message: "创建用户成功"})
 }
 
-// CaptchaValid      邮箱验证
-// @Description  根据邮箱发送验证吗，并更新数据库
+// @Summary      发送验证码
+// @Description  根据邮箱发送验证码，并更新数据库
 // @Tags         社交模块
 // @Accept       json
 // @Produce      json
-// @Param        data  body      api.CaptchaValidQ  true  "邮箱"
-// @Success      200   {object}  api.RegisterA  "用户注册账号,返回注册成功信息"
+// @Param        data  body      api.GetCaptchaQ  true  "邮箱"
+// @Success      200   {object}  api.GetCaptchaA  "用户注册账号,返回注册成功信息"
 // @Router       /api/v1/user/captcha [post]
-func CaptchaValid(c *gin.Context) {
-	var data api.CaptchaValidQ
+func GetCaptcha(c *gin.Context) {
+	var data api.GetCaptchaQ
 	if err := c.ShouldBindJSON(&data); err != nil {
 		panic(err)
 	}
@@ -57,6 +58,6 @@ func CaptchaValid(c *gin.Context) {
 	if err := service.CreateCaptcha(&database.Captcha{Email: data.Email, Captcha: confirmNumber}); err != nil {
 		panic(err)
 	}
-	service.SendRegisterEmail(data.Email, confirmNumber)
-	c.JSON(http.StatusOK, api.RegisterA{Message: "发送验证码成功", Code: 200})
+	utils.SendRegisterEmail(data.Email, confirmNumber)
+	c.JSON(http.StatusOK, api.RegisterA{Message: "发送验证码成功"})
 }

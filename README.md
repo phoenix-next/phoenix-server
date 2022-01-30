@@ -7,11 +7,12 @@
 
 ## Deploy
 
-首先，需要 clone 项目并进行编译，得到可执行文件 phoenix-server：
+首先，需要 clone 项目并进行编译（需要 Go 1.17 及以上），得到可执行文件 phoenix-server：
 
 ```sh
 git clone https://github.com/phoenix-next/phoenix-server
 cd phoenix-server
+go mod tidy
 go build .
 ```
 
@@ -24,6 +25,12 @@ database:
   user: 'username' # MySQL的用户名
   password: 'password' # MySQL对应用户的密码
   database: 'phoenix' # 使用的MySQL数据库名称
+
+email:
+  user: 'user@126.com' # 发送注册邮件的邮箱
+  password: 'password' # 上述邮箱的密码（或授权码）
+  host: 'smtp.126.com' # 该邮箱所属的邮件服务器
+  port: '465' # 该邮件服务器提供服务的端口
 
 server:
   port: 8080 # 服务器运行的端口
