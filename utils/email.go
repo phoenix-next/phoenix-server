@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"strconv"
 
 	"github.com/phoenix-next/phoenix-server/global"
@@ -45,16 +44,20 @@ func SendMail(mailTo []string, subject string, body string) error {
 }
 
 // SendRegisterEmail 发送注册验证码邮件
-func SendRegisterEmail(themail string, number int) {
-	subject := "欢迎注册phoenix    xxxx代填"
-	// 邮件正文
+func SendRegisterEmail(email string, number int) {
+	// 邮件标题
+	subject := "欢迎注册PhoeniX学习平台"
+	// 邮件接收方
 	mailTo := []string{
-		themail,
+		email,
 	}
-	body := "Hello,This is a email,这是你的注册码" + strconv.Itoa(number)
+	// 邮件内容
+	body := `您好，欢迎注册PhoeniX学习平台！
+			 本平台旨在提高题目评测速度，提供更优质的知识共享与交流社区，帮助您更轻松地掌握新技能。
+			 您的注册验证码为：` + strconv.Itoa(number)
+	// 发送邮件
 	err := SendMail(mailTo, subject, body)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("sendRegisterEmail successfully")
 }
