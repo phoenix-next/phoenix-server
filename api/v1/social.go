@@ -20,7 +20,7 @@ import (
 // @Accept       json
 // @Produce      json
 // @Param        data  body      api.RegisterQ  true  "用户名, 邮箱, 密码, 验证码"
-// @Success      200   {object}  api.RegisterA  "用户注册账号,返回注册成功信息"
+// @Success      200   {object}  api.RegisterA  "返回信息"
 // @Router       /api/v1/user/register [post]
 func Register(c *gin.Context) {
 	var data api.RegisterQ
@@ -49,7 +49,7 @@ func Register(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        data  body      api.GetCaptchaQ  true  "邮箱"
-// @Success      200   {object}  api.GetCaptchaA  "用户注册账号,返回注册成功信息"
+// @Success      200   {object}  api.GetCaptchaA  "返回信息"
 // @Router       /api/v1/user/captcha [post]
 func GetCaptcha(c *gin.Context) {
 	var data api.GetCaptchaQ
@@ -66,4 +66,22 @@ func GetCaptcha(c *gin.Context) {
 	}
 	utils.SendRegisterEmail(data.Email, confirmNumber)
 	c.JSON(http.StatusOK, api.RegisterA{Message: "发送验证码成功"})
+}
+
+// Login
+// @Summary      用户登录
+// @Description  根据用户邮箱和密码等生成token，并将token返回给用户
+// @Tags         社交模块
+// @Accept       json
+// @Produce      json
+// @Param        data  body      api.LoginQ  true  "邮箱，密码"
+// @Success      200   {object}  api.LoginA  "返回信息，Token"
+// @Router       /api/v1/user/login [post]
+func Login(c *gin.Context) {
+	var data api.LoginQ
+	err := c.ShouldBindJSON(&data)
+	if err != nil {
+		global.LOG.Panic("Login: bind data error")
+	}
+	c.JSON(http.StatusOK, api.LoginA{Message: "登录成功", Token: "123456"})
 }

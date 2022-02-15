@@ -8,15 +8,9 @@ import (
 )
 
 func SendMail(mailTo []string, subject string, body string) error {
-	// 定义邮箱服务器连接信息，如果是网易邮箱 password 填密码，qq邮箱填授权码
+	// 定义邮箱服务器连接信息，如果是网易邮箱 password 填密码，如果是QQ邮箱则填授权码
 	// 具体信息可在 phoenix-config.yml 中填写
-	//	mailConn := map[string]string{
-	//  	"user": "xxx@163.com",
-	//  	"password": "your password",
-	//  	"host": "smtp.163.com",
-	//  	"port": "465",
-	//	}
-
+	// 另外，Viper不提供配置校验，所以配置文件出错该函数必返回error
 	mailConn := map[string]string{
 		"user":     global.VP.GetString("email.user"),
 		"password": global.VP.GetString("email.password"),

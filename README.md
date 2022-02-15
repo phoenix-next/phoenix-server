@@ -4,6 +4,7 @@
 
 - PhoeniX 后台服务器，用于集中管理、存储用户信息
 - 项目使用 Golang + Gin 制作
+- 本项目为服务端，Shell 客户端位于[这里](https://github.com/phoenix-next/phoenix-shell)，而桌面客户端位于[这里](https://github.com/phoenix-next/phoenix)
 
 ## Deploy
 

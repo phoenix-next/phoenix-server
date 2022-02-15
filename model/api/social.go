@@ -18,3 +18,13 @@ type GetCaptchaQ struct {
 type GetCaptchaA struct {
 	Message string `json:"message"`
 }
+
+type LoginQ struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type LoginA struct {
+	Message string `json:"message"`
+	Token   string `json:"token"`
+}
