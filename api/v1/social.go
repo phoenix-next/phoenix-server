@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/phoenix-next/phoenix-server/global"
 	"github.com/phoenix-next/phoenix-server/model/api"
 	"github.com/phoenix-next/phoenix-server/model/database"
 	"github.com/phoenix-next/phoenix-server/service"
@@ -52,13 +53,16 @@ func Register(c *gin.Context) {
 // @Router       /api/v1/user/captcha [post]
 func GetCaptcha(c *gin.Context) {
 	var data api.GetCaptchaQ
-	if err := c.ShouldBindJSON(&data); err != nil {
-		panic(err)
+	err := c.ShouldBindJSON(&data)
+	if err != nil {
+		global.LOG.Panic("GetCaptcha: bind data error")
 	}
 	confirmNumber := rand.New(rand.NewSource(time.Now().UnixNano())).Int() % 1000000
-	_ = service.DeleteCaptchaByEmail(data.Email)
-	if err := service.CreateCaptcha(&database.Captcha{Email: data.Email, Captcha: confirmNumber}); err != nil {
-		panic(err)
+	if err = service.DeleteCaptchaByEmail(data.Email); err != nil {
+		global.LOG.Panic("GetCaptcha: delete captcha error")
+	}
+	if err = service.CreateCaptcha(&database.Captcha{Email: data.Email, Captcha: confirmNumber}); err != nil {
+		global.LOG.Panic("GetCaptcha: create captcha error")
 	}
 	utils.SendRegisterEmail(data.Email, confirmNumber)
 	c.JSON(http.StatusOK, api.RegisterA{Message: "发送验证码成功"})

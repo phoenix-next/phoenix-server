@@ -8,20 +8,20 @@ import (
 )
 
 func SendMail(mailTo []string, subject string, body string) error {
-	//定义邮箱服务器连接信息，如果是网易邮箱 pass填密码，qq邮箱填授权码
-	// 具体信息可在secret.go 中填写
-	//mailConn := map[string]string{
-	//  "user": "xxx@163.com",
-	//  "pass": "your password",
-	//  "host": "smtp.163.com",
-	//  "port": "465",
-	//}
+	// 定义邮箱服务器连接信息，如果是网易邮箱 password 填密码，qq邮箱填授权码
+	// 具体信息可在 phoenix-config.yml 中填写
+	//	mailConn := map[string]string{
+	//  	"user": "xxx@163.com",
+	//  	"password": "your password",
+	//  	"host": "smtp.163.com",
+	//  	"port": "465",
+	//	}
 
 	mailConn := map[string]string{
-		"user": global.VP.GetString("email.user"),
-		"pass": global.VP.GetString("email.pass"),
-		"host": global.VP.GetString("email.host"),
-		"port": global.VP.GetString("email.port"),
+		"user":     global.VP.GetString("email.user"),
+		"password": global.VP.GetString("email.password"),
+		"host":     global.VP.GetString("email.host"),
+		"port":     global.VP.GetString("email.port"),
 	}
 
 	port, _ := strconv.Atoi(mailConn["port"]) //转换端口类型为int
@@ -36,7 +36,7 @@ func SendMail(mailTo []string, subject string, body string) error {
 	m.SetHeader("Subject", subject) //设置邮件主题
 	m.SetBody("text/html", body)    //设置邮件正文
 
-	d := gomail.NewDialer(mailConn["host"], port, mailConn["user"], mailConn["pass"])
+	d := gomail.NewDialer(mailConn["host"], port, mailConn["user"], mailConn["password"])
 
 	err := d.DialAndSend(m)
 	return err
@@ -58,6 +58,6 @@ func SendRegisterEmail(email string, number int) {
 	// 发送邮件
 	err := SendMail(mailTo, subject, body)
 	if err != nil {
-		panic(err)
+		global.LOG.Panic("SendRegisterEmail: send email error")
 	}
 }
