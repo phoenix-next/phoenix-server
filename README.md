@@ -3,8 +3,23 @@
 ## Introduction
 
 - PhoeniX 后台服务器，用于集中管理、存储用户信息
-- 项目使用 Golang + Gin 制作
+- 项目使用 Golang 作为主要语言，使用 Gin 框架以及 Golang 的其他第三方库制作
 - 本项目为服务端，Shell 客户端位于[这里](https://github.com/phoenix-next/phoenix-shell)，而桌面客户端位于[这里](https://github.com/phoenix-next/phoenix)
+
+## Development
+
+开发过程中，有一些常用的命令：
+
+```sh
+# 更新Swagger的API文档(本质上是重新生成文档)
+swag init
+# 格式化(format)API函数的Swagger注释
+swag fmt
+# 更新并安装项目依赖
+go mod tidy
+# 构建项目，生成可执行文件
+go build .
+```
 
 ## Deploy
 
@@ -42,3 +57,5 @@ server:
 ## Credits
 
 - 项目的结构参考了[Slime 学术分享平台](https://github.com/BFlameSwift/SlimeScholar-Go)，以及[Gin-Vue 代码框架](https://github.com/flipped-aurora/gin-vue-admin)
+- 感谢 [Golang](https://github.com/golang/go) 项目以及 [Gin](https://github.com/gin-gonic/gin) 框架，这是本项目的基石
+- 另外，还要感谢 [viper](https://github.com/spf13/viper), [logrus](https://github.com/sirupsen/logrus), [swag](https://github.com/swaggo/swag) 等第三方库的作者，这加快了项目的开发
