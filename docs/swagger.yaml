@@ -9,6 +9,20 @@ definitions:
       email:
         type: string
     type: object
+  api.LoginA:
+    properties:
+      message:
+        type: string
+      token:
+        type: string
+    type: object
+  api.LoginQ:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
   api.RegisterA:
     properties:
       message:
@@ -17,7 +31,7 @@ definitions:
   api.RegisterQ:
     properties:
       captcha:
-        type: integer
+        type: string
       email:
         type: string
       name:
@@ -53,10 +67,32 @@ paths:
       - application/json
       responses:
         "200":
-          description: 用户注册账号,返回注册成功信息
+          description: 返回信息
           schema:
             $ref: '#/definitions/api.GetCaptchaA'
       summary: 发送验证码
+      tags:
+      - 社交模块
+  /api/v1/user/login:
+    post:
+      consumes:
+      - application/json
+      description: 根据用户邮箱和密码等生成token，并将token返回给用户
+      parameters:
+      - description: 邮箱，密码
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/api.LoginQ'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 返回信息，Token
+          schema:
+            $ref: '#/definitions/api.LoginA'
+      summary: 用户登录
       tags:
       - 社交模块
   /api/v1/user/register:
@@ -75,7 +111,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: 用户注册账号,返回注册成功信息
+          description: 返回信息
           schema:
             $ref: '#/definitions/api.RegisterA'
       summary: 注册

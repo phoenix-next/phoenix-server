@@ -4,7 +4,7 @@ type RegisterQ struct {
 	Name     string `json:"name"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
-	Captcha  int    `json:"captcha"`
+	Captcha  string `json:"captcha"`
 }
 
 type RegisterA struct {

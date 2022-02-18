@@ -19,7 +19,7 @@ type Captcha struct {
 	ID       uint64    `gorm:"primary_key; autoIncrement; not null;" json:"id"`
 	Email    string    `gorm:"size:32; not null; unique;" json:"email"`
 	SendTime time.Time `gorm:"autoCreateTime" json:"send_time"`
-	Captcha  int       `gorm:"not null;" json:"captcha"`
+	Captcha  uint64    `gorm:"not null;" json:"captcha"`
 }
 
 // Organization 组织

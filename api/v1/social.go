@@ -3,6 +3,7 @@ package v1
 import (
 	"math/rand"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -25,19 +26,23 @@ import (
 func Register(c *gin.Context) {
 	var data api.RegisterQ
 	if err := c.ShouldBindJSON(&data); err != nil {
-		panic(err)
+		global.LOG.Panic("Register: bind data error")
 	}
 	if _, notFound := service.GetUserByName(data.Name); !notFound {
 		c.JSON(http.StatusForbidden, api.RegisterA{Message: "用户已存在"})
 		return
 	}
-	if !service.ValidEmailCaptcha(data.Email, data.Captcha) {
+	captcha, err := strconv.ParseUint(data.Captcha, 10, 64)
+	realCaptcha, notFound := service.GetCaptchaByEmail(data.Email)
+	if notFound {
+		c.JSON(http.StatusForbidden, api.RegisterA{Message: "验证码未发送"})
+	}
+	if captcha != realCaptcha.Captcha || err != nil {
 		c.JSON(http.StatusForbidden, api.RegisterA{Message: "验证码错误"})
 		return
 	}
-	err := service.CreateUser(&database.User{Name: data.Name, Password: data.Password, Email: data.Email})
-	if err != nil {
-		panic(err)
+	if err := service.CreateUser(&database.User{Name: data.Name, Password: data.Password, Email: data.Email}); err != nil {
+		global.LOG.Panic("Register: create user error")
 	}
 	c.JSON(http.StatusOK, api.RegisterA{Message: "创建用户成功"})
 }
@@ -61,7 +66,7 @@ func GetCaptcha(c *gin.Context) {
 	if err = service.DeleteCaptchaByEmail(data.Email); err != nil {
 		global.LOG.Panic("GetCaptcha: delete captcha error")
 	}
-	if err = service.CreateCaptcha(&database.Captcha{Email: data.Email, Captcha: confirmNumber}); err != nil {
+	if err = service.CreateCaptcha(&database.Captcha{Email: data.Email, Captcha: uint64(confirmNumber)}); err != nil {
 		global.LOG.Panic("GetCaptcha: create captcha error")
 	}
 	utils.SendRegisterEmail(data.Email, confirmNumber)

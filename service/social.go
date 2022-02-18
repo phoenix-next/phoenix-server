@@ -74,11 +74,3 @@ func DeleteCaptchaByEmail(email string) (err error) {
 	}
 	return nil
 }
-
-// ValidEmailCaptcha 验证邮箱验证码是否正确
-func ValidEmailCaptcha(email string, number int) bool {
-	if captcha, notFound := GetCaptchaByEmail(email); !notFound {
-		return captcha.Captcha == number
-	}
-	return false
-}
