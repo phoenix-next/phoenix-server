@@ -88,5 +88,5 @@ func Login(c *gin.Context) {
 	if err != nil {
 		global.LOG.Panic("Login: bind data error")
 	}
-	c.JSON(http.StatusOK, api.LoginA{Success: true, Message: "登录成功", Token: "123456"})
+	c.JSON(http.StatusOK, api.LoginA{Success: true, Message: "登录成功", Token: "123456", ID: 123})
 }
