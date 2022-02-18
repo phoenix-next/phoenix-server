@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	_ "github.com/phoenix-next/phoenix-server/docs"
 	"github.com/phoenix-next/phoenix-server/global"
@@ -25,6 +26,7 @@ func main() {
 	global.DB = initialize.InitMySQL()
 
 	r := gin.New()
+	r.Use(cors.Default())
 	initialize.InitRouter(r)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	r.Run(":" + global.VP.GetString("server.port"))
