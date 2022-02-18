@@ -8,6 +8,7 @@ type RegisterQ struct {
 }
 
 type RegisterA struct {
+	Success bool   `json:"success"`
 	Message string `json:"message"`
 }
 
@@ -16,6 +17,7 @@ type GetCaptchaQ struct {
 }
 
 type GetCaptchaA struct {
+	Success bool   `json:"success"`
 	Message string `json:"message"`
 }
 
@@ -25,6 +27,7 @@ type LoginQ struct {
 }
 
 type LoginA struct {
+	Success bool   `json:"success"`
 	Message string `json:"message"`
 	Token   string `json:"token"`
 }

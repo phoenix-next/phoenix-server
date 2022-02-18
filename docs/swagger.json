@@ -41,7 +41,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "返回信息",
+                        "description": "是否成功，返回信息",
                         "schema": {
                             "$ref": "#/definitions/api.GetCaptchaA"
                         }
@@ -75,7 +75,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "返回信息，Token",
+                        "description": "是否成功，返回信息，Token",
                         "schema": {
                             "$ref": "#/definitions/api.LoginA"
                         }
@@ -109,7 +109,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "返回信息",
+                        "description": "是否成功，返回信息",
                         "schema": {
                             "$ref": "#/definitions/api.RegisterA"
                         }
@@ -124,6 +124,9 @@
             "properties": {
                 "message": {
                     "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
                 }
             }
         },
@@ -140,6 +143,9 @@
             "properties": {
                 "message": {
                     "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
                 },
                 "token": {
                     "type": "string"
@@ -162,6 +168,9 @@
             "properties": {
                 "message": {
                     "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
                 }
             }
         },

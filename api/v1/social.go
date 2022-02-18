@@ -21,7 +21,7 @@ import (
 // @Accept       json
 // @Produce      json
 // @Param        data  body      api.RegisterQ  true  "用户名, 邮箱, 密码, 验证码"
-// @Success      200   {object}  api.RegisterA  "返回信息"
+// @Success      200   {object}  api.RegisterA  "是否成功，返回信息"
 // @Router       /api/v1/user/register [post]
 func Register(c *gin.Context) {
 	var data api.RegisterQ
@@ -29,22 +29,22 @@ func Register(c *gin.Context) {
 		global.LOG.Panic("Register: bind data error")
 	}
 	if _, notFound := service.GetUserByName(data.Name); !notFound {
-		c.JSON(http.StatusForbidden, api.RegisterA{Message: "用户已存在"})
+		c.JSON(http.StatusOK, api.RegisterA{Success: false, Message: "用户已存在"})
 		return
 	}
 	captcha, err := strconv.ParseUint(data.Captcha, 10, 64)
 	realCaptcha, notFound := service.GetCaptchaByEmail(data.Email)
 	if notFound {
-		c.JSON(http.StatusForbidden, api.RegisterA{Message: "验证码未发送"})
+		c.JSON(http.StatusOK, api.RegisterA{Success: false, Message: "验证码未发送"})
 	}
 	if captcha != realCaptcha.Captcha || err != nil {
-		c.JSON(http.StatusForbidden, api.RegisterA{Message: "验证码错误"})
+		c.JSON(http.StatusOK, api.RegisterA{Success: false, Message: "验证码错误"})
 		return
 	}
 	if err := service.CreateUser(&database.User{Name: data.Name, Password: data.Password, Email: data.Email}); err != nil {
 		global.LOG.Panic("Register: create user error")
 	}
-	c.JSON(http.StatusOK, api.RegisterA{Message: "创建用户成功"})
+	c.JSON(http.StatusOK, api.RegisterA{Success: true, Message: "创建用户成功"})
 }
 
 // GetCaptcha
@@ -54,7 +54,7 @@ func Register(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        data  body      api.GetCaptchaQ  true  "邮箱"
-// @Success      200   {object}  api.GetCaptchaA  "返回信息"
+// @Success      200   {object}  api.GetCaptchaA  "是否成功，返回信息"
 // @Router       /api/v1/user/captcha [post]
 func GetCaptcha(c *gin.Context) {
 	var data api.GetCaptchaQ
@@ -70,7 +70,7 @@ func GetCaptcha(c *gin.Context) {
 		global.LOG.Panic("GetCaptcha: create captcha error")
 	}
 	utils.SendRegisterEmail(data.Email, confirmNumber)
-	c.JSON(http.StatusOK, api.RegisterA{Message: "发送验证码成功"})
+	c.JSON(http.StatusOK, api.RegisterA{Success: true, Message: "发送验证码成功"})
 }
 
 // Login
@@ -80,7 +80,7 @@ func GetCaptcha(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        data  body      api.LoginQ  true  "邮箱，密码"
-// @Success      200   {object}  api.LoginA  "返回信息，Token"
+// @Success      200   {object}  api.LoginA  "是否成功，返回信息，Token"
 // @Router       /api/v1/user/login [post]
 func Login(c *gin.Context) {
 	var data api.LoginQ
@@ -88,5 +88,5 @@ func Login(c *gin.Context) {
 	if err != nil {
 		global.LOG.Panic("Login: bind data error")
 	}
-	c.JSON(http.StatusOK, api.LoginA{Message: "登录成功", Token: "123456"})
+	c.JSON(http.StatusOK, api.LoginA{Success: true, Message: "登录成功", Token: "123456"})
 }

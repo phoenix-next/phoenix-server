@@ -3,6 +3,8 @@ definitions:
     properties:
       message:
         type: string
+      success:
+        type: boolean
     type: object
   api.GetCaptchaQ:
     properties:
@@ -13,6 +15,8 @@ definitions:
     properties:
       message:
         type: string
+      success:
+        type: boolean
       token:
         type: string
     type: object
@@ -27,6 +31,8 @@ definitions:
     properties:
       message:
         type: string
+      success:
+        type: boolean
     type: object
   api.RegisterQ:
     properties:
@@ -67,7 +73,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: 返回信息
+          description: 是否成功，返回信息
           schema:
             $ref: '#/definitions/api.GetCaptchaA'
       summary: 发送验证码
@@ -89,7 +95,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: 返回信息，Token
+          description: 是否成功，返回信息，Token
           schema:
             $ref: '#/definitions/api.LoginA'
       summary: 用户登录
@@ -111,7 +117,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: 返回信息
+          description: 是否成功，返回信息
           schema:
             $ref: '#/definitions/api.RegisterA'
       summary: 注册
