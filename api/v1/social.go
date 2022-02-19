@@ -39,7 +39,8 @@ func Register(c *gin.Context) {
 	c.JSON(http.StatusOK, api.RegisterA{Message: "创建用户成功", Code: 200})
 }
 
-// CaptchaValid      邮箱验证
+// CaptchaValid
+// @Summary      邮箱验证
 // @Description  根据邮箱发送验证吗，并更新数据库
 // @Tags         社交模块
 // @Accept       json
