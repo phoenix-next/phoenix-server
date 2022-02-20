@@ -1,20 +1,43 @@
 definitions:
-  api.CaptchaValidQ:
+  api.GetCaptchaA:
+    properties:
+      message:
+        type: string
+      success:
+        type: boolean
+    type: object
+  api.GetCaptchaQ:
     properties:
       email:
         type: string
     type: object
-  api.RegisterA:
+  api.LoginA:
     properties:
-      code:
-        type: integer
       message:
         type: string
+      success:
+        type: boolean
+      token:
+        type: string
+    type: object
+  api.LoginQ:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  api.RegisterA:
+    properties:
+      message:
+        type: string
+      success:
+        type: boolean
     type: object
   api.RegisterQ:
     properties:
       captcha:
-        type: integer
+        type: string
       email:
         type: string
       name:
@@ -38,21 +61,44 @@ paths:
     post:
       consumes:
       - application/json
-      description: 根据邮箱发送验证吗，并更新数据库
+      description: 根据邮箱发送验证码，并更新数据库
       parameters:
       - description: 邮箱
         in: body
         name: data
         required: true
         schema:
-          $ref: '#/definitions/api.CaptchaValidQ'
+          $ref: '#/definitions/api.GetCaptchaQ'
       produces:
       - application/json
       responses:
         "200":
-          description: 用户注册账号,返回注册成功信息
+          description: 是否成功，返回信息
           schema:
-            $ref: '#/definitions/api.RegisterA'
+            $ref: '#/definitions/api.GetCaptchaA'
+      summary: 发送验证码
+      tags:
+      - 社交模块
+  /api/v1/user/login:
+    post:
+      consumes:
+      - application/json
+      description: 根据用户邮箱和密码等生成token，并将token返回给用户
+      parameters:
+      - description: 邮箱，密码
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/api.LoginQ'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 是否成功，返回信息，Token
+          schema:
+            $ref: '#/definitions/api.LoginA'
+      summary: 用户登录
       tags:
       - 社交模块
   /api/v1/user/register:
@@ -71,9 +117,10 @@ paths:
       - application/json
       responses:
         "200":
-          description: 用户注册账号,返回注册成功信息
+          description: 是否成功，返回信息
           schema:
             $ref: '#/definitions/api.RegisterA'
+      summary: 注册
       tags:
       - 社交模块
 swagger: "2.0"

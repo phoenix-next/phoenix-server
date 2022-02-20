@@ -2,9 +2,6 @@ package service
 
 import (
 	"errors"
-	"fmt"
-	"github.com/phoenix-next/phoenix-server/middleware"
-	"strconv"
 
 	"github.com/phoenix-next/phoenix-server/global"
 	"github.com/phoenix-next/phoenix-server/model/database"
@@ -25,19 +22,21 @@ func GetUserByID(ID uint64) (user database.User, notFound bool) {
 	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
 		return user, true
 	} else if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		panic(err)
+		global.LOG.Panic("GetUserByID: search error")
+		return user, true
 	} else {
 		return user, false
 	}
 }
 
-// GetUserByName 根据用户 name 查询某个用户
-func GetUserByName(name string) (user database.User, notFound bool) {
-	err := global.DB.Where("name = ?", name).First(&user).Error
+// GetUserByEmail 根据用户邮箱查询某个用户
+func GetUserByEmail(email string) (user database.User, notFound bool) {
+	err := global.DB.Where("email = ?", email).First(&user).Error
 	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
 		return user, true
 	} else if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		panic(err)
+		global.LOG.Panic("GetUserByEmail: search error")
+		return user, true
 	} else {
 		return user, false
 	}
@@ -50,7 +49,7 @@ func GetAllUser() (users []database.User) {
 	return users
 }
 
-// CreateCaptcha CreateUser 创建用户
+// CreateCaptcha 生成验证码
 func CreateCaptcha(captcha *database.Captcha) (err error) {
 	if err = global.DB.Create(captcha).Error; err != nil {
 		return err
@@ -58,13 +57,14 @@ func CreateCaptcha(captcha *database.Captcha) (err error) {
 	return nil
 }
 
-// GetCaptchaByNEmail 根据邮箱删得到验证码
-func GetCaptchaByNEmail(name string) (captcha database.Captcha, notFound bool) {
+// GetCaptchaByEmail 根据邮箱删得到验证码
+func GetCaptchaByEmail(name string) (captcha database.Captcha, notFound bool) {
 	err := global.DB.Where("email = ?", name).First(&captcha).Error
 	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
 		return captcha, true
 	} else if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		panic(err)
+		global.LOG.Panic("GetCaptchaByEmail: search error")
+		return captcha, true
 	} else {
 		return captcha, false
 	}
@@ -76,28 +76,4 @@ func DeleteCaptchaByEmail(email string) (err error) {
 		return err
 	}
 	return nil
-}
-
-// SendRegisterEmail 发送注册验证码邮件
-func SendRegisterEmail(themail string, number int) {
-	subject := "欢迎注册phoenix    xxxx代填"
-	// 邮件正文
-	mailTo := []string{
-		themail,
-	}
-	body := "Hello,This is a email,这是你的注册码" + strconv.Itoa(number)
-	err := middleware.SendMail(mailTo, subject, body)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println("sendRegisterEmail successfully")
-	return
-}
-
-// 验证邮箱验证码是否正确
-func ValidEmailCaptcha(email string, number int) bool {
-	if captcha, notFound := GetCaptchaByNEmail(email); !notFound {
-		return captcha.Captcha == number
-	}
-	return false
 }

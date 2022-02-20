@@ -33,7 +33,7 @@ var doc = `{
     "paths": {
         "/api/v1/user/captcha": {
             "post": {
-                "description": "根据邮箱发送验证吗，并更新数据库",
+                "description": "根据邮箱发送验证码，并更新数据库",
                 "consumes": [
                     "application/json"
                 ],
@@ -43,6 +43,7 @@ var doc = `{
                 "tags": [
                     "社交模块"
                 ],
+                "summary": "发送验证码",
                 "parameters": [
                     {
                         "description": "邮箱",
@@ -50,15 +51,49 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/api.CaptchaValidQ"
+                            "$ref": "#/definitions/api.GetCaptchaQ"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "用户注册账号,返回注册成功信息",
+                        "description": "是否成功，返回信息",
                         "schema": {
-                            "$ref": "#/definitions/api.RegisterA"
+                            "$ref": "#/definitions/api.GetCaptchaA"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/login": {
+            "post": {
+                "description": "根据用户邮箱和密码等生成token，并将token返回给用户",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "社交模块"
+                ],
+                "summary": "用户登录",
+                "parameters": [
+                    {
+                        "description": "邮箱，密码",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.LoginQ"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "是否成功，返回信息，Token",
+                        "schema": {
+                            "$ref": "#/definitions/api.LoginA"
                         }
                     }
                 }
@@ -76,6 +111,7 @@ var doc = `{
                 "tags": [
                     "社交模块"
                 ],
+                "summary": "注册",
                 "parameters": [
                     {
                         "description": "用户名, 邮箱, 密码, 验证码",
@@ -89,7 +125,7 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "用户注册账号,返回注册成功信息",
+                        "description": "是否成功，返回信息",
                         "schema": {
                             "$ref": "#/definitions/api.RegisterA"
                         }
@@ -99,7 +135,18 @@ var doc = `{
         }
     },
     "definitions": {
-        "api.CaptchaValidQ": {
+        "api.GetCaptchaA": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "api.GetCaptchaQ": {
             "type": "object",
             "properties": {
                 "email": {
@@ -107,14 +154,39 @@ var doc = `{
                 }
             }
         },
+        "api.LoginA": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "api.LoginQ": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
         "api.RegisterA": {
             "type": "object",
             "properties": {
-                "code": {
-                    "type": "integer"
-                },
                 "message": {
                     "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
                 }
             }
         },
@@ -122,7 +194,7 @@ var doc = `{
             "type": "object",
             "properties": {
                 "captcha": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "email": {
                     "type": "string"
@@ -189,5 +261,5 @@ func (s *s) ReadDoc() string {
 }
 
 func init() {
-	swag.Register(swag.Name, &s{})
+	swag.Register("swagger", &s{})
 }

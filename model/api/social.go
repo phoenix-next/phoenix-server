@@ -1,23 +1,34 @@
 package api
 
-type NormalResponse struct {
-	Message string      `json:"message"`
-	Code    int         `json:"code"`
-	Data    interface{} `json:"data"`
-}
-
 type RegisterQ struct {
 	Name     string `json:"name"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
-	Captcha  int    `json:"captcha"`
+	Captcha  string `json:"captcha"`
 }
 
 type RegisterA struct {
+	Success bool   `json:"success"`
 	Message string `json:"message"`
-	Code    int    `json:"code"`
 }
 
-type CaptchaValidQ struct {
+type GetCaptchaQ struct {
 	Email string `json:"email"`
+}
+
+type GetCaptchaA struct {
+	Success bool   `json:"success"`
+	Message string `json:"message"`
+}
+
+type LoginQ struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type LoginA struct {
+	Success bool   `json:"success"`
+	Message string `json:"message"`
+	Token   string `json:"token"`
+	ID      uint64 `json:"id"`
 }
