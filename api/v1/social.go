@@ -103,5 +103,6 @@ func Login(c *gin.Context) {
 		c.JSON(http.StatusOK, api.LoginA{Success: false, Message: "登录失败，密码错误", Token: "", ID: 0})
 		return
 	}
-	c.JSON(http.StatusOK, api.LoginA{Success: true, Message: "登录成功", Token: "123456", ID: user.ID})
+	token := utils.GenerateToken(user.Email)
+	c.JSON(http.StatusOK, api.LoginA{Success: true, Message: "登录成功", Token: token, ID: user.ID})
 }

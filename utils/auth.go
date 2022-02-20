@@ -21,8 +21,8 @@ func GenerateToken(email string) (signedToken string) {
 	return
 }
 
-//ValidateToken 验证token的正确性，正确则返回claims
-func ValidateToken(signedToken string) (claims jwt.StandardClaims, err error) {
+//ValidateToken 验证token的正确性，正确则返回email
+func ValidateToken(signedToken string) (email string, err error) {
 	secret := global.VP.GetString("server.secret")
 	token, err := jwt.Parse(
 		signedToken,
@@ -37,6 +37,6 @@ func ValidateToken(signedToken string) (claims jwt.StandardClaims, err error) {
 		err = errors.New("token isn't valid")
 		return
 	}
-	claims = token.Claims.(jwt.StandardClaims)
+	email = token.Claims.(jwt.StandardClaims).Audience
 	return
 }
