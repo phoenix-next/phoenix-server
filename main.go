@@ -7,6 +7,8 @@ import (
 	"github.com/phoenix-next/phoenix-server/initialize"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
+	"os"
+	"path/filepath"
 )
 
 // @title        PhoeniX API
@@ -20,16 +22,30 @@ import (
 // @license.name  Apache 2.0
 // @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
 func main() {
+	// 初始化全局资源
 	global.VP = initialize.InitViper()
 	global.LOG = initialize.InitLogger()
 	global.DB = initialize.InitMySQL()
-
-	if !global.VP.Get("server.debug").(bool) {
+	// 创建Router
+	isDebug := global.VP.Get("server.debug").(bool)
+	if !isDebug {
 		gin.SetMode(gin.ReleaseMode)
 	}
 	r := gin.New()
-
+	// 初始化Router
 	initialize.InitRouter(r)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	r.Run(":" + global.VP.GetString("server.port"))
+	// 运行Router
+	if isDebug {
+		r.Run(":" + global.VP.GetString("server.port"))
+	} else {
+		path, err := os.Executable()
+		if err != nil {
+			global.LOG.Panic("初始化失败：可执行程序路径获取失败")
+		}
+		folder := filepath.Dir(path)
+		r.RunTLS(":"+global.VP.GetString("server.port"),
+			filepath.Join(folder, global.VP.GetString("server.cert")),
+			filepath.Join(folder, global.VP.GetString("server.key")))
+	}
 }
