@@ -1,5 +1,5 @@
 definitions:
-  api.GetCaptchaA:
+  api.CommonA:
     properties:
       message:
         type: string
@@ -10,6 +10,15 @@ definitions:
     properties:
       email:
         type: string
+    type: object
+  api.GetProfileA:
+    properties:
+      message:
+        type: string
+      name:
+        type: string
+      success:
+        type: boolean
     type: object
   api.LoginA:
     properties:
@@ -28,13 +37,6 @@ definitions:
         type: string
       password:
         type: string
-    type: object
-  api.RegisterA:
-    properties:
-      message:
-        type: string
-      success:
-        type: boolean
     type: object
   api.RegisterQ:
     properties:
@@ -77,7 +79,7 @@ paths:
         "200":
           description: 是否成功，返回信息
           schema:
-            $ref: '#/definitions/api.GetCaptchaA'
+            $ref: '#/definitions/api.CommonA'
       summary: 发送验证码
       tags:
       - 社交模块
@@ -103,6 +105,32 @@ paths:
       summary: 用户登录
       tags:
       - 社交模块
+  /api/v1/user/profile:
+    get:
+      consumes:
+      - application/json
+      description: 根据用户ID，获取用户资料
+      parameters:
+      - description: token
+        in: header
+        name: x-token
+        required: true
+        type: string
+      - description: 用户ID
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 是否成功，返回信息，用户资料
+          schema:
+            $ref: '#/definitions/api.GetProfileA'
+      summary: 获取用户资料
+      tags:
+      - 社交模块
   /api/v1/user/register:
     post:
       consumes:
@@ -121,7 +149,7 @@ paths:
         "200":
           description: 是否成功，返回信息
           schema:
-            $ref: '#/definitions/api.RegisterA'
+            $ref: '#/definitions/api.CommonA'
       summary: 注册
       tags:
       - 社交模块

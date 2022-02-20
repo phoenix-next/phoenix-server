@@ -1,5 +1,10 @@
 package api
 
+type CommonA struct {
+	Success bool   `json:"success"`
+	Message string `json:"message"`
+}
+
 type RegisterQ struct {
 	Name     string `json:"name"`
 	Email    string `json:"email"`
@@ -7,18 +12,8 @@ type RegisterQ struct {
 	Captcha  string `json:"captcha"`
 }
 
-type RegisterA struct {
-	Success bool   `json:"success"`
-	Message string `json:"message"`
-}
-
 type GetCaptchaQ struct {
 	Email string `json:"email"`
-}
-
-type GetCaptchaA struct {
-	Success bool   `json:"success"`
-	Message string `json:"message"`
 }
 
 type LoginQ struct {
@@ -31,10 +26,6 @@ type LoginA struct {
 	Message string `json:"message"`
 	Token   string `json:"token"`
 	ID      uint64 `json:"id"`
-}
-
-type GetProfileQ struct {
-	ID uint64 `json:"id"`
 }
 
 type GetProfileA struct {

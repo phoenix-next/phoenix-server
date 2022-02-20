@@ -30,13 +30,13 @@ func ValidateToken(signedToken string) (email string, err error) {
 			return []byte(secret), nil
 		},
 	)
-	if err != nil {
-		global.LOG.Panic("ValidateToken: parse token error")
-	}
-	if !token.Valid {
+	if err != nil || !token.Valid {
 		err = errors.New("token isn't valid")
 		return
 	}
-	email = token.Claims.(jwt.StandardClaims).Audience
+	email, ok := token.Claims.(jwt.MapClaims)["aud"].(string)
+	if !ok {
+		global.LOG.Panic("ValidateToken: type cast error")
+	}
 	return
 }

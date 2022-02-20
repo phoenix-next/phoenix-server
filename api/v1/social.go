@@ -22,7 +22,7 @@ import (
 // @Accept       json
 // @Produce      json
 // @Param        data  body      api.RegisterQ  true  "用户名, 邮箱, 密码, 验证码"
-// @Success      200   {object}  api.RegisterA  "是否成功，返回信息"
+// @Success      200   {object}  api.CommonA    "是否成功，返回信息"
 // @Router       /api/v1/user/register [post]
 func Register(c *gin.Context) {
 	var data api.RegisterQ
@@ -30,27 +30,27 @@ func Register(c *gin.Context) {
 		global.LOG.Panic("Register: bind data error")
 	}
 	if _, notFound := service.GetUserByEmail(data.Email); !notFound {
-		c.JSON(http.StatusOK, api.RegisterA{Success: false, Message: "用户已存在"})
+		c.JSON(http.StatusOK, api.CommonA{Success: false, Message: "用户已存在"})
 		return
 	}
 	captcha, err := strconv.ParseUint(data.Captcha, 10, 64)
 	realCaptcha, notFound := service.GetCaptchaByEmail(data.Email)
 	if notFound {
-		c.JSON(http.StatusOK, api.RegisterA{Success: false, Message: "验证码未发送"})
+		c.JSON(http.StatusOK, api.CommonA{Success: false, Message: "验证码未发送"})
 		return
 	}
 	if captcha != realCaptcha.Captcha || err != nil {
-		c.JSON(http.StatusOK, api.RegisterA{Success: false, Message: "验证码错误"})
+		c.JSON(http.StatusOK, api.CommonA{Success: false, Message: "验证码错误"})
 		return
 	}
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(data.Password), 14)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(data.Password), 12)
 	if err != nil {
 		global.LOG.Panic("Register: hash password error")
 	}
 	if err := service.CreateUser(&database.User{Name: data.Name, Password: string(hashedPassword), Email: data.Email}); err != nil {
 		global.LOG.Panic("Register: create user error")
 	}
-	c.JSON(http.StatusOK, api.RegisterA{Success: true, Message: "创建用户成功"})
+	c.JSON(http.StatusOK, api.CommonA{Success: true, Message: "创建用户成功"})
 }
 
 // GetCaptcha
@@ -60,7 +60,7 @@ func Register(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        data  body      api.GetCaptchaQ  true  "邮箱"
-// @Success      200   {object}  api.GetCaptchaA  "是否成功，返回信息"
+// @Success      200   {object}  api.CommonA      "是否成功，返回信息"
 // @Router       /api/v1/user/captcha [post]
 func GetCaptcha(c *gin.Context) {
 	var data api.GetCaptchaQ
@@ -76,7 +76,7 @@ func GetCaptcha(c *gin.Context) {
 		global.LOG.Panic("GetCaptcha: create captcha error")
 	}
 	utils.SendRegisterEmail(data.Email, confirmNumber)
-	c.JSON(http.StatusOK, api.RegisterA{Success: true, Message: "发送验证码成功"})
+	c.JSON(http.StatusOK, api.CommonA{Success: true, Message: "发送验证码成功"})
 }
 
 // Login
@@ -113,9 +113,10 @@ func Login(c *gin.Context) {
 // @Tags         社交模块
 // @Accept       json
 // @Produce      json
-// @Param        data  body      api.GetProfileQ  true  "用户ID"
-// @Success      200   {object}  api.GetProfileA  "是否成功，返回信息，用户资料"
-// @Router       /api/v1/user/profile [post]
+// @Param        x-token  header    string           true  "token"
+// @Param        id       query     string           true  "用户ID"
+// @Success      200      {object}  api.GetProfileA  "是否成功，返回信息，用户资料"
+// @Router       /api/v1/user/profile [get]
 func GetProfile(c *gin.Context) {
-	c.JSON(http.StatusOK, "hello")
+	c.JSON(http.StatusOK, c.GetString("email"))
 }

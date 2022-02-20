@@ -59,7 +59,7 @@ var doc = `{
                     "200": {
                         "description": "是否成功，返回信息",
                         "schema": {
-                            "$ref": "#/definitions/api.GetCaptchaA"
+                            "$ref": "#/definitions/api.CommonA"
                         }
                     }
                 }
@@ -99,6 +99,45 @@ var doc = `{
                 }
             }
         },
+        "/api/v1/user/profile": {
+            "get": {
+                "description": "根据用户ID，获取用户资料",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "社交模块"
+                ],
+                "summary": "获取用户资料",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "x-token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "是否成功，返回信息，用户资料",
+                        "schema": {
+                            "$ref": "#/definitions/api.GetProfileA"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/user/register": {
             "post": {
                 "description": "注册新用户",
@@ -127,7 +166,7 @@ var doc = `{
                     "200": {
                         "description": "是否成功，返回信息",
                         "schema": {
-                            "$ref": "#/definitions/api.RegisterA"
+                            "$ref": "#/definitions/api.CommonA"
                         }
                     }
                 }
@@ -135,7 +174,7 @@ var doc = `{
         }
     },
     "definitions": {
-        "api.GetCaptchaA": {
+        "api.CommonA": {
             "type": "object",
             "properties": {
                 "message": {
@@ -151,6 +190,20 @@ var doc = `{
             "properties": {
                 "email": {
                     "type": "string"
+                }
+            }
+        },
+        "api.GetProfileA": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
                 }
             }
         },
@@ -179,17 +232,6 @@ var doc = `{
                 },
                 "password": {
                     "type": "string"
-                }
-            }
-        },
-        "api.RegisterA": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string"
-                },
-                "success": {
-                    "type": "boolean"
                 }
             }
         },
