@@ -8,8 +8,8 @@ import (
 )
 
 func InitRouter(r *gin.Engine) {
+	r.Use(cors.Default())
 	rawRouter := r.Group("/api/v1")
-	rawRouter.Use(cors.Default())
 
 	authRouter := rawRouter.Group("/user")
 	{
