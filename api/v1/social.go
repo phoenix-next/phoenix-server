@@ -12,6 +12,7 @@ import (
 	"github.com/phoenix-next/phoenix-server/model/database"
 	"github.com/phoenix-next/phoenix-server/service"
 	"github.com/phoenix-next/phoenix-server/utils"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // Register
@@ -28,7 +29,7 @@ func Register(c *gin.Context) {
 	if err := c.ShouldBindJSON(&data); err != nil {
 		global.LOG.Panic("Register: bind data error")
 	}
-	if _, notFound := service.GetUserByName(data.Name); !notFound {
+	if _, notFound := service.GetUserByEmail(data.Email); !notFound {
 		c.JSON(http.StatusOK, api.RegisterA{Success: false, Message: "用户已存在"})
 		return
 	}
@@ -36,12 +37,17 @@ func Register(c *gin.Context) {
 	realCaptcha, notFound := service.GetCaptchaByEmail(data.Email)
 	if notFound {
 		c.JSON(http.StatusOK, api.RegisterA{Success: false, Message: "验证码未发送"})
+		return
 	}
 	if captcha != realCaptcha.Captcha || err != nil {
 		c.JSON(http.StatusOK, api.RegisterA{Success: false, Message: "验证码错误"})
 		return
 	}
-	if err := service.CreateUser(&database.User{Name: data.Name, Password: data.Password, Email: data.Email}); err != nil {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(data.Password), 14)
+	if err != nil {
+		global.LOG.Panic("Register: hash password error")
+	}
+	if err := service.CreateUser(&database.User{Name: data.Name, Password: string(hashedPassword), Email: data.Email}); err != nil {
 		global.LOG.Panic("Register: create user error")
 	}
 	c.JSON(http.StatusOK, api.RegisterA{Success: true, Message: "创建用户成功"})
@@ -88,5 +94,14 @@ func Login(c *gin.Context) {
 	if err != nil {
 		global.LOG.Panic("Login: bind data error")
 	}
-	c.JSON(http.StatusOK, api.LoginA{Success: true, Message: "登录成功", Token: "123456", ID: 123})
+	user, notFound := service.GetUserByEmail(data.Email)
+	if notFound {
+		c.JSON(http.StatusOK, api.LoginA{Success: false, Message: "登录失败，邮箱不存在", Token: "", ID: 0})
+		return
+	}
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(data.Password)); err != nil {
+		c.JSON(http.StatusOK, api.LoginA{Success: false, Message: "登录失败，密码错误", Token: "", ID: 0})
+		return
+	}
+	c.JSON(http.StatusOK, api.LoginA{Success: true, Message: "登录成功", Token: "123456", ID: user.ID})
 }

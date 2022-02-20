@@ -22,19 +22,21 @@ func GetUserByID(ID uint64) (user database.User, notFound bool) {
 	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
 		return user, true
 	} else if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		panic(err)
+		global.LOG.Panic("GetUserByID: search error")
+		return user, true
 	} else {
 		return user, false
 	}
 }
 
-// GetUserByName 根据用户 name 查询某个用户
-func GetUserByName(name string) (user database.User, notFound bool) {
-	err := global.DB.Where("name = ?", name).First(&user).Error
+// GetUserByEmail 根据用户邮箱查询某个用户
+func GetUserByEmail(email string) (user database.User, notFound bool) {
+	err := global.DB.Where("email = ?", email).First(&user).Error
 	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
 		return user, true
 	} else if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		panic(err)
+		global.LOG.Panic("GetUserByEmail: search error")
+		return user, true
 	} else {
 		return user, false
 	}
@@ -47,7 +49,7 @@ func GetAllUser() (users []database.User) {
 	return users
 }
 
-// CreateCaptcha 创建用户
+// CreateCaptcha 生成验证码
 func CreateCaptcha(captcha *database.Captcha) (err error) {
 	if err = global.DB.Create(captcha).Error; err != nil {
 		return err
@@ -61,7 +63,8 @@ func GetCaptchaByEmail(name string) (captcha database.Captcha, notFound bool) {
 	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
 		return captcha, true
 	} else if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		panic(err)
+		global.LOG.Panic("GetCaptchaByEmail: search error")
+		return captcha, true
 	} else {
 		return captcha, false
 	}
