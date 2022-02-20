@@ -13,6 +13,8 @@ definitions:
     type: object
   api.LoginA:
     properties:
+      id:
+        type: integer
       message:
         type: string
       success:

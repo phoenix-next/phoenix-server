@@ -157,6 +157,9 @@ var doc = `{
         "api.LoginA": {
             "type": "object",
             "properties": {
+                "id": {
+                    "type": "integer"
+                },
                 "message": {
                     "type": "string"
                 },
