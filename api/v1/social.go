@@ -106,3 +106,16 @@ func Login(c *gin.Context) {
 	token := utils.GenerateToken(user.Email)
 	c.JSON(http.StatusOK, api.LoginA{Success: true, Message: "登录成功", Token: token, ID: user.ID})
 }
+
+// GetProfile
+// @Summary      获取用户资料
+// @Description  根据用户ID，获取用户资料
+// @Tags         社交模块
+// @Accept       json
+// @Produce      json
+// @Param        data  body      api.GetProfileQ  true  "用户ID"
+// @Success      200   {object}  api.GetProfileA  "是否成功，返回信息，用户资料"
+// @Router       /api/v1/user/profile [post]
+func GetProfile(c *gin.Context) {
+	c.JSON(http.StatusOK, "hello")
+}

@@ -32,3 +32,13 @@ type LoginA struct {
 	Token   string `json:"token"`
 	ID      uint64 `json:"id"`
 }
+
+type GetProfileQ struct {
+	ID uint64 `json:"id"`
+}
+
+type GetProfileA struct {
+	Success bool   `json:"success"`
+	Message string `json:"message"`
+	Name    string `json:"name"`
+}

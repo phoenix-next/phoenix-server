@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func Auth() gin.HandlerFunc {
+func AuthRequired() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token := c.GetHeader("x-token")
 		email, err := utils.ValidateToken(token)
