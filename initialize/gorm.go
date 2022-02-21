@@ -56,7 +56,7 @@ func InitMySQL() *gorm.DB {
 	}
 	// 更新MySQL数据库内容
 	db.Set("gorm:table_options", "ENGINE=InnoDB")
-	db.AutoMigrate(
+	err = db.AutoMigrate(
 		&database.User{},
 		&database.Problem{},
 		&database.Tutorial{},
@@ -70,5 +70,8 @@ func InitMySQL() *gorm.DB {
 		&database.CompOrgRel{},
 		&database.UserOrgRel{},
 	)
+	if err != nil {
+		panic("初始化失败：更新MySQL数据库内容失败")
+	}
 	return db
 }

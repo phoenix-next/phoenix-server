@@ -33,20 +33,28 @@ func main() {
 	}
 	r := gin.New()
 	// 初始化Router
-	r.SetTrustedProxies(nil)
+	err := r.SetTrustedProxies(nil)
+	if err != nil {
+		global.LOG.Panic("初始化失败：禁止使用代理访问失败")
+	}
 	initialize.InitRouter(r)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	// 运行Router
 	if isDebug {
-		r.Run(":" + global.VP.GetString("server.port"))
+		err = r.Run(":" + global.VP.GetString("server.port"))
 	} else {
-		path, err := os.Executable()
+		var path string
+		path, err = os.Executable()
 		if err != nil {
 			global.LOG.Panic("初始化失败：可执行程序路径获取失败")
 		}
 		folder := filepath.Dir(path)
-		r.RunTLS(":"+global.VP.GetString("server.port"),
+		err = r.RunTLS(":"+global.VP.GetString("server.port"),
 			filepath.Join(folder, global.VP.GetString("server.cert")),
 			filepath.Join(folder, global.VP.GetString("server.key")))
+	}
+	// Router运行错误处理
+	if err != nil {
+		global.LOG.Panic("运行时错误：", err)
 	}
 }
