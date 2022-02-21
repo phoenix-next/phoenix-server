@@ -4,6 +4,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	v1 "github.com/phoenix-next/phoenix-server/api/v1"
+	_ "github.com/phoenix-next/phoenix-server/docs"
 	"github.com/phoenix-next/phoenix-server/global"
 	"github.com/phoenix-next/phoenix-server/middleware"
 	ginSwagger "github.com/swaggo/gin-swagger"
