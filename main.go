@@ -7,6 +7,8 @@ import (
 	"github.com/phoenix-next/phoenix-server/initialize"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
+	"github.com/unrolled/secure"
+	"net/http"
 	"os"
 	"path/filepath"
 )
@@ -45,6 +47,17 @@ func main() {
 	if isDebug {
 		err = r.Run(":" + global.VP.GetString("server.port"))
 	} else {
+		// 重定向至https
+		app := secure.New(secure.Options{
+			SSLRedirect: true,
+		}).Handler(nil)
+		go func() {
+			err := http.ListenAndServe(":80", app)
+			if err != nil {
+				global.LOG.Panic("运行时错误：", err)
+			}
+		}()
+		// 获取配置并运行
 		var path string
 		path, err = os.Executable()
 		if err != nil {
