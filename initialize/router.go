@@ -4,8 +4,11 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	v1 "github.com/phoenix-next/phoenix-server/api/v1"
+	_ "github.com/phoenix-next/phoenix-server/docs"
 	"github.com/phoenix-next/phoenix-server/global"
 	"github.com/phoenix-next/phoenix-server/middleware"
+	ginSwagger "github.com/swaggo/gin-swagger"
+	"github.com/swaggo/gin-swagger/swaggerFiles"
 	"github.com/unrolled/secure"
 	"net/http"
 	"os"
@@ -14,6 +17,10 @@ import (
 
 func InitRouter(r *gin.Engine) {
 	r.Use(cors.Default())
+
+	if global.VP.GetBool("server.docs") {
+		r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	}
 
 	if err := r.SetTrustedProxies(nil); err != nil {
 		global.LOG.Panic("初始化失败：禁止使用代理访问失败")
