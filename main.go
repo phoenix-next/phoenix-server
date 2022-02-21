@@ -33,6 +33,7 @@ func main() {
 	}
 	r := gin.New()
 	// 初始化Router
+	r.SetTrustedProxies(nil)
 	initialize.InitRouter(r)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	// 运行Router
