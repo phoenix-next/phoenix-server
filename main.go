@@ -2,8 +2,11 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	_ "github.com/phoenix-next/phoenix-server/docs"
 	"github.com/phoenix-next/phoenix-server/global"
 	"github.com/phoenix-next/phoenix-server/initialize"
+	ginSwagger "github.com/swaggo/gin-swagger"
+	"github.com/swaggo/gin-swagger/swaggerFiles"
 )
 
 // @title        PhoeniX API
@@ -27,6 +30,9 @@ func main() {
 	}
 	r := gin.New()
 	// 初始化Router
+	if global.VP.GetBool("server.docs") {
+		r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	}
 	initialize.InitRouter(r)
 	// 运行Router
 	initialize.RunRouter(r)
