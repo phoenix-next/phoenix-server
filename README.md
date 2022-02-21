@@ -51,6 +51,7 @@ email:
 server:
   port: 8080 # 服务器运行的端口
   secret: 'secret' # 服务器用于签名的密钥
+  docs: false # 是否允许访问API文档页面
   debug: false # 是否以Debug模式运行服务器
   cert: 'certFileName' # 仅在非Debug模式下有效，为使用的SSL证书的文件名
   key: 'keyFileName' # 仅在非Debug模式下有效，为使用的私钥的文件名

@@ -34,9 +34,6 @@ func ValidateToken(signedToken string) (email string, err error) {
 		err = errors.New("token isn't valid")
 		return
 	}
-	email, ok := token.Claims.(jwt.MapClaims)["aud"].(string)
-	if !ok {
-		global.LOG.Panic("ValidateToken: type cast error")
-	}
+	email = token.Claims.(jwt.MapClaims)["aud"].(string)
 	return
 }
