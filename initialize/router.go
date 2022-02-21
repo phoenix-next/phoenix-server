@@ -48,7 +48,7 @@ func RunRouter(r *gin.Engine) {
 				SSLRedirect: true,
 			}).Handler(nil)
 			// 创建go线程监听http请求，并用新建的请求处理器重定向
-			go global.LOG.Panic("运行时错误：", http.ListenAndServe(":80", redirect))
+			go func() { global.LOG.Panic("运行时错误：", http.ListenAndServe(":80", redirect)) }()
 		}
 		// 获取配置并运行Router
 		var path string
