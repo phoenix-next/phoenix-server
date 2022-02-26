@@ -9,7 +9,7 @@ import "github.com/gin-gonic/gin"
 // @Accept       json
 // @Produce      json
 // @Param        data  body      api.CreateProblemQ  true  "CreateProblemQ"
-// @Success      200   {object}  api.CommonA         "成功，返回信息"
+// @Success      200   {object}  api.CommonA         "是否成功，返回信息"
 // @Router       /api/v1/problems [post]
 func CreateProblem(c *gin.Context) {
 
