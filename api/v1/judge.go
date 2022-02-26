@@ -8,8 +8,8 @@ import "github.com/gin-gonic/gin"
 // @Tags         评测模块
 // @Accept       json
 // @Produce      json
-// @Param        data  body      api.CreateProblemQ  true  ""
-// @Success      200   {object}  api.CommonA    "是否成功，返回信息"
+// @Param        data  body      api.CreateProblemQ  true  "CreateProblemQ"
+// @Success      200   {object}  api.CommonA         "是否成功，返回信息"
 // @Router       /api/v1/problems [post]
 func CreateProblem(c *gin.Context) {
 
@@ -21,8 +21,8 @@ func CreateProblem(c *gin.Context) {
 // @Tags         评测模块
 // @Accept       json
 // @Produce      json
-// @Param        data  body      api.GetProblemQ  true  ""
-// @Success      200   {object}  api.CommonA    "是否成功，返回信息"
+// @Param        data  body      api.GetProblemQ  true  "GetProblemQ"
+// @Success      200   {object}  api.CommonA      "是否成功，返回信息"
 // @Router       /api/v1/problems/:id [get]
 func GetProblem(c *gin.Context) {
 
@@ -34,8 +34,8 @@ func GetProblem(c *gin.Context) {
 // @Tags         评测模块
 // @Accept       json
 // @Produce      json
-// @Param        data  body      api.UpdateProblemQ  true  ""
-// @Success      200   {object}  api.CommonA    "是否成功，返回信息"
+// @Param        data  body      api.UpdateProblemQ  true  "UpdateProblemQ"
+// @Success      200   {object}  api.CommonA         "是否成功，返回信息"
 // @Router       /api/v1/problems/:id [put]
 func UpdateProblem(c *gin.Context) {
 
@@ -47,8 +47,8 @@ func UpdateProblem(c *gin.Context) {
 // @Tags         评测模块
 // @Accept       json
 // @Produce      json
-// @Param        data  body      api.DeleteProblemQ  true  ""
-// @Success      200   {object}  api.CommonA    "是否成功，返回信息"
+// @Param        data  body      api.DeleteProblemQ  true  "DeleteProblemQ"
+// @Success      200   {object}  api.CommonA         "是否成功，返回信息"
 // @Router       /api/v1/problems/:id [delete]
 func DeleteProblem(c *gin.Context) {
 
@@ -60,8 +60,8 @@ func DeleteProblem(c *gin.Context) {
 // @Tags         评测模块
 // @Accept       json
 // @Produce      json
-// @Param        data  body      api.GetProblemVersionQ  true  ""
-// @Success      200   {object}  api.CommonA    "是否成功，返回信息"
+// @Param        data  body      api.GetProblemVersionQ  true  "GetProblemVersionQ"
+// @Success      200   {object}  api.CommonA             "是否成功，返回信息"
 // @Router       /api/v1/problems/:id/version [get]
 func GetProblemVersion(c *gin.Context) {
 
@@ -73,8 +73,8 @@ func GetProblemVersion(c *gin.Context) {
 // @Tags         评测模块
 // @Accept       json
 // @Produce      json
-// @Param        data  body      api.GetProblemListQ  true  ""
-// @Success      200   {object}  api.CommonA    "是否成功，返回信息"
+// @Param        data  body      api.GetProblemListQ  true  "GetProblemListQ"
+// @Success      200   {object}  api.CommonA          "是否成功，返回信息"
 // @Router       /api/v1/problems [get]
 func GetProblemList(c *gin.Context) {
 

@@ -31,6 +31,204 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v1/problems": {
+            "get": {
+                "description": "获取用户所能查看的题目列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "评测模块"
+                ],
+                "summary": "获取题目列表",
+                "parameters": [
+                    {
+                        "description": "GetProblemListQ",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.GetProblemListQ"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "是否成功，返回信息",
+                        "schema": {
+                            "$ref": "#/definitions/api.CommonA"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "创建一个题目，题目需要包含答案和题面",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "评测模块"
+                ],
+                "summary": "创建题目",
+                "parameters": [
+                    {
+                        "description": "CreateProblemQ",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.CreateProblemQ"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "是否成功，返回信息",
+                        "schema": {
+                            "$ref": "#/definitions/api.CommonA"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/problems/:id": {
+            "get": {
+                "description": "下载一个题目的信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "评测模块"
+                ],
+                "summary": "下载题目",
+                "parameters": [
+                    {
+                        "description": "GetProblemQ",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.GetProblemQ"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "是否成功，返回信息",
+                        "schema": {
+                            "$ref": "#/definitions/api.CommonA"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "更新一个题目的信息，并自动更新题目版本",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "评测模块"
+                ],
+                "summary": "更新题目",
+                "parameters": [
+                    {
+                        "description": "UpdateProblemQ",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.UpdateProblemQ"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "是否成功，返回信息",
+                        "schema": {
+                            "$ref": "#/definitions/api.CommonA"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "删除一个题目",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "评测模块"
+                ],
+                "summary": "删除题目",
+                "parameters": [
+                    {
+                        "description": "DeleteProblemQ",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.DeleteProblemQ"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "是否成功，返回信息",
+                        "schema": {
+                            "$ref": "#/definitions/api.CommonA"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/problems/:id/version": {
+            "get": {
+                "description": "获取一个题目的版本",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "评测模块"
+                ],
+                "summary": "获取题目版本",
+                "parameters": [
+                    {
+                        "description": "GetProblemVersionQ",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.GetProblemVersionQ"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "是否成功，返回信息",
+                        "schema": {
+                            "$ref": "#/definitions/api.CommonA"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/user/captcha": {
             "post": {
                 "description": "根据邮箱发送验证码，并更新数据库",
@@ -185,6 +383,12 @@ var doc = `{
                 }
             }
         },
+        "api.CreateProblemQ": {
+            "type": "object"
+        },
+        "api.DeleteProblemQ": {
+            "type": "object"
+        },
         "api.GetCaptchaQ": {
             "type": "object",
             "properties": {
@@ -192,6 +396,15 @@ var doc = `{
                     "type": "string"
                 }
             }
+        },
+        "api.GetProblemListQ": {
+            "type": "object"
+        },
+        "api.GetProblemQ": {
+            "type": "object"
+        },
+        "api.GetProblemVersionQ": {
+            "type": "object"
         },
         "api.GetProfileA": {
             "type": "object",
@@ -251,6 +464,9 @@ var doc = `{
                     "type": "string"
                 }
             }
+        },
+        "api.UpdateProblemQ": {
+            "type": "object"
         }
     }
 }`

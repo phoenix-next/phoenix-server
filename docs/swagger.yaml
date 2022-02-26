@@ -6,10 +6,20 @@ definitions:
       success:
         type: boolean
     type: object
+  api.CreateProblemQ:
+    type: object
+  api.DeleteProblemQ:
+    type: object
   api.GetCaptchaQ:
     properties:
       email:
         type: string
+    type: object
+  api.GetProblemListQ:
+    type: object
+  api.GetProblemQ:
+    type: object
+  api.GetProblemVersionQ:
     type: object
   api.GetProfileA:
     properties:
@@ -49,6 +59,8 @@ definitions:
       password:
         type: string
     type: object
+  api.UpdateProblemQ:
+    type: object
 info:
   contact:
     email: 1079207272@qq.com
@@ -61,6 +73,135 @@ info:
   title: PhoeniX API
   version: "1.0"
 paths:
+  /api/v1/problems:
+    get:
+      consumes:
+      - application/json
+      description: 获取用户所能查看的题目列表
+      parameters:
+      - description: GetProblemListQ
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/api.GetProblemListQ'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 是否成功，返回信息
+          schema:
+            $ref: '#/definitions/api.CommonA'
+      summary: 获取题目列表
+      tags:
+      - 评测模块
+    post:
+      consumes:
+      - application/json
+      description: 创建一个题目，题目需要包含答案和题面
+      parameters:
+      - description: CreateProblemQ
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/api.CreateProblemQ'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 是否成功，返回信息
+          schema:
+            $ref: '#/definitions/api.CommonA'
+      summary: 创建题目
+      tags:
+      - 评测模块
+  /api/v1/problems/:id:
+    delete:
+      consumes:
+      - application/json
+      description: 删除一个题目
+      parameters:
+      - description: DeleteProblemQ
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/api.DeleteProblemQ'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 是否成功，返回信息
+          schema:
+            $ref: '#/definitions/api.CommonA'
+      summary: 删除题目
+      tags:
+      - 评测模块
+    get:
+      consumes:
+      - application/json
+      description: 下载一个题目的信息
+      parameters:
+      - description: GetProblemQ
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/api.GetProblemQ'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 是否成功，返回信息
+          schema:
+            $ref: '#/definitions/api.CommonA'
+      summary: 下载题目
+      tags:
+      - 评测模块
+    put:
+      consumes:
+      - application/json
+      description: 更新一个题目的信息，并自动更新题目版本
+      parameters:
+      - description: UpdateProblemQ
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/api.UpdateProblemQ'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 是否成功，返回信息
+          schema:
+            $ref: '#/definitions/api.CommonA'
+      summary: 更新题目
+      tags:
+      - 评测模块
+  /api/v1/problems/:id/version:
+    get:
+      consumes:
+      - application/json
+      description: 获取一个题目的版本
+      parameters:
+      - description: GetProblemVersionQ
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/api.GetProblemVersionQ'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 是否成功，返回信息
+          schema:
+            $ref: '#/definitions/api.CommonA'
+      summary: 获取题目版本
+      tags:
+      - 评测模块
   /api/v1/user/captcha:
     post:
       consumes:
