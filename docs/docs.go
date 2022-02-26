@@ -97,7 +97,7 @@ var doc = `{
                 }
             }
         },
-        "/api/v1/problems/:id": {
+        "/api/v1/problems/{id}": {
             "get": {
                 "description": "下载一个题目的信息",
                 "consumes": [
@@ -111,6 +111,13 @@ var doc = `{
                 ],
                 "summary": "下载题目",
                 "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "题目ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "description": "GetProblemQ",
                         "name": "data",
@@ -144,6 +151,13 @@ var doc = `{
                 "summary": "更新题目",
                 "parameters": [
                     {
+                        "type": "integer",
+                        "description": "题目ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
                         "description": "UpdateProblemQ",
                         "name": "data",
                         "in": "body",
@@ -176,6 +190,13 @@ var doc = `{
                 "summary": "删除题目",
                 "parameters": [
                     {
+                        "type": "integer",
+                        "description": "题目ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
                         "description": "DeleteProblemQ",
                         "name": "data",
                         "in": "body",
@@ -195,7 +216,7 @@ var doc = `{
                 }
             }
         },
-        "/api/v1/problems/:id/version": {
+        "/api/v1/problems/{id}/version": {
             "get": {
                 "description": "获取一个题目的版本",
                 "consumes": [
@@ -209,6 +230,13 @@ var doc = `{
                 ],
                 "summary": "获取题目版本",
                 "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "题目ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "description": "GetProblemVersionQ",
                         "name": "data",

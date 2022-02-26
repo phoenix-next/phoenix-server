@@ -22,6 +22,7 @@ jobs:
           cd ${{github.workspace}}
           go env -w GO111MODULE=on
           go mod tidy
+          swag init
           go build .
 
       - name: stop
