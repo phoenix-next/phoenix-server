@@ -16,16 +16,18 @@ import (
 )
 
 func InitRouter(r *gin.Engine) {
+	// 允许跨域
 	r.Use(cors.Default())
-
+	// 是否开启api文档页面
 	if global.VP.GetBool("server.docs") {
 		r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	}
-
+	// 禁用代理访问
 	if err := r.SetTrustedProxies(nil); err != nil {
 		global.LOG.Panic("初始化失败：禁止使用代理访问失败")
 	}
 
+	// 登录模块
 	rawRouter := r.Group("/api/v1")
 	authRouter := rawRouter.Group("/user")
 	{
@@ -33,13 +35,25 @@ func InitRouter(r *gin.Engine) {
 		authRouter.POST("/captcha", v1.GetCaptcha)
 		authRouter.POST("/login", v1.Login)
 	}
-
+	// 除了登录模块之外，都需要身份认证
 	basicRouter := rawRouter.Group("/")
 	basicRouter.Use(middleware.AuthRequired())
 
+	// 用户模块
 	userRouter := basicRouter.Group("/user")
 	{
 		userRouter.GET("/profile", v1.GetProfile)
+	}
+
+	// 评测模块
+	problemRouter := basicRouter.Group("/problems")
+	{
+		problemRouter.GET("/", v1.GetProblemList)
+		problemRouter.POST("/", v1.CreateProblem)
+		problemRouter.DELETE("/:id", v1.DeleteProblem)
+		problemRouter.GET("/:id", v1.GetProblem)
+		problemRouter.PUT("/:id", v1.UpdateProblem)
+		problemRouter.GET("/:id/version", v1.GetProblemVersion)
 	}
 }
 
