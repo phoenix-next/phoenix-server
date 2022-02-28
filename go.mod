@@ -9,7 +9,7 @@ require (
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/viper v1.10.1
 	github.com/swaggo/gin-swagger v1.4.1
-	github.com/swaggo/swag v1.7.9
+	github.com/swaggo/swag v1.8.0
 	github.com/unrolled/secure v1.10.0
 	golang.org/x/crypto v0.0.0-20220112180741-5e0467b6c7ce
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
