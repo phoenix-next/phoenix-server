@@ -13,10 +13,6 @@ type CreateProblemQ struct {
 	Description  *multipart.FileHeader `form:"description" swaggerignore:"true"`
 }
 
-type GetProblemQ struct {
-	ID uint64 `json:"id"`
-}
-
 type GetProblemA struct {
 	ID           uint64 `json:"id"`
 	Name         string `json:"name"`
@@ -45,19 +41,10 @@ type DeleteProblemQ struct {
 	ID uint64 `json:"id"`
 }
 
-type GetProblemVersionQ struct {
-	ID uint64 `json:"id"`
-}
-
 type GetProblemVersionA struct {
 	Success bool   `json:"success"`
 	Message string `json:"message"`
 	Version int    `json:"version"`
-}
-
-type GetProblemListQ struct {
-	Page   int `json:"page"`   //一页十个问题
-	Sorter int `json:"sorter"` //按什么排序
 }
 
 type GetProblemListA struct {

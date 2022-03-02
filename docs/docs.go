@@ -46,18 +46,23 @@ var doc = `{
                 "summary": "获取题目列表",
                 "parameters": [
                     {
-                        "description": "GetProblemListQ",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/api.GetProblemListQ"
-                        }
+                        "type": "integer",
+                        "description": "用户位于哪一页",
+                        "name": "page",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "用户想按什么排序",
+                        "name": "sorter",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "是否成功，返回信息",
+                        "description": "是否成功，返回信息，题目列表",
                         "schema": {
                             "$ref": "#/definitions/api.GetProblemListA"
                         }
@@ -67,7 +72,7 @@ var doc = `{
             "post": {
                 "description": "创建一个题目，题目需要包含答案和题面",
                 "consumes": [
-                    "application/json"
+                    "multipart/form-data"
                 ],
                 "produces": [
                     "application/json"
@@ -117,20 +122,11 @@ var doc = `{
                         "name": "id",
                         "in": "path",
                         "required": true
-                    },
-                    {
-                        "description": "GetProblemQ",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/api.GetProblemQ"
-                        }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "是否成功，返回信息",
+                        "description": "题目ID，题目名称，题目难度，可读权限，可写权限，组织ID，输入文件，输出文件，题目描述",
                         "schema": {
                             "$ref": "#/definitions/api.GetProblemA"
                         }
@@ -140,7 +136,7 @@ var doc = `{
             "put": {
                 "description": "更新一个题目的信息，并自动更新题目版本",
                 "consumes": [
-                    "application/json"
+                    "multipart/form-data"
                 ],
                 "produces": [
                     "application/json"
@@ -151,14 +147,7 @@ var doc = `{
                 "summary": "更新题目",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "description": "题目ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "UpdateProblemQ",
+                        "description": "题目ID，题目名称，题目难度，可读权限，可写权限，组织ID，输入文件，输出文件，题目描述",
                         "name": "data",
                         "in": "body",
                         "required": true,
@@ -189,13 +178,6 @@ var doc = `{
                 ],
                 "summary": "删除题目",
                 "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "题目ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
                     {
                         "description": "DeleteProblemQ",
                         "name": "data",
@@ -236,20 +218,11 @@ var doc = `{
                         "name": "id",
                         "in": "path",
                         "required": true
-                    },
-                    {
-                        "description": "GetProblemVersionQ",
-                        "name": "data",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/api.GetProblemVersionQ"
-                        }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "是否成功，返回信息",
+                        "description": "是否成功，返回信息，题目版本",
                         "schema": {
                             "$ref": "#/definitions/api.GetProblemVersionA"
                         }
@@ -507,27 +480,6 @@ var doc = `{
                 }
             }
         },
-        "api.GetProblemListQ": {
-            "type": "object",
-            "properties": {
-                "page": {
-                    "description": "一页十个问题",
-                    "type": "integer"
-                },
-                "sorter": {
-                    "description": "按什么排序",
-                    "type": "integer"
-                }
-            }
-        },
-        "api.GetProblemQ": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                }
-            }
-        },
         "api.GetProblemVersionA": {
             "type": "object",
             "properties": {
@@ -538,14 +490,6 @@ var doc = `{
                     "type": "boolean"
                 },
                 "version": {
-                    "type": "integer"
-                }
-            }
-        },
-        "api.GetProblemVersionQ": {
-            "type": "object",
-            "properties": {
-                "id": {
                     "type": "integer"
                 }
             }
