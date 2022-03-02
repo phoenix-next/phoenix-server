@@ -55,7 +55,6 @@ server:
   debug: false # 是否以Debug模式运行服务器
   cert: 'certFileName' # 仅在非Debug模式下有效，为使用的SSL证书的文件名
   key: 'keyFileName' # 仅在非Debug模式下有效，为使用的私钥的文件名
-  backend_url: 'backend_url' # 服务器允许访问的后端网络地址
 ```
 
 将可执行文件和配置文件置于**相同目录**下，并执行可执行文件即可运行服务器

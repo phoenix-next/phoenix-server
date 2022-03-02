@@ -44,5 +44,5 @@ func GetProblemFileName(problem *database.Problem, kind string) string {
 
 // 获取访问问题资源的Url
 func GetProblemFileUrl(problem *database.Problem, kind string) string {
-	return global.VP.GetString("server.backend_url") + "/resource/problem/" + GetProblemFileName(problem, kind)
+	return "/resource/problem/" + GetProblemFileName(problem, kind)
 }
