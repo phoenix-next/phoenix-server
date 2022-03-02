@@ -36,3 +36,13 @@ func GetProblemByID(ID uint64) (problem database.Problem, notFound bool) {
 		return problem, false
 	}
 }
+
+// 获取访问问题资源的文件名
+func GetProblemFileName(problem *database.Problem, kind string) string {
+	return strconv.Itoa(int(problem.ID)) + "_" + strconv.Itoa(problem.Version) + "_" + kind
+}
+
+// 获取访问问题资源的Url
+func GetProblemFileUrl(problem *database.Problem, kind string) string {
+	return global.VP.GetString("server.backend_url") + "/resource/problem/" + GetProblemFileName(problem, kind)
+}
