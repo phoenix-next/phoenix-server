@@ -68,20 +68,6 @@ definitions:
       success:
         type: boolean
     type: object
-  api.GetProblemListQ:
-    properties:
-      page:
-        description: 一页十个问题
-        type: integer
-      sorter:
-        description: 按什么排序
-        type: integer
-    type: object
-  api.GetProblemQ:
-    properties:
-      id:
-        type: integer
-    type: object
   api.GetProblemVersionA:
     properties:
       message:
@@ -89,11 +75,6 @@ definitions:
       success:
         type: boolean
       version:
-        type: integer
-    type: object
-  api.GetProblemVersionQ:
-    properties:
-      id:
         type: integer
     type: object
   api.GetProfileA:
@@ -167,17 +148,21 @@ paths:
       - application/json
       description: 获取用户所能查看的题目列表
       parameters:
-      - description: GetProblemListQ
-        in: body
-        name: data
+      - description: 用户位于哪一页
+        in: path
+        name: page
         required: true
-        schema:
-          $ref: '#/definitions/api.GetProblemListQ'
+        type: integer
+      - description: 用户想按什么排序
+        in: path
+        name: sorter
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
         "200":
-          description: 是否成功，返回信息
+          description: 是否成功，返回信息，题目列表
           schema:
             $ref: '#/definitions/api.GetProblemListA'
       summary: 获取题目列表
@@ -185,7 +170,7 @@ paths:
       - 评测模块
     post:
       consumes:
-      - application/json
+      - multipart/form-data
       description: 创建一个题目，题目需要包含答案和题面
       parameters:
       - description: 题目名称，题目难度，可读权限，可写权限，组织ID，输入文件，输出文件，题目描述
@@ -210,11 +195,6 @@ paths:
       - application/json
       description: 删除一个题目
       parameters:
-      - description: 题目ID
-        in: path
-        name: id
-        required: true
-        type: integer
       - description: DeleteProblemQ
         in: body
         name: data
@@ -241,17 +221,11 @@ paths:
         name: id
         required: true
         type: integer
-      - description: GetProblemQ
-        in: body
-        name: data
-        required: true
-        schema:
-          $ref: '#/definitions/api.GetProblemQ'
       produces:
       - application/json
       responses:
         "200":
-          description: 是否成功，返回信息
+          description: 题目ID，题目名称，题目难度，可读权限，可写权限，组织ID，输入文件，输出文件，题目描述
           schema:
             $ref: '#/definitions/api.GetProblemA'
       summary: 下载题目
@@ -259,15 +233,10 @@ paths:
       - 评测模块
     put:
       consumes:
-      - application/json
+      - multipart/form-data
       description: 更新一个题目的信息，并自动更新题目版本
       parameters:
-      - description: 题目ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: UpdateProblemQ
+      - description: 题目ID，题目名称，题目难度，可读权限，可写权限，组织ID，输入文件，输出文件，题目描述
         in: body
         name: data
         required: true
@@ -294,17 +263,11 @@ paths:
         name: id
         required: true
         type: integer
-      - description: GetProblemVersionQ
-        in: body
-        name: data
-        required: true
-        schema:
-          $ref: '#/definitions/api.GetProblemVersionQ'
       produces:
       - application/json
       responses:
         "200":
-          description: 是否成功，返回信息
+          description: 是否成功，返回信息，题目版本
           schema:
             $ref: '#/definitions/api.GetProblemVersionA'
       summary: 获取题目版本
