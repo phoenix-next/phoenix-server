@@ -19,9 +19,9 @@ func CreateProblem(q *api.CreateProblemQ) (p database.Problem, err error) {
 	//problem := database.Problem{Name: q.Name, Version: 1, Difficulty: 1, Readable: 1, Writable: 1, Organization: 1, Creator: 1}
 	problem := database.Problem{Name: q.Name, Version: 1, Difficulty: q.Difficulty, Readable: q.Readable, Writable: q.Writable, Organization: q.Organization, Creator: q.Creator}
 	if err = global.DB.Create(&problem).Error; err != nil {
-		return problem, err
+		return p, err
 	}
-	return p, nil
+	return problem, nil
 }
 
 // GetProblemByID 根据问题 ID 查询某个问题

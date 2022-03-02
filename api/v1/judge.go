@@ -31,6 +31,7 @@ func CreateProblem(c *gin.Context) {
 	if err != nil {
 		global.LOG.Panic("CreateProblem: create problem error")
 	}
+
 	err1, err2, err3 := c.SaveUploadedFile(data.Description, filepath.Join(path, service.MakeProblemFileName(problem.ID, 1, "description"))), c.SaveUploadedFile(data.Input, filepath.Join(path, service.MakeProblemFileName(problem.ID, 1, "input"))), c.SaveUploadedFile(data.Output, filepath.Join(path, service.MakeProblemFileName(problem.ID, 1, "output")))
 	if err1 != nil || err2 != nil || err3 != nil {
 		global.LOG.Panic("save problem " + problem.Name + " file error")
