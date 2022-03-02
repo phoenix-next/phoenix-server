@@ -9,17 +9,18 @@ import (
 
 func InitViper() *viper.Viper {
 	// 获取配置文件路径
-	path, err := os.Executable()
+	rootPath, err := os.Executable()
 	if err != nil {
 		panic("初始化失败：可执行程序路径获取失败")
 	}
-	path = filepath.Dir(path)
-	path = filepath.Join(path, "phoenix-config.yml")
+	rootPath = filepath.Dir(rootPath)
+	path := filepath.Join(rootPath, "phoenix-config.yml")
 	// 初始化viper
 	v := viper.New()
 	v.SetConfigFile(path)
 	v.SetConfigType("yaml")
 	err = v.ReadInConfig()
+	v.Set("root_path", rootPath)
 	if err != nil {
 		panic("初始化失败：读取配置文件失败")
 	}

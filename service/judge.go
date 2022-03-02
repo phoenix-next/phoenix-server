@@ -14,6 +14,7 @@ func MakeProblemFileName(problemId uint64, version int, suffix string) string {
 
 // CreateProblem 生成验证码
 func CreateProblem(q *api.CreateProblemQ) (p database.Problem, err error) {
+	//problem := database.Problem{Name: q.Name, Version: 1, Difficulty: 1, Readable: 1, Writable: 1, Organization: 1, Creator: 1}
 	problem := database.Problem{Name: q.Name, Version: 1, Difficulty: q.Difficulty, Readable: q.Readable, Writable: q.Writable, Organization: q.Organization, Creator: q.Creator}
 	if err = global.DB.Create(&problem).Error; err != nil {
 		return problem, err
