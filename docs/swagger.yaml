@@ -7,19 +7,94 @@ definitions:
         type: boolean
     type: object
   api.CreateProblemQ:
+    properties:
+      difficulty:
+        type: integer
+      name:
+        type: string
+      organization:
+        type: integer
+      readable:
+        type: integer
+      writable:
+        type: integer
     type: object
   api.DeleteProblemQ:
+    properties:
+      id:
+        type: integer
     type: object
   api.GetCaptchaQ:
     properties:
       email:
         type: string
     type: object
+  api.GetProblemA:
+    properties:
+      description:
+        type: string
+      difficulty:
+        type: integer
+      id:
+        type: integer
+      input:
+        type: string
+      name:
+        type: string
+      organization:
+        type: integer
+      output:
+        type: string
+      readable:
+        type: integer
+      writable:
+        type: integer
+    type: object
+  api.GetProblemListA:
+    properties:
+      message:
+        type: string
+      problemList:
+        items:
+          properties:
+            difficulty:
+              type: integer
+            id:
+              type: integer
+            name:
+              type: string
+          type: object
+        type: array
+      success:
+        type: boolean
+    type: object
   api.GetProblemListQ:
+    properties:
+      page:
+        description: 一页十个问题
+        type: integer
+      sorter:
+        description: 按什么排序
+        type: integer
     type: object
   api.GetProblemQ:
+    properties:
+      id:
+        type: integer
+    type: object
+  api.GetProblemVersionA:
+    properties:
+      message:
+        type: string
+      success:
+        type: boolean
+      version:
+        type: integer
     type: object
   api.GetProblemVersionQ:
+    properties:
+      id:
+        type: integer
     type: object
   api.GetProfileA:
     properties:
@@ -60,6 +135,19 @@ definitions:
         type: string
     type: object
   api.UpdateProblemQ:
+    properties:
+      difficulty:
+        type: integer
+      id:
+        type: integer
+      name:
+        type: string
+      organization:
+        type: integer
+      readable:
+        type: integer
+      writable:
+        type: integer
     type: object
 info:
   contact:
@@ -91,7 +179,7 @@ paths:
         "200":
           description: 是否成功，返回信息
           schema:
-            $ref: '#/definitions/api.CommonA'
+            $ref: '#/definitions/api.GetProblemListA'
       summary: 获取题目列表
       tags:
       - 评测模块
@@ -100,7 +188,7 @@ paths:
       - application/json
       description: 创建一个题目，题目需要包含答案和题面
       parameters:
-      - description: CreateProblemQ
+      - description: 题目名称，题目难度，可读权限，可写权限，组织ID，输入文件，输出文件，题目描述
         in: body
         name: data
         required: true
@@ -165,7 +253,7 @@ paths:
         "200":
           description: 是否成功，返回信息
           schema:
-            $ref: '#/definitions/api.CommonA'
+            $ref: '#/definitions/api.GetProblemA'
       summary: 下载题目
       tags:
       - 评测模块
@@ -218,7 +306,7 @@ paths:
         "200":
           description: 是否成功，返回信息
           schema:
-            $ref: '#/definitions/api.CommonA'
+            $ref: '#/definitions/api.GetProblemVersionA'
       summary: 获取题目版本
       tags:
       - 评测模块
