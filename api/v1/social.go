@@ -113,10 +113,23 @@ func Login(c *gin.Context) {
 // @Tags         社交模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string           true  "token"
+// @Param        x-token  header    string                    true  "token"
 // @Param        id       query     string           true  "用户ID"
 // @Success      200      {object}  api.GetProfileA  "是否成功，返回信息，用户资料"
 // @Router       /api/v1/user/profile [get]
 func GetProfile(c *gin.Context) {
+	c.JSON(http.StatusOK, c.GetString("email"))
+}
+
+// GetUserOrganization
+// @Summary      获取用户所属的所有组织
+// @Description  根据用户token，获取用户所属的所有组织
+// @Tags         社交模块
+// @Accept       json
+// @Produce      json
+// @Param        x-token  header    string           true  "token"
+// @Success      200      {object}  api.GetUserOrganizationA  "是否成功，返回信息，用户所属的组织"
+// @Router       /api/v1/user/organizations [get]
+func GetUserOrganization(c *gin.Context) {
 	c.JSON(http.StatusOK, c.GetString("email"))
 }

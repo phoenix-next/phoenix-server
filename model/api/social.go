@@ -33,3 +33,6 @@ type GetProfileA struct {
 	Message string `json:"message"`
 	Name    string `json:"name"`
 }
+
+type GetUserOrganizationA struct {
+}
