@@ -24,7 +24,7 @@ type Captcha struct {
 
 // Organization 组织
 type Organization struct {
-	ID          uint64    `gorm:"primary_key; not null;" json:"id"`
+	ID          uint64    `gorm:"primary_key; autoIncrement;not null;" json:"id"`
 	Name        string    `gorm:"size:32; not null; unique" json:"name"`
 	Profile     string    `gorm:"size:255;" json:"profile"`
 	CreatorID   uint64    `gorm:"not null;" json:"creator_id"` // 创建者ID
