@@ -15,8 +15,9 @@ import (
 // @Tags         评测模块
 // @Accept       multipart/form-data
 // @Produce      json
-// @Param        data  body      api.CreateProblemQ  true  "题目名称，题目难度，可读权限，可写权限，组织ID，输入文件，输出文件，题目描述"
-// @Success      200   {object}  api.CommonA         "是否成功，返回信息"
+// @Param        x-token  header    string              true  "token"
+// @Param        data     body      api.CreateProblemQ  true  "题目名称，题目难度，可读权限，可写权限，组织ID，输入文件，输出文件，题目描述"
+// @Success      200      {object}  api.CommonA         "是否成功，返回信息"
 // @Router       /api/v1/problems [post]
 func CreateProblem(c *gin.Context) {
 	var data api.CreateProblemQ
@@ -44,8 +45,9 @@ func CreateProblem(c *gin.Context) {
 // @Tags         评测模块
 // @Accept       json
 // @Produce      json
-// @Param        id   path      int              true  "题目ID"
-// @Success      200  {object}  api.GetProblemA  "题目ID，题目名称，题目难度，可读权限，可写权限，组织ID，输入文件，输出文件，题目描述"
+// @Param        x-token  header    string              true  "token"
+// @Param        id       path      int              true  "题目ID"
+// @Success      200      {object}  api.GetProblemA  "题目ID，题目名称，题目难度，可读权限，可写权限，组织ID，输入文件，输出文件，题目描述"
 // @Router       /api/v1/problems/{id} [get]
 func GetProblem(c *gin.Context) {
 
@@ -57,8 +59,9 @@ func GetProblem(c *gin.Context) {
 // @Tags         评测模块
 // @Accept       multipart/form-data
 // @Produce      json
-// @Param        data  body      api.UpdateProblemQ  true  "题目ID，题目名称，题目难度，可读权限，可写权限，组织ID，输入文件，输出文件，题目描述"
-// @Success      200   {object}  api.CommonA         "是否成功，返回信息"
+// @Param        x-token  header    string              true  "token"
+// @Param        data     body      api.UpdateProblemQ  true  "题目ID，题目名称，题目难度，可读权限，可写权限，组织ID，输入文件，输出文件，题目描述"
+// @Success      200      {object}  api.CommonA         "是否成功，返回信息"
 // @Router       /api/v1/problems/{id} [put]
 func UpdateProblem(c *gin.Context) {
 
@@ -70,8 +73,9 @@ func UpdateProblem(c *gin.Context) {
 // @Tags         评测模块
 // @Accept       json
 // @Produce      json
-// @Param        data  body      api.DeleteProblemQ  true  "DeleteProblemQ"
-// @Success      200   {object}  api.CommonA         "是否成功，返回信息"
+// @Param        x-token  header    string                  true  "token"
+// @Param        data     body      api.DeleteProblemQ  true  "DeleteProblemQ"
+// @Success      200      {object}  api.CommonA         "是否成功，返回信息"
 // @Router       /api/v1/problems/{id} [delete]
 func DeleteProblem(c *gin.Context) {
 
@@ -83,8 +87,9 @@ func DeleteProblem(c *gin.Context) {
 // @Tags         评测模块
 // @Accept       json
 // @Produce      json
-// @Param        id   path      int                     true  "题目ID"
-// @Success      200  {object}  api.GetProblemVersionA  "是否成功，返回信息，题目版本"
+// @Param        x-token  header    string               true  "token"
+// @Param        id       path      int                     true  "题目ID"
+// @Success      200      {object}  api.GetProblemVersionA  "是否成功，返回信息，题目版本"
 // @Router       /api/v1/problems/{id}/version [get]
 func GetProblemVersion(c *gin.Context) {
 
@@ -96,9 +101,10 @@ func GetProblemVersion(c *gin.Context) {
 // @Tags         评测模块
 // @Accept       json
 // @Produce      json
-// @Param        page    path      int                  true  "用户位于哪一页"
-// @Param        sorter  path      int                  true  "用户想按什么排序"
-// @Success      200     {object}  api.GetProblemListA  "是否成功，返回信息，题目列表"
+// @Param        x-token  header    string           true  "token"
+// @Param        page     path      int                  true  "用户位于哪一页"
+// @Param        sorter   path      int                  true  "用户想按什么排序"
+// @Success      200      {object}  api.GetProblemListA  "是否成功，返回信息，题目列表"
 // @Router       /api/v1/problems [get]
 func GetProblemList(c *gin.Context) {
 

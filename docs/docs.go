@@ -46,6 +46,13 @@ var doc = `{
                 "summary": "获取题目列表",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "token",
+                        "name": "x-token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "type": "integer",
                         "description": "用户位于哪一页",
                         "name": "page",
@@ -83,6 +90,13 @@ var doc = `{
                 "summary": "创建题目",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "token",
+                        "name": "x-token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "description": "题目名称，题目难度，可读权限，可写权限，组织ID，输入文件，输出文件，题目描述",
                         "name": "data",
                         "in": "body",
@@ -117,6 +131,13 @@ var doc = `{
                 "summary": "下载题目",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "token",
+                        "name": "x-token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "type": "integer",
                         "description": "题目ID",
                         "name": "id",
@@ -146,6 +167,13 @@ var doc = `{
                 ],
                 "summary": "更新题目",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "x-token",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "description": "题目ID，题目名称，题目难度，可读权限，可写权限，组织ID，输入文件，输出文件，题目描述",
                         "name": "data",
@@ -178,6 +206,13 @@ var doc = `{
                 ],
                 "summary": "删除题目",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "x-token",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "description": "DeleteProblemQ",
                         "name": "data",
@@ -212,6 +247,13 @@ var doc = `{
                 ],
                 "summary": "获取题目版本",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "x-token",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "integer",
                         "description": "题目ID",
@@ -293,6 +335,38 @@ var doc = `{
                         "description": "是否成功，返回信息，Token",
                         "schema": {
                             "$ref": "#/definitions/api.LoginA"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/organizations": {
+            "get": {
+                "description": "根据用户token，获取用户所属的所有组织",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "社交模块"
+                ],
+                "summary": "获取用户所属的所有组织",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "x-token",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "是否成功，返回信息，用户所属的组织",
+                        "schema": {
+                            "$ref": "#/definitions/api.GetUserOrganizationA"
                         }
                     }
                 }
@@ -507,6 +581,9 @@ var doc = `{
                     "type": "boolean"
                 }
             }
+        },
+        "api.GetUserOrganizationA": {
+            "type": "object"
         },
         "api.LoginA": {
             "type": "object",
