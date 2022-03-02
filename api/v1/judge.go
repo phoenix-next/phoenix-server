@@ -8,7 +8,7 @@ import "github.com/gin-gonic/gin"
 // @Tags         评测模块
 // @Accept       json
 // @Produce      json
-// @Param        data  body      api.CreateProblemQ  true  "CreateProblemQ"
+// @Param        data  body      api.CreateProblemQ  true  "题目名称，题目难度，可读权限，可写权限，组织ID，输入文件，输出文件，题目描述"
 // @Success      200   {object}  api.CommonA         "是否成功，返回信息"
 // @Router       /api/v1/problems [post]
 func CreateProblem(c *gin.Context) {
@@ -23,7 +23,7 @@ func CreateProblem(c *gin.Context) {
 // @Produce      json
 // @Param        id    path      int              true  "题目ID"
 // @Param        data  body      api.GetProblemQ  true  "GetProblemQ"
-// @Success      200   {object}  api.CommonA      "是否成功，返回信息"
+// @Success      200   {object}  api.GetProblemA      "是否成功，返回信息"
 // @Router       /api/v1/problems/{id} [get]
 func GetProblem(c *gin.Context) {
 
@@ -65,7 +65,7 @@ func DeleteProblem(c *gin.Context) {
 // @Produce      json
 // @Param        id    path      int                     true  "题目ID"
 // @Param        data  body      api.GetProblemVersionQ  true  "GetProblemVersionQ"
-// @Success      200   {object}  api.CommonA             "是否成功，返回信息"
+// @Success      200   {object}  api.GetProblemVersionA             "是否成功，返回信息"
 // @Router       /api/v1/problems/{id}/version [get]
 func GetProblemVersion(c *gin.Context) {
 
@@ -78,7 +78,7 @@ func GetProblemVersion(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        data  body      api.GetProblemListQ  true  "GetProblemListQ"
-// @Success      200   {object}  api.CommonA          "是否成功，返回信息"
+// @Success      200   {object}  api.GetProblemListA          "是否成功，返回信息"
 // @Router       /api/v1/problems [get]
 func GetProblemList(c *gin.Context) {
 
