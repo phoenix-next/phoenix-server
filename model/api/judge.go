@@ -8,9 +8,9 @@ type CreateProblemQ struct {
 	Readable     int                   `form:"readable"`
 	Writable     int                   `form:"writable"`
 	Organization uint64                `form:"organization"`
-	Input        *multipart.FileHeader `form:"input"`
-	Output       *multipart.FileHeader `form:"output"`
-	Description  *multipart.FileHeader `form:"description"`
+	Input        *multipart.FileHeader `form:"input" swaggerignore:"true"`
+	Output       *multipart.FileHeader `form:"output" swaggerignore:"true"`
+	Description  *multipart.FileHeader `form:"description" swaggerignore:"true"`
 }
 
 type GetProblemQ struct {
@@ -36,9 +36,9 @@ type UpdateProblemQ struct {
 	Readable     int                   `form:"readable"`
 	Writable     int                   `form:"writable"`
 	Organization uint64                `form:"organization"`
-	Input        *multipart.FileHeader `form:"input"`
-	Output       *multipart.FileHeader `form:"output"`
-	Description  *multipart.FileHeader `form:"description"`
+	Input        *multipart.FileHeader `form:"input" swaggerignore:"true"`
+	Output       *multipart.FileHeader `form:"output" swaggerignore:"true"`
+	Description  *multipart.FileHeader `form:"description" swaggerignore:"true"`
 }
 
 type DeleteProblemQ struct {

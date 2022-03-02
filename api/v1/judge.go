@@ -23,7 +23,7 @@ func CreateProblem(c *gin.Context) {
 // @Produce      json
 // @Param        id    path      int              true  "题目ID"
 // @Param        data  body      api.GetProblemQ  true  "GetProblemQ"
-// @Success      200   {object}  api.GetProblemA      "是否成功，返回信息"
+// @Success      200   {object}  api.GetProblemA  "是否成功，返回信息"
 // @Router       /api/v1/problems/{id} [get]
 func GetProblem(c *gin.Context) {
 
@@ -65,7 +65,7 @@ func DeleteProblem(c *gin.Context) {
 // @Produce      json
 // @Param        id    path      int                     true  "题目ID"
 // @Param        data  body      api.GetProblemVersionQ  true  "GetProblemVersionQ"
-// @Success      200   {object}  api.GetProblemVersionA             "是否成功，返回信息"
+// @Success      200   {object}  api.GetProblemVersionA  "是否成功，返回信息"
 // @Router       /api/v1/problems/{id}/version [get]
 func GetProblemVersion(c *gin.Context) {
 
@@ -78,7 +78,7 @@ func GetProblemVersion(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        data  body      api.GetProblemListQ  true  "GetProblemListQ"
-// @Success      200   {object}  api.GetProblemListA          "是否成功，返回信息"
+// @Success      200   {object}  api.GetProblemListA  "是否成功，返回信息"
 // @Router       /api/v1/problems [get]
 func GetProblemList(c *gin.Context) {
 

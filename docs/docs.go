@@ -59,7 +59,7 @@ var doc = `{
                     "200": {
                         "description": "是否成功，返回信息",
                         "schema": {
-                            "$ref": "#/definitions/api.CommonA"
+                            "$ref": "#/definitions/api.GetProblemListA"
                         }
                     }
                 }
@@ -78,7 +78,7 @@ var doc = `{
                 "summary": "创建题目",
                 "parameters": [
                     {
-                        "description": "CreateProblemQ",
+                        "description": "题目名称，题目难度，可读权限，可写权限，组织ID，输入文件，输出文件，题目描述",
                         "name": "data",
                         "in": "body",
                         "required": true,
@@ -132,7 +132,7 @@ var doc = `{
                     "200": {
                         "description": "是否成功，返回信息",
                         "schema": {
-                            "$ref": "#/definitions/api.CommonA"
+                            "$ref": "#/definitions/api.GetProblemA"
                         }
                     }
                 }
@@ -251,7 +251,7 @@ var doc = `{
                     "200": {
                         "description": "是否成功，返回信息",
                         "schema": {
-                            "$ref": "#/definitions/api.CommonA"
+                            "$ref": "#/definitions/api.GetProblemVersionA"
                         }
                     }
                 }
@@ -412,10 +412,32 @@ var doc = `{
             }
         },
         "api.CreateProblemQ": {
-            "type": "object"
+            "type": "object",
+            "properties": {
+                "difficulty": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "organization": {
+                    "type": "integer"
+                },
+                "readable": {
+                    "type": "integer"
+                },
+                "writable": {
+                    "type": "integer"
+                }
+            }
         },
         "api.DeleteProblemQ": {
-            "type": "object"
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                }
+            }
         },
         "api.GetCaptchaQ": {
             "type": "object",
@@ -425,14 +447,108 @@ var doc = `{
                 }
             }
         },
+        "api.GetProblemA": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "difficulty": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "input": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "organization": {
+                    "type": "integer"
+                },
+                "output": {
+                    "type": "string"
+                },
+                "readable": {
+                    "type": "integer"
+                },
+                "writable": {
+                    "type": "integer"
+                }
+            }
+        },
+        "api.GetProblemListA": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "problemList": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "difficulty": {
+                                "type": "integer"
+                            },
+                            "id": {
+                                "type": "integer"
+                            },
+                            "name": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
         "api.GetProblemListQ": {
-            "type": "object"
+            "type": "object",
+            "properties": {
+                "page": {
+                    "description": "一页十个问题",
+                    "type": "integer"
+                },
+                "sorter": {
+                    "description": "按什么排序",
+                    "type": "integer"
+                }
+            }
         },
         "api.GetProblemQ": {
-            "type": "object"
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "api.GetProblemVersionA": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
+                },
+                "version": {
+                    "type": "integer"
+                }
+            }
         },
         "api.GetProblemVersionQ": {
-            "type": "object"
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                }
+            }
         },
         "api.GetProfileA": {
             "type": "object",
@@ -494,7 +610,27 @@ var doc = `{
             }
         },
         "api.UpdateProblemQ": {
-            "type": "object"
+            "type": "object",
+            "properties": {
+                "difficulty": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "organization": {
+                    "type": "integer"
+                },
+                "readable": {
+                    "type": "integer"
+                },
+                "writable": {
+                    "type": "integer"
+                }
+            }
         }
     }
 }`
