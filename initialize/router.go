@@ -48,8 +48,8 @@ func InitRouter(r *gin.Engine) {
 	// 评测模块
 	problemRouter := basicRouter.Group("/problems")
 	{
-		problemRouter.GET("/", v1.GetProblemList)
-		problemRouter.POST("/", v1.CreateProblem)
+		problemRouter.GET("", v1.GetProblemList)
+		problemRouter.POST("", v1.CreateProblem)
 		problemRouter.DELETE("/:id", v1.DeleteProblem)
 		problemRouter.GET("/:id", v1.GetProblem)
 		problemRouter.PUT("/:id", v1.UpdateProblem)
