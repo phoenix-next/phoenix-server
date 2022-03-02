@@ -1,9 +1,11 @@
 package service
 
 import (
+	"errors"
 	"github.com/phoenix-next/phoenix-server/global"
 	"github.com/phoenix-next/phoenix-server/model/api"
 	"github.com/phoenix-next/phoenix-server/model/database"
+	"gorm.io/gorm"
 	"strconv"
 )
 
@@ -20,4 +22,27 @@ func CreateProblem(q *api.CreateProblemQ) (p database.Problem, err error) {
 		return problem, err
 	}
 	return p, nil
+}
+
+// GetProblemByID 根据问题 ID 查询某个问题
+func GetProblemByID(ID uint64) (problem database.Problem, notFound bool) {
+	err := global.DB.First(&problem, ID).Error
+	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
+		return problem, true
+	} else if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		global.LOG.Panic("GetUserByID: search error")
+		return problem, true
+	} else {
+		return problem, false
+	}
+}
+
+// 获取访问问题资源的文件名
+func GetProblemFileName(problem *database.Problem, kind string) string {
+	return strconv.Itoa(int(problem.ID)) + "_" + strconv.Itoa(problem.Version) + "_" + kind
+}
+
+// 获取访问问题资源的Url
+func GetProblemFileUrl(problem *database.Problem, kind string) string {
+	return global.VP.GetString("server.backend_url") + "/resource/problem/" + GetProblemFileName(problem, kind)
 }

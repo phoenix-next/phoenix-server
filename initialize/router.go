@@ -35,6 +35,13 @@ func InitRouter(r *gin.Engine) {
 		authRouter.POST("/captcha", v1.GetCaptcha)
 		authRouter.POST("/login", v1.Login)
 	}
+
+	// 上传文件模块 查看题目不需要登录即查看
+	resourceRouter := rawRouter.Group("/resource")
+	{
+		resourceRouter.StaticFS("/problem", http.Dir(filepath.Join(global.VP.GetString("root_path"), "resource", "problems")))
+	}
+
 	// 除了登录模块之外，都需要身份认证
 	basicRouter := rawRouter.Group("/")
 	basicRouter.Use(middleware.AuthRequired())
@@ -56,6 +63,7 @@ func InitRouter(r *gin.Engine) {
 		problemRouter.PUT("/:id", v1.UpdateProblem)
 		problemRouter.GET("/:id/version", v1.GetProblemVersion)
 	}
+
 }
 
 func RunRouter(r *gin.Engine) {

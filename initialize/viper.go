@@ -21,6 +21,7 @@ func InitViper() *viper.Viper {
 	v.SetConfigType("yaml")
 	err = v.ReadInConfig()
 	v.Set("root_path", rootPath)
+	v.Set("problem_path", filepath.Join(rootPath, "resource", "problems"))
 	if err != nil {
 		panic("初始化失败：读取配置文件失败")
 	}
