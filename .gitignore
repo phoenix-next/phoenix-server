@@ -24,6 +24,7 @@ bin
 gin.log
 *.log
 media/
+test/
 
 # config file
 phoenix-config.yml
