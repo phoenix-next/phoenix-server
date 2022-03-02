@@ -1,6 +1,13 @@
 package v1
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/phoenix-next/phoenix-server/global"
+	"github.com/phoenix-next/phoenix-server/model/api"
+	"github.com/phoenix-next/phoenix-server/service"
+	"net/http"
+	"path/filepath"
+)
 
 // CreateProblem
 // @Summary      创建题目
@@ -13,7 +20,23 @@ import "github.com/gin-gonic/gin"
 // @Success      200      {object}  api.CommonA         "是否成功，返回信息"
 // @Router       /api/v1/problems [post]
 func CreateProblem(c *gin.Context) {
-
+	var data api.CreateProblemQ
+	path := filepath.Join(global.VP.GetString("root_path"), "resource", "problems")
+	err := c.ShouldBind(&data)
+	if err != nil {
+		global.LOG.Panic("CreateProblem: bind data error")
+	}
+	problem, err := service.CreateProblem(&data)
+	if err != nil {
+		global.LOG.Panic("CreateProblem: create problem error")
+	}
+	err1, err2, err3 := c.SaveUploadedFile(data.Description, filepath.Join(path, service.MakeProblemFileName(problem.ID, 1, "description"))), c.SaveUploadedFile(data.Input, filepath.Join(path, service.MakeProblemFileName(problem.ID, 1, "input"))), c.SaveUploadedFile(data.Output, filepath.Join(path, service.MakeProblemFileName(problem.ID, 1, "output")))
+	if err1 != nil || err2 != nil || err3 != nil {
+		global.LOG.Panic("save problem " + problem.Name + " file error")
+		c.JSON(http.StatusInternalServerError, api.CommonA{Success: false, Message: "保存文件出错"})
+		return
+	}
+	c.JSON(http.StatusOK, api.CommonA{Success: true, Message: "创建题目成功"})
 }
 
 // GetProblem
