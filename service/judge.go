@@ -54,3 +54,17 @@ func DeleteProblemByID(ID uint64) (err error) {
 	}
 	return nil
 }
+
+// UpdateProblem 根据信息更新题目
+func UpdateProblem(problem *database.Problem, q *api.UpdateProblemQ) (err error) {
+	problem.Name, problem.Version, problem.Difficulty, problem.Organization, problem.Writable, problem.Readable =
+		q.Name, problem.Version+1, q.Difficulty, q.Organization, q.Writable, q.Readable
+	err = global.DB.Save(problem).Error
+	return err
+}
+
+// SaveProblem 根据信息保存题目
+func SaveProblem(problem *database.Problem) (err error) {
+	err = global.DB.Save(problem).Error
+	return err
+}
