@@ -117,7 +117,12 @@ func DeleteProblem(c *gin.Context) {
 // @Success      200      {object}  api.GetProblemVersionA  "是否成功，返回信息，题目版本"
 // @Router       /api/v1/problems/{id}/version [get]
 func GetProblemVersion(c *gin.Context) {
-
+	id, _ := strconv.ParseUint(c.Request.FormValue("id"), 10, 64)
+	if problem, notFound := service.GetProblemByID(id); notFound {
+		c.JSON(http.StatusNotFound, nil)
+	} else {
+		c.JSON(http.StatusOK, api.GetProblemVersionA{Success: true, Message: "返回题目版本成功", Version: problem.Version})
+	}
 }
 
 // GetProblemList
