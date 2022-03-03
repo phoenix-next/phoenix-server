@@ -37,12 +37,20 @@ func GetProblemByID(ID uint64) (problem database.Problem, notFound bool) {
 	}
 }
 
-// 获取访问问题资源的文件名
+// GetProblemFileName 获取访问问题资源的文件名
 func GetProblemFileName(problem *database.Problem, kind string) string {
 	return strconv.Itoa(int(problem.ID)) + "_" + strconv.Itoa(problem.Version) + "_" + kind
 }
 
-// 获取访问问题资源的Url
+// GetProblemFileUrl 获取访问问题资源的Url
 func GetProblemFileUrl(problem *database.Problem, kind string) string {
 	return "/resource/problem/" + GetProblemFileName(problem, kind)
+}
+
+// DeleteProblemByID 根据问题id 删除问题
+func DeleteProblemByID(ID uint64) (err error) {
+	if err = global.DB.Where("id = ?", ID).Delete(database.Problem{}).Error; err != nil {
+		return err
+	}
+	return nil
 }
