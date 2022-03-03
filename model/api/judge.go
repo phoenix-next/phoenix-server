@@ -1,6 +1,9 @@
 package api
 
-import "mime/multipart"
+import (
+	"github.com/phoenix-next/phoenix-server/model/database"
+	"mime/multipart"
+)
 
 type CreateProblemQ struct {
 	Name         string                `form:"name"`
@@ -50,11 +53,7 @@ type GetProblemVersionA struct {
 }
 
 type GetProblemListA struct {
-	Success     bool   `json:"success"`
-	Message     string `json:"message"`
-	ProblemList []struct {
-		ID         uint64 `json:"id"`
-		Name       string `json:"name"`
-		Difficulty int    `json:"difficulty"`
-	}
+	Success     bool               `json:"success"`
+	Message     string             `json:"message"`
+	ProblemList []database.Problem `json:"problem_list"`
 }

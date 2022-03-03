@@ -6,7 +6,10 @@ import (
 	"github.com/phoenix-next/phoenix-server/model/api"
 	"github.com/phoenix-next/phoenix-server/model/database"
 	"gorm.io/gorm"
+	"math"
+	"sort"
 	"strconv"
+	"strings"
 )
 
 // MakeProblemFileName 保存题目文件名称
@@ -67,4 +70,51 @@ func UpdateProblem(problem *database.Problem, q *api.UpdateProblemQ) (err error)
 func SaveProblem(problem *database.Problem) (err error) {
 	err = global.DB.Save(problem).Error
 	return err
+}
+
+// QueryAllProblems 查询所有问题
+func QueryAllProblems() (problems []database.Problem) {
+	problems = make([]database.Problem, 0)
+	global.DB.Find(&problems)
+	return problems
+}
+
+// GetAllAvailableReadableProblems 获取所有可访问问题 TODO 组织管理员权限
+func GetAllAvailableReadableProblems() (problems []database.Problem) {
+	allProblems := QueryAllProblems()
+	problems = make([]database.Problem, 0)
+	for _, problem := range allProblems {
+		if problem.Readable == 3 {
+			problems = append(problems, problem)
+		}
+	}
+	if isUser := global.VP.IsSet("email"); !isUser {
+		// 未登录，直接返回公开题目
+		return problems
+	}
+	user, _ := GetUserByEmail(global.VP.GetString("email"))
+	//TODO 组织管理员权限
+	for _, problem := range allProblems {
+		if problem.Creator == user.ID {
+			problems = append(problems, problem)
+		}
+	}
+	return problems
+}
+
+// GetProblemsByPage 对给定问题做出排序与页选择
+func GetProblemsByPage(problems []database.Problem, page int, sorter int) (problemList []database.Problem) {
+	size := 10
+	sort.Slice(problems, func(i, j int) bool {
+		if math.Abs(float64(sorter)) == 1 {
+			return problems[i].ID > problems[j].ID && sorter > 0
+		} else if math.Abs(float64(sorter)) == 3 {
+			return problems[i].Difficulty > problems[j].Difficulty && sorter > 0
+		} else if math.Abs(float64(sorter)) == 2 {
+			return strings.Compare(problems[i].Name, problems[j].Name) < 0 && sorter > 0
+		} else {
+			return true
+		}
+	})
+	return problems[(page-1)*size : int(math.Min(float64(page*size), float64(len(problems))))]
 }

@@ -163,5 +163,9 @@ func GetProblemVersion(c *gin.Context) {
 // @Success      200      {object}  api.GetProblemListA  "是否成功，返回信息，题目列表"
 // @Router       /api/v1/problems [get]
 func GetProblemList(c *gin.Context) {
+	page, _ := strconv.Atoi(c.Request.FormValue("page"))
+	sorter, _ := strconv.Atoi(c.Request.FormValue("sorter"))
+	problems := service.GetProblemsByPage(service.GetAllAvailableReadableProblems(), page, sorter)
+	c.JSON(http.StatusOK, api.GetProblemListA{Success: true, Message: "获取成功", ProblemList: problems})
 
 }
