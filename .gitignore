@@ -25,9 +25,7 @@ gin.log
 *.log
 media/
 test/
-#保留文件夹，防止保存出错
-/resource/problems/*
-!resource/problems/*empty
+resource
 
 # config file
 phoenix-config.yml
