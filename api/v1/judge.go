@@ -86,6 +86,7 @@ func UpdateProblem(c *gin.Context) {
 	err := c.ShouldBind(&data)
 	if err != nil {
 		global.LOG.Panic("UpdateProblem: bind data error")
+		c.JSON(http.StatusInternalServerError, api.CommonA{Success: true, Message: "创建题目成功"})
 	}
 
 	if problem, notFound := service.GetProblemByID(data.ID); notFound {
