@@ -53,7 +53,7 @@ func CreateProblem(c *gin.Context) {
 // @Success      200      {object}  api.GetProblemA  "题目ID，题目名称，题目难度，可读权限，可写权限，组织ID，输入文件，输出文件，题目描述"
 // @Router       /api/v1/problems/{id} [get]
 func GetProblem(c *gin.Context) {
-	id, _ := strconv.ParseUint(c.Request.FormValue("id"), 10, 64)
+	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
 	if problem, notFound := service.GetProblemByID(id); notFound {
 		c.JSON(http.StatusNotFound, nil)
 	} else {
@@ -121,7 +121,7 @@ func UpdateProblem(c *gin.Context) {
 // @Success      200      {object}  api.CommonA         "是否成功，返回信息"
 // @Router       /api/v1/problems/{id} [delete]
 func DeleteProblem(c *gin.Context) {
-	id, _ := strconv.ParseUint(c.Request.FormValue("id"), 10, 64)
+	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
 	if _, notFound := service.GetProblemByID(id); notFound {
 		c.JSON(http.StatusNotFound, nil)
 	} else {
@@ -143,7 +143,7 @@ func DeleteProblem(c *gin.Context) {
 // @Success      200      {object}  api.GetProblemVersionA  "是否成功，返回信息，题目版本"
 // @Router       /api/v1/problems/{id}/version [get]
 func GetProblemVersion(c *gin.Context) {
-	id, _ := strconv.ParseUint(c.Request.FormValue("id"), 10, 64)
+	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
 	if problem, notFound := service.GetProblemByID(id); notFound {
 		c.JSON(http.StatusNotFound, nil)
 	} else {
