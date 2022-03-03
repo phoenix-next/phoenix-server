@@ -29,7 +29,9 @@ func CreateProblem(c *gin.Context) {
 	}
 	problem, err := service.CreateProblem(&data)
 	if err != nil {
-		global.LOG.Panic("CreateProblem: create problem error")
+		global.LOG.Warn("CreateProblem: create problem error")
+		c.JSON(http.StatusInternalServerError, api.CommonA{Success: false, Message: "创建题目失败"})
+		return
 	}
 	err1, err2, err3 := c.SaveUploadedFile(data.Description, filepath.Join(path, service.MakeProblemFileName(problem.ID, 1, "description"))), c.SaveUploadedFile(data.Input, filepath.Join(path, service.MakeProblemFileName(problem.ID, 1, "input"))), c.SaveUploadedFile(data.Output, filepath.Join(path, service.MakeProblemFileName(problem.ID, 1, "output")))
 	if err1 != nil || err2 != nil || err3 != nil {
@@ -86,7 +88,6 @@ func UpdateProblem(c *gin.Context) {
 	err := c.ShouldBind(&data)
 	if err != nil {
 		global.LOG.Panic("UpdateProblem: bind data error")
-		c.JSON(http.StatusInternalServerError, api.CommonA{Success: true, Message: "创建题目成功"})
 	}
 
 	if problem, notFound := service.GetProblemByID(data.ID); notFound {
@@ -101,7 +102,9 @@ func UpdateProblem(c *gin.Context) {
 		if err1 != nil || err2 != nil || err3 != nil {
 			// 保存文件失败，回滚数据库
 			service.SaveProblem(&problemOrigin)
-			global.LOG.Panic("save problem " + problem.Name + " file error")
+			global.LOG.Warn("save problem " + problem.Name + " file error")
+			c.JSON(http.StatusInternalServerError, api.CommonA{Success: false, Message: "保存题目文件失败"})
+			return
 		}
 		c.JSON(http.StatusOK, api.CommonA{Success: true, Message: "更新题目成功"})
 	}
