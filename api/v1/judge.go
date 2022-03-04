@@ -165,7 +165,7 @@ func GetProblemVersion(c *gin.Context) {
 func GetProblemList(c *gin.Context) {
 	page, _ := strconv.Atoi(c.Request.FormValue("page"))
 	sorter, _ := strconv.Atoi(c.Request.FormValue("sorter"))
-	problems := service.GetProblemsByPage(service.GetAllAvailableReadableProblems(), page, sorter)
+	problems := service.GetProblemsByPage(service.GetAllAvailableReadableProblems(c), page, sorter)
 	c.JSON(http.StatusOK, api.GetProblemListA{Success: true, Message: "获取成功", ProblemList: problems})
 
 }

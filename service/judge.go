@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"github.com/gin-gonic/gin"
 	"github.com/phoenix-next/phoenix-server/global"
 	"github.com/phoenix-next/phoenix-server/model/api"
 	"github.com/phoenix-next/phoenix-server/model/database"
@@ -80,7 +81,7 @@ func QueryAllProblems() (problems []database.Problem) {
 }
 
 // GetAllAvailableReadableProblems 获取所有可访问问题 TODO 组织管理员权限
-func GetAllAvailableReadableProblems() (problems []database.Problem) {
+func GetAllAvailableReadableProblems(c *gin.Context) (problems []database.Problem) {
 	allProblems := QueryAllProblems()
 	problems = make([]database.Problem, 0)
 	for _, problem := range allProblems {
@@ -88,11 +89,11 @@ func GetAllAvailableReadableProblems() (problems []database.Problem) {
 			problems = append(problems, problem)
 		}
 	}
-	if isUser := global.VP.IsSet("email"); !isUser {
+	if _, isUser := c.Get("email"); !isUser {
 		// 未登录，直接返回公开题目
 		return problems
 	}
-	user, _ := GetUserByEmail(global.VP.GetString("email"))
+	user, _ := GetUserByEmail(c.GetString("email"))
 	//TODO 组织管理员权限
 	for _, problem := range allProblems {
 		if problem.Creator == user.ID {
