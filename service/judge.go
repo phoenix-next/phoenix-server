@@ -80,8 +80,8 @@ func QueryAllProblems() (problems []database.Problem) {
 	return problems
 }
 
-// GetAllAvailableReadableProblems 获取所有可访问问题 TODO 组织管理员权限
-func GetAllAvailableReadableProblems(c *gin.Context) (problems []database.Problem) {
+// GetReadableProblems 获取所有可访问问题 TODO 组织管理员权限
+func GetReadableProblems(c *gin.Context) (problems []database.Problem) {
 	allProblems := QueryAllProblems()
 	problems = make([]database.Problem, 0)
 	for _, problem := range allProblems {

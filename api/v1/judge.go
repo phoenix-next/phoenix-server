@@ -166,8 +166,9 @@ func GetProblemVersion(c *gin.Context) {
 func GetProblemList(c *gin.Context) {
 	page, _ := strconv.Atoi(c.Request.FormValue("page"))
 	sorter, _ := strconv.Atoi(c.Request.FormValue("sorter"))
-	problems := service.GetAllAvailableReadableProblems(c)
+	problems := service.GetReadableProblems(c)
 	// TODO 题目名称搜索关键字，模糊查找
+	
 	pagedProblems := service.GetProblemsByPage(problems, page, sorter)
 	c.JSON(http.StatusOK, api.GetProblemListA{Success: true, Message: "获取成功", ProblemList: pagedProblems, Total: len(problems)})
 }
