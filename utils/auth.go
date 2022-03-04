@@ -2,6 +2,7 @@ package utils
 
 import (
 	"errors"
+	"fmt"
 	"github.com/golang-jwt/jwt"
 	"github.com/phoenix-next/phoenix-server/global"
 )
@@ -31,6 +32,7 @@ func ValidateToken(signedToken string) (email string, err error) {
 		},
 	)
 	if err != nil || !token.Valid {
+		fmt.Println(err)
 		err = errors.New("token isn't valid")
 		return
 	}
