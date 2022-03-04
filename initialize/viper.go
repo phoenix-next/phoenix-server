@@ -15,6 +15,10 @@ func InitViper() *viper.Viper {
 	}
 	rootPath = filepath.Dir(rootPath)
 	path := filepath.Join(rootPath, "phoenix-config.yml")
+	// 创建资源文件夹
+	if err = os.MkdirAll("./resource/problems", os.ModePerm); err != nil {
+		panic(err)
+	}
 	// 初始化viper
 	v := viper.New()
 	v.SetConfigFile(path)
