@@ -47,7 +47,7 @@ func GetProblemFileName(problem *database.Problem, kind string) string {
 
 // GetProblemFileUrl 获取访问问题资源的Url
 func GetProblemFileUrl(problem *database.Problem, kind string) string {
-	return "/resource/problem/" + GetProblemFileName(problem, kind)
+	return "resource/problem/" + GetProblemFileName(problem, kind)
 }
 
 // DeleteProblemByID 根据问题id 删除问题
