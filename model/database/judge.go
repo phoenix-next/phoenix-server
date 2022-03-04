@@ -12,7 +12,7 @@ type Competition struct {
 // Problem 题目
 type Problem struct {
 	ID           uint64    `gorm:"primary_key;autoIncrement;not null;" json:"id"`
-	Name         string    `gorm:"size:32; not null; unique" json:"name"`
+	Name         string    `gorm:"size:32; not null" json:"name"`
 	Version      int       `gorm:"not null;" json:"version"`
 	Difficulty   int       `gorm:"not null" json:"difficulty"`
 	Readable     int       `gorm:"not null" json:"readable"`

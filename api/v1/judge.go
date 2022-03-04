@@ -22,7 +22,7 @@ import (
 // @Router       /api/v1/problems [post]
 func CreateProblem(c *gin.Context) {
 	var data api.CreateProblemQ
-	path := filepath.Join(global.VP.GetString("root_path"), "resource", "problems")
+	path := global.VP.GetString("problem_path")
 	err := c.ShouldBind(&data)
 	if err != nil {
 		global.LOG.Panic("CreateProblem: bind data error")
@@ -37,7 +37,7 @@ func CreateProblem(c *gin.Context) {
 	if err1 != nil || err2 != nil || err3 != nil {
 		//发生错误，回滚删除数据库
 		service.DeleteProblemByID(problem.ID)
-		global.LOG.Panic("save problem " + problem.Name + " file error")
+		global.LOG.Panic("CreateProblem: save problem error")
 	}
 	c.JSON(http.StatusOK, api.CommonA{Success: true, Message: "创建题目成功"})
 }
@@ -168,7 +168,7 @@ func GetProblemList(c *gin.Context) {
 	sorter, _ := strconv.Atoi(c.Request.FormValue("sorter"))
 	problems := service.GetReadableProblems(c)
 	// TODO 题目名称搜索关键字，模糊查找
-	
+
 	pagedProblems := service.GetProblemsByPage(problems, page, sorter)
 	c.JSON(http.StatusOK, api.GetProblemListA{Success: true, Message: "获取成功", ProblemList: pagedProblems, Total: len(problems)})
 }
