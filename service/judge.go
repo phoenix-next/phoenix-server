@@ -82,24 +82,15 @@ func QueryAllProblems() (problems []database.Problem) {
 
 // GetReadableProblems 获取所有可访问问题 TODO 组织管理员权限
 func GetReadableProblems(c *gin.Context) (problems []database.Problem) {
+	user, _ := GetUserByEmail(c.GetString("email"))
 	allProblems := QueryAllProblems()
 	problems = make([]database.Problem, 0)
 	for _, problem := range allProblems {
-		if problem.Readable == 3 {
+		if problem.Readable == 3 || problem.Creator == user.ID {
 			problems = append(problems, problem)
 		}
 	}
-	if _, isUser := c.Get("email"); !isUser {
-		// 未登录，直接返回公开题目
-		return problems
-	}
-	user, _ := GetUserByEmail(c.GetString("email"))
 	//TODO 组织管理员权限
-	for _, problem := range allProblems {
-		if problem.Creator == user.ID {
-			problems = append(problems, problem)
-		}
-	}
 	return problems
 }
 
