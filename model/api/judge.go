@@ -55,5 +55,6 @@ type GetProblemVersionA struct {
 type GetProblemListA struct {
 	Success     bool               `json:"success"`
 	Message     string             `json:"message"`
+	Total       int                `json:"total"`
 	ProblemList []database.Problem `json:"problemList"`
 }
