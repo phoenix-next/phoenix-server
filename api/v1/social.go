@@ -131,5 +131,6 @@ func GetProfile(c *gin.Context) {
 // @Success      200      {object}  api.GetUserOrganizationA  "是否成功，返回信息，用户所属的组织"
 // @Router       /api/v1/user/organizations [get]
 func GetUserOrganization(c *gin.Context) {
+	// TODO 逻辑实现
 	c.JSON(http.StatusOK, c.GetString("organization"))
 }

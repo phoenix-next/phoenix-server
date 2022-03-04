@@ -8,6 +8,8 @@ definitions:
     type: object
   api.CreateProblemQ:
     properties:
+      creator:
+        type: integer
       difficulty:
         type: integer
       name:
@@ -31,6 +33,8 @@ definitions:
     type: object
   api.GetProblemA:
     properties:
+      creator:
+        type: integer
       description:
         type: string
       difficulty:
@@ -56,17 +60,12 @@ definitions:
         type: string
       problemList:
         items:
-          properties:
-            difficulty:
-              type: integer
-            id:
-              type: integer
-            name:
-              type: string
-          type: object
+          $ref: '#/definitions/database.Problem'
         type: array
       success:
         type: boolean
+      total:
+        type: integer
     type: object
   api.GetProblemVersionA:
     properties:
@@ -87,6 +86,23 @@ definitions:
         type: boolean
     type: object
   api.GetUserOrganizationA:
+    properties:
+      message:
+        type: string
+      organizations:
+        items:
+          properties:
+            id:
+              type: integer
+            isAdmin:
+              description: 用户在该组织中是否为管理员
+              type: boolean
+            name:
+              type: string
+          type: object
+        type: array
+      success:
+        type: boolean
     type: object
   api.LoginA:
     properties:
@@ -132,6 +148,27 @@ definitions:
       writable:
         type: integer
     type: object
+  database.Problem:
+    properties:
+      created_time:
+        type: string
+      creator:
+        type: integer
+      difficulty:
+        type: integer
+      id:
+        type: integer
+      name:
+        type: string
+      organization:
+        type: integer
+      readable:
+        type: integer
+      version:
+        type: integer
+      writable:
+        type: integer
+    type: object
 info:
   contact:
     email: 1079207272@qq.com
@@ -155,12 +192,17 @@ paths:
         name: x-token
         required: true
         type: string
-      - description: 用户位于哪一页
+      - description: 用户位于哪一页，页数从1开始
         in: path
         name: page
         required: true
         type: integer
-      - description: 用户想按什么排序
+      - description: 当前的(题目名称)搜索关键字，为空字符串表示没有关键字，模糊匹配
+        in: path
+        name: keyWord
+        required: true
+        type: string
+      - description: 用户想按什么排序，1为按题号升序，-1为按题号降序，2为按名称升序，-2为按名称降序，3为按难度升序，-3为按难度降序
         in: path
         name: sorter
         required: true

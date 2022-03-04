@@ -54,14 +54,21 @@ var doc = `{
                     },
                     {
                         "type": "integer",
-                        "description": "用户位于哪一页",
+                        "description": "用户位于哪一页，页数从1开始",
                         "name": "page",
                         "in": "path",
                         "required": true
                     },
                     {
+                        "type": "string",
+                        "description": "当前的(题目名称)搜索关键字，为空字符串表示没有关键字，模糊匹配",
+                        "name": "keyWord",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
                         "type": "integer",
-                        "description": "用户想按什么排序",
+                        "description": "用户想按什么排序，1为按题号升序，-1为按题号降序，2为按名称升序，-2为按名称降序，3为按难度升序，-3为按难度降序",
                         "name": "sorter",
                         "in": "path",
                         "required": true
@@ -461,6 +468,9 @@ var doc = `{
         "api.CreateProblemQ": {
             "type": "object",
             "properties": {
+                "creator": {
+                    "type": "integer"
+                },
                 "difficulty": {
                     "type": "integer"
                 },
@@ -497,6 +507,9 @@ var doc = `{
         "api.GetProblemA": {
             "type": "object",
             "properties": {
+                "creator": {
+                    "type": "integer"
+                },
                 "description": {
                     "type": "string"
                 },
@@ -535,22 +548,14 @@ var doc = `{
                 "problemList": {
                     "type": "array",
                     "items": {
-                        "type": "object",
-                        "properties": {
-                            "difficulty": {
-                                "type": "integer"
-                            },
-                            "id": {
-                                "type": "integer"
-                            },
-                            "name": {
-                                "type": "string"
-                            }
-                        }
+                        "$ref": "#/definitions/database.Problem"
                     }
                 },
                 "success": {
                     "type": "boolean"
+                },
+                "total": {
+                    "type": "integer"
                 }
             }
         },
@@ -583,7 +588,33 @@ var doc = `{
             }
         },
         "api.GetUserOrganizationA": {
-            "type": "object"
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "organizations": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "integer"
+                            },
+                            "isAdmin": {
+                                "description": "用户在该组织中是否为管理员",
+                                "type": "boolean"
+                            },
+                            "name": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
         },
         "api.LoginA": {
             "type": "object",
@@ -646,6 +677,38 @@ var doc = `{
                     "type": "integer"
                 },
                 "readable": {
+                    "type": "integer"
+                },
+                "writable": {
+                    "type": "integer"
+                }
+            }
+        },
+        "database.Problem": {
+            "type": "object",
+            "properties": {
+                "created_time": {
+                    "type": "string"
+                },
+                "creator": {
+                    "type": "integer"
+                },
+                "difficulty": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "organization": {
+                    "type": "integer"
+                },
+                "readable": {
+                    "type": "integer"
+                },
+                "version": {
                     "type": "integer"
                 },
                 "writable": {
