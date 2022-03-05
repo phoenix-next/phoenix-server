@@ -101,7 +101,7 @@ func Login(c *gin.Context) {
 		c.JSON(http.StatusOK, model.LoginA{Success: false, Message: "登录失败，密码错误", Token: "", ID: 0})
 		return
 	}
-	token := utils.GenerateToken(user.Email)
+	token := utils.GenerateToken(user.ID)
 	c.JSON(http.StatusOK, model.LoginA{Success: true, Message: "登录成功", Token: token, ID: user.ID})
 }
 
@@ -116,7 +116,7 @@ func Login(c *gin.Context) {
 // @Success      200      {object}  model.GetProfileA  "是否成功，返回信息，用户资料"
 // @Router       /api/v1/users/{id}/profile [get]
 func GetProfile(c *gin.Context) {
-	c.JSON(http.StatusOK, c.GetString("email"))
+	c.JSON(http.StatusOK, "TODO")
 }
 
 // GetUserOrganization

@@ -29,7 +29,8 @@ func CreateOrganization(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, model.CommonA{Success: false, Message: "已存在该名称的组织"})
 		return
 	}
-	user, _ := service.GetUserByEmail(c.GetString("email"))
+	userRaw, _ := c.Get("user")
+	user := userRaw.(model.User)
 	organization := model.Organization{Name: data.Name, Profile: data.Profile, CreatorName: user.Name, CreatorID: user.ID}
 	if err := service.CreateOrganization(&organization); err != nil {
 		global.LOG.Panic("CreateOrganization: create organization error")

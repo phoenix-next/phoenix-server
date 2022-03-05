@@ -2,16 +2,16 @@ package utils
 
 import (
 	"errors"
-	"fmt"
 	"github.com/golang-jwt/jwt"
 	"github.com/phoenix-next/phoenix-server/global"
+	"strconv"
 )
 
 // GenerateToken 生成一个token
-func GenerateToken(email string) (signedToken string) {
+func GenerateToken(id uint64) (signedToken string) {
 	claims := jwt.StandardClaims{
 		Issuer:   "phoenix-server",
-		Audience: email,
+		Audience: strconv.FormatUint(id, 10),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	secret := global.VP.GetString("server.secret")
@@ -22,8 +22,8 @@ func GenerateToken(email string) (signedToken string) {
 	return
 }
 
-//ValidateToken 验证token的正确性，正确则返回email
-func ValidateToken(signedToken string) (email string, err error) {
+//ValidateToken 验证token的正确性，正确则返回id
+func ValidateToken(signedToken string) (id uint64, err error) {
 	secret := global.VP.GetString("server.secret")
 	token, err := jwt.Parse(
 		signedToken,
@@ -32,10 +32,12 @@ func ValidateToken(signedToken string) (email string, err error) {
 		},
 	)
 	if err != nil || !token.Valid {
-		fmt.Println(err)
 		err = errors.New("token isn't valid")
 		return
 	}
-	email = token.Claims.(jwt.MapClaims)["aud"].(string)
+	id, err = strconv.ParseUint(token.Claims.(jwt.MapClaims)["aud"].(string), 10, 64)
+	if err != nil {
+		err = errors.New("token isn't valid")
+	}
 	return
 }

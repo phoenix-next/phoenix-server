@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/phoenix-next/phoenix-server/global"
 	"github.com/phoenix-next/phoenix-server/model"
-	"github.com/phoenix-next/phoenix-server/service"
 	"net/http"
 )
 
@@ -24,10 +23,8 @@ func CreatePost(c *gin.Context) {
 	if err != nil {
 		global.LOG.Panic("CreatePost: bind data error")
 	}
-	user, notFound := service.GetUserByEmail(c.GetString("email"))
-	if notFound {
-		global.LOG.Panic("CreatePost: can not find user")
-	}
+	userRaw, _ := c.Get("user")
+	user := userRaw.(model.User)
 	post := model.Post{Content: data.Content, OrgID: data.OrgID, CreatorID: user.ID, CreatorName: user.Name, Type: data.Type, Title: data.Title}
 	if err = global.DB.Create(&post).Error; err != nil {
 		global.LOG.Panic("CreatePost: can create post")

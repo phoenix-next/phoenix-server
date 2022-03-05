@@ -81,7 +81,8 @@ func QueryAllProblems() (problems []model.Problem) {
 
 // GetReadableProblems 获取所有可访问问题 TODO 组织管理员权限
 func GetReadableProblems(c *gin.Context) (problems []model.Problem) {
-	user, _ := GetUserByEmail(c.GetString("email"))
+	userRaw, _ := c.Get("user")
+	user := userRaw.(model.User)
 	allProblems := QueryAllProblems()
 	problems = make([]model.Problem, 0)
 	for _, problem := range allProblems {
