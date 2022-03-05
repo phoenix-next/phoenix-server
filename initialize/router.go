@@ -29,11 +29,10 @@ func InitRouter(r *gin.Engine) {
 
 	// 登录模块
 	rawRouter := r.Group("/api/v1")
-	authRouter := rawRouter.Group("/user")
 	{
-		authRouter.POST("/register", v1.Register)
-		authRouter.POST("/captcha", v1.GetCaptcha)
-		authRouter.POST("/login", v1.Login)
+		rawRouter.POST("/users", v1.Register)
+		rawRouter.POST("/captcha", v1.GetCaptcha)
+		rawRouter.POST("/tokens", v1.Login)
 	}
 
 	// 上传文件模块 查看题目不需要登录即查看
@@ -47,7 +46,7 @@ func InitRouter(r *gin.Engine) {
 	basicRouter.Use(middleware.AuthRequired())
 
 	// 用户模块
-	userRouter := basicRouter.Group("/user")
+	userRouter := basicRouter.Group("/users")
 	{
 		userRouter.GET("/:id/profile", v1.GetProfile)
 		userRouter.GET("/:id/organizations", v1.GetUserOrganization)
