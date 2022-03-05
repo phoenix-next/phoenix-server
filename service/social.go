@@ -2,7 +2,6 @@ package service
 
 import (
 	"errors"
-
 	"github.com/phoenix-next/phoenix-server/global"
 	"github.com/phoenix-next/phoenix-server/model/database"
 	"gorm.io/gorm"
@@ -92,4 +91,25 @@ func DeleteOrganizationByID(ID uint64) (err error) {
 		return err
 	}
 	return nil
+}
+
+// GetOrganizationByID 根据组织 ID 查询某个组织
+func GetOrganizationByID(ID uint64) (organization database.Organization, notFound bool) {
+	err := global.DB.First(&organization, ID).Error
+	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
+		return organization, true
+	} else if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		global.LOG.Panic("GetUserByID: search error")
+		return organization, true
+	} else {
+		return organization, false
+	}
+}
+
+// UpdateOrganization 根据信息更新组织
+func UpdateOrganization(organization *database.Organization, name string, profile string) (err error) {
+	organization.Name = name
+	organization.Profile = profile
+	err = global.DB.Save(organization).Error
+	return err
 }

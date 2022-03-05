@@ -45,8 +45,18 @@ func CreateOrganization(c *gin.Context) {
 // @Success      200      {object}  api.CommonA              "是否成功，返回信息"
 // @Router       /api/v1/organizations/{id} [put]
 func UpdateOrganization(c *gin.Context) {
-	// TODO 逻辑实现
-	c.JSON(http.StatusOK, c.GetString("organization"))
+	var data api.CreateOrganizationQ
+	if err := c.ShouldBindJSON(&data); err != nil {
+		global.LOG.Panic("UpdateOrganization: bind data error")
+	}
+	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
+	if organization, notFound := service.GetOrganizationByID(id); notFound {
+		c.JSON(http.StatusNotFound, api.CommonA{Success: false, Message: "未找到组织"})
+	} else {
+		service.UpdateOrganization(&organization, data.Name, data.Profile)
+		c.JSON(http.StatusOK, c.GetString("organization"))
+	}
+
 }
 
 // DeleteOrganization
