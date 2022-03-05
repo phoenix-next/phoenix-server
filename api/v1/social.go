@@ -90,7 +90,7 @@ func DeleteOrganization(c *gin.Context) {
 
 // CreateInvitation
 // @Summary      邀请成员进入组织
-// @Description  组织管理员向组织外人员发出邀请
+// @Description  组织管理员向组织外人员发出邀请，邀请其成为管理员或普通用户
 // @Tags         社交模块
 // @Accept       json
 // @Produce      json

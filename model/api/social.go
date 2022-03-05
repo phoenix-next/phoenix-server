@@ -55,7 +55,8 @@ type UpdateOrganizationQ struct {
 }
 
 type CreateInvitationQ struct {
-	Email string `json:"email"`
+	Email   string `json:"email"`
+	IsAdmin bool   `json:"isAdmin"`
 }
 
 type GetOrganizationMemberA struct {
