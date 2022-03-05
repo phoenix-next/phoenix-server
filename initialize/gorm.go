@@ -67,7 +67,6 @@ func InitMySQL() *gorm.DB {
 		&database.Post{},
 
 		&database.CompProbRel{},
-		&database.CompOrgRel{},
 		&database.UserOrgRel{},
 	)
 	if err != nil {

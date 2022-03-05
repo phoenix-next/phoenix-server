@@ -11,7 +11,6 @@ type User struct {
 	Avatar   string    `gorm:"size:256;" json:"avatar"`
 	Profile  string    `gorm:"size:256;" json:"profile"`
 	RegTime  time.Time `gorm:"autoCreateTime" json:"reg_time"`
-	UserType uint64    `gorm:"default:0;" json:"user_type"` // 0为普通用户，1为至少为某一组织的管理员
 }
 
 // Captcha 邮箱验证码
