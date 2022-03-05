@@ -6,7 +6,7 @@ import (
 )
 
 // CreateOrganization
-// @Summary      用户创建一个组织
+// @Summary      创建一个组织
 // @Description  创建一个组织，创建者比管理员权限高，也算是管理员
 // @Tags         社交模块
 // @Accept       json
@@ -68,7 +68,7 @@ func CreateInvitation(c *gin.Context) {
 }
 
 // UpdateOrganizationMember
-// @Summary      用户加入组织
+// @Summary      同意加入组织
 // @Description  组织外的用户加入一个组织，该用户必须拥有组织管理员的邀请
 // @Tags         社交模块
 // @Accept       json
