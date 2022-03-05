@@ -374,7 +374,7 @@ paths:
         name: id
         required: true
         type: integer
-      - description: 管理员ID
+      - description: 管理员的用户ID
         in: path
         name: adminID
         required: true
@@ -638,6 +638,58 @@ paths:
       summary: 获取题目版本
       tags:
       - 评测模块
+  /api/v1/user/{id}/organizations:
+    get:
+      consumes:
+      - application/json
+      description: 根据一个用户的ID，获取用户所属的所有组织
+      parameters:
+      - description: token
+        in: header
+        name: x-token
+        required: true
+        type: string
+      - description: 用户ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 是否成功，返回信息，用户所属的组织列表
+          schema:
+            $ref: '#/definitions/api.GetUserOrganizationA'
+      summary: 获取用户所属的所有组织
+      tags:
+      - 社交模块
+  /api/v1/user/{id}/profile:
+    get:
+      consumes:
+      - application/json
+      description: 根据用户ID，获取用户资料
+      parameters:
+      - description: token
+        in: header
+        name: x-token
+        required: true
+        type: string
+      - description: 用户ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 是否成功，返回信息，用户资料
+          schema:
+            $ref: '#/definitions/api.GetProfileA'
+      summary: 获取用户资料
+      tags:
+      - 社交模块
   /api/v1/user/captcha:
     post:
       consumes:
@@ -680,53 +732,6 @@ paths:
           schema:
             $ref: '#/definitions/api.LoginA'
       summary: 用户登录
-      tags:
-      - 社交模块
-  /api/v1/user/organizations:
-    get:
-      consumes:
-      - application/json
-      description: 根据一个用户的token，获取用户所属的所有组织
-      parameters:
-      - description: token
-        in: header
-        name: x-token
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 是否成功，返回信息，用户所属的组织列表
-          schema:
-            $ref: '#/definitions/api.GetUserOrganizationA'
-      summary: 获取用户所属的所有组织
-      tags:
-      - 社交模块
-  /api/v1/user/profile:
-    get:
-      consumes:
-      - application/json
-      description: 根据用户ID，获取用户资料
-      parameters:
-      - description: token
-        in: header
-        name: x-token
-        required: true
-        type: string
-      - description: 用户ID
-        in: query
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 是否成功，返回信息，用户资料
-          schema:
-            $ref: '#/definitions/api.GetProfileA'
-      summary: 获取用户资料
       tags:
       - 社交模块
   /api/v1/user/register:

@@ -235,7 +235,7 @@ var doc = `{
                     },
                     {
                         "type": "integer",
-                        "description": "管理员ID",
+                        "description": "管理员的用户ID",
                         "name": "adminID",
                         "in": "path",
                         "required": true
@@ -691,77 +691,6 @@ var doc = `{
                 }
             }
         },
-        "/api/v1/user/organizations": {
-            "get": {
-                "description": "根据一个用户的token，获取用户所属的所有组织",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "社交模块"
-                ],
-                "summary": "获取用户所属的所有组织",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "token",
-                        "name": "x-token",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "是否成功，返回信息，用户所属的组织列表",
-                        "schema": {
-                            "$ref": "#/definitions/api.GetUserOrganizationA"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/user/profile": {
-            "get": {
-                "description": "根据用户ID，获取用户资料",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "社交模块"
-                ],
-                "summary": "获取用户资料",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "token",
-                        "name": "x-token",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "用户ID",
-                        "name": "id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "是否成功，返回信息，用户资料",
-                        "schema": {
-                            "$ref": "#/definitions/api.GetProfileA"
-                        }
-                    }
-                }
-            }
-        },
         "/api/v1/user/register": {
             "post": {
                 "description": "注册新用户",
@@ -791,6 +720,84 @@ var doc = `{
                         "description": "是否成功，返回信息",
                         "schema": {
                             "$ref": "#/definitions/api.CommonA"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/{id}/organizations": {
+            "get": {
+                "description": "根据一个用户的ID，获取用户所属的所有组织",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "社交模块"
+                ],
+                "summary": "获取用户所属的所有组织",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "x-token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "用户ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "是否成功，返回信息，用户所属的组织列表",
+                        "schema": {
+                            "$ref": "#/definitions/api.GetUserOrganizationA"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/{id}/profile": {
+            "get": {
+                "description": "根据用户ID，获取用户资料",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "社交模块"
+                ],
+                "summary": "获取用户资料",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "x-token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "是否成功，返回信息，用户资料",
+                        "schema": {
+                            "$ref": "#/definitions/api.GetProfileA"
                         }
                     }
                 }

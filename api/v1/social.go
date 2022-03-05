@@ -113,23 +113,24 @@ func Login(c *gin.Context) {
 // @Tags         社交模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string       true  "token"
-// @Param        id       query     string           true  "用户ID"
+// @Param        x-token  header    string                   true  "token"
+// @Param        id       path      string           true  "用户ID"
 // @Success      200      {object}  api.GetProfileA  "是否成功，返回信息，用户资料"
-// @Router       /api/v1/user/profile [get]
+// @Router       /api/v1/user/{id}/profile [get]
 func GetProfile(c *gin.Context) {
 	c.JSON(http.StatusOK, c.GetString("email"))
 }
 
 // GetUserOrganization
 // @Summary      获取用户所属的所有组织
-// @Description  根据一个用户的token，获取用户所属的所有组织
+// @Description  根据一个用户的ID，获取用户所属的所有组织
 // @Tags         社交模块
 // @Accept       json
 // @Produce      json
 // @Param        x-token  header    string                    true  "token"
+// @Param        id       path      int                       true  "用户ID"
 // @Success      200      {object}  api.GetUserOrganizationA  "是否成功，返回信息，用户所属的组织列表"
-// @Router       /api/v1/user/organizations [get]
+// @Router       /api/v1/user/{id}/organizations [get]
 func GetUserOrganization(c *gin.Context) {
 	// TODO 逻辑实现
 	c.JSON(http.StatusOK, c.GetString("organization"))
@@ -141,7 +142,7 @@ func GetUserOrganization(c *gin.Context) {
 // @Tags         社交模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string                   true  "token"
+// @Param        x-token  header    string       true  "token"
 // @Param        data     body      api.CreateOrganizationQ  true  "组织名称，组织的简介"
 // @Success      200      {object}  api.CommonA              "是否成功，返回信息"
 // @Router       /api/v1/organizations [post]
@@ -187,10 +188,10 @@ func DeleteOrganization(c *gin.Context) {
 // @Tags         社交模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string       true  "token"
+// @Param        x-token  header    string                        true  "token"
 // @Param        id       path      int                    true  "组织ID"
 // @Param        data     body      api.CreateInvitationQ  true  "用户email"
-// @Success      200      {object}  api.CommonA  "是否成功，返回信息"
+// @Success      200      {object}  api.CommonA                   "是否成功，返回信息"
 // @Router       /api/v1/organizations/{id}/invitations [post]
 func CreateInvitation(c *gin.Context) {
 	// TODO 逻辑实现
@@ -203,9 +204,9 @@ func CreateInvitation(c *gin.Context) {
 // @Tags         社交模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string                      true  "token"
+// @Param        x-token  header    string       true  "token"
 // @Param        id       path      int          true  "组织ID"
-// @Success      200      {object}  api.CommonA                   "是否成功，返回信息"
+// @Success      200      {object}  api.CommonA  "是否成功，返回信息"
 // @Router       /api/v1/organizations/{id}/users [post]
 func UpdateOrganizationMember(c *gin.Context) {
 	// TODO 逻辑实现
@@ -218,7 +219,7 @@ func UpdateOrganizationMember(c *gin.Context) {
 // @Tags         社交模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string                        true  "token"
+// @Param        x-token  header    string                      true  "token"
 // @Param        id       path      int                         true  "组织ID"
 // @Success      200      {object}  api.GetOrganizationMemberA  "是否成功，返回信息，组织成员信息列表"
 // @Router       /api/v1/organizations/{id}/users [get]
@@ -251,7 +252,7 @@ func UpdateOrganizationAdmin(c *gin.Context) {
 // @Produce      json
 // @Param        x-token  header    string                   true  "token"
 // @Param        id       path      int          true  "组织ID"
-// @Param        adminID  path      int          true  "管理员ID"
+// @Param        adminID  path      int          true  "管理员的用户ID"
 // @Success      200   {object}  api.CommonA    "是否成功，返回信息"
 // @Router       /api/v1/organizations/{id}/admins/{adminID} [delete]
 func DeleteOrganizationAdmin(c *gin.Context) {
