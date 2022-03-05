@@ -16,8 +16,11 @@ import (
 )
 
 func InitRouter(r *gin.Engine) {
-	// 允许跨域
-	r.Use(cors.Default())
+	// 跨域配置
+	config := cors.DefaultConfig()
+	config.AllowHeaders = append(config.AllowHeaders, "X-Token")
+	config.AllowOrigins = []string{"http://localhost", "http://127.0.0.1", ""}
+	r.Use(cors.New(config))
 	// 是否开启api文档页面
 	if global.VP.GetBool("server.docs") {
 		r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

@@ -39,15 +39,12 @@ func CreatePost(c *gin.Context) {
 // @Success      200      {object}  model.CommonA  "是否成功，返回信息"
 // @Router       /api/v1/posts/{id} [delete]
 func DeletePost(c *gin.Context) {
-	//user, notFound := service.GetUserByEmail(c.GetString("email"))
-	//if notFound {
-	//	global.LOG.Panic("DeletePost: can not found user")
-	//}
+	//user := utils.SolveUser(c)
 	//var post model.Post
 	//id, _ := strconv.Atoi(c.Param("id"))
 	//global.DB.First(&post, id).Error
 	//global.DB.Delete(&post)
-	//c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "删帖成功"})
+	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "删帖成功"})
 }
 
 // UpdatePost
