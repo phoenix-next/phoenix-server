@@ -6,6 +6,18 @@ definitions:
       success:
         type: boolean
     type: object
+  api.CreateInvitationQ:
+    properties:
+      email:
+        type: string
+    type: object
+  api.CreateOrganizationQ:
+    properties:
+      name:
+        type: string
+      profile:
+        type: string
+    type: object
   api.CreateProblemQ:
     properties:
       creator:
@@ -30,6 +42,25 @@ definitions:
     properties:
       email:
         type: string
+    type: object
+  api.GetOrganizationMemberA:
+    properties:
+      member:
+        items:
+          properties:
+            id:
+              type: integer
+            isAdmin:
+              description: 用户在该组织中是否为管理员
+              type: boolean
+            name:
+              type: string
+          type: object
+        type: array
+      message:
+        type: string
+      success:
+        type: boolean
     type: object
   api.GetProblemA:
     properties:
@@ -85,6 +116,24 @@ definitions:
       success:
         type: boolean
     type: object
+  api.GetUserInvitationsA:
+    properties:
+      message:
+        type: string
+      organization:
+        items:
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+            profile:
+              type: string
+          type: object
+        type: array
+      success:
+        type: boolean
+    type: object
   api.GetUserOrganizationA:
     properties:
       message:
@@ -131,6 +180,18 @@ definitions:
       name:
         type: string
       password:
+        type: string
+    type: object
+  api.UpdateOrganizationAdminQ:
+    properties:
+      id:
+        type: string
+    type: object
+  api.UpdateOrganizationQ:
+    properties:
+      name:
+        type: string
+      profile:
         type: string
     type: object
   api.UpdateProblemQ:
@@ -181,6 +242,236 @@ info:
   title: PhoeniX API
   version: "1.0"
 paths:
+  /api/v1/organizations:
+    post:
+      consumes:
+      - application/json
+      description: 创建一个组织，创建者比管理员权限高，也算是管理员
+      parameters:
+      - description: token
+        in: header
+        name: x-token
+        required: true
+        type: string
+      - description: 组织名称，组织的简介
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/api.CreateOrganizationQ'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 是否成功，返回信息
+          schema:
+            $ref: '#/definitions/api.CommonA'
+      summary: 用户创建一个组织
+      tags:
+      - 社交模块
+  /api/v1/organizations/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 组织创建者删除该组织
+      parameters:
+      - description: token
+        in: header
+        name: x-token
+        required: true
+        type: string
+      - description: 组织ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 是否成功，返回信息
+          schema:
+            $ref: '#/definitions/api.CommonA'
+      summary: 删除一个组织
+      tags:
+      - 社交模块
+    put:
+      consumes:
+      - application/json
+      description: 更新一个组织的信息，用户必须是管理员
+      parameters:
+      - description: token
+        in: header
+        name: x-token
+        required: true
+        type: string
+      - description: 组织ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 组织的名称，组织简介
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/api.UpdateOrganizationQ'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 是否成功，返回信息
+          schema:
+            $ref: '#/definitions/api.CommonA'
+      summary: 更新一个组织的信息
+      tags:
+      - 社交模块
+  /api/v1/organizations/{id}/admins:
+    post:
+      consumes:
+      - application/json
+      description: 组织创建者在组织中添加一个管理员，组织成员无法拒绝
+      parameters:
+      - description: token
+        in: header
+        name: x-token
+        required: true
+        type: string
+      - description: 组织ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 用户ID
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/api.UpdateOrganizationAdminQ'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 是否成功，返回信息
+          schema:
+            $ref: '#/definitions/api.CommonA'
+      summary: 添加组织管理员
+      tags:
+      - 社交模块
+  /api/v1/organizations/{id}/admins/{adminID}:
+    delete:
+      consumes:
+      - application/json
+      description: 组织创建者在组织中删除一个管理员，管理员无法拒绝
+      parameters:
+      - description: token
+        in: header
+        name: x-token
+        required: true
+        type: string
+      - description: 组织ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 管理员ID
+        in: path
+        name: adminID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 是否成功，返回信息
+          schema:
+            $ref: '#/definitions/api.CommonA'
+      summary: 删除组织管理员
+      tags:
+      - 社交模块
+  /api/v1/organizations/{id}/invitations:
+    post:
+      consumes:
+      - application/json
+      description: 组织管理员向组织外人员发出邀请
+      parameters:
+      - description: token
+        in: header
+        name: x-token
+        required: true
+        type: string
+      - description: 组织ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 用户email
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/api.CreateInvitationQ'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 是否成功，返回信息
+          schema:
+            $ref: '#/definitions/api.CommonA'
+      summary: 邀请成员进入组织
+      tags:
+      - 社交模块
+  /api/v1/organizations/{id}/users:
+    get:
+      consumes:
+      - application/json
+      description: 获取一个组织中，所有组织成员的基础信息
+      parameters:
+      - description: token
+        in: header
+        name: x-token
+        required: true
+        type: string
+      - description: 组织ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 是否成功，返回信息，组织成员信息列表
+          schema:
+            $ref: '#/definitions/api.GetOrganizationMemberA'
+      summary: 获取组织成员
+      tags:
+      - 社交模块
+    post:
+      consumes:
+      - application/json
+      description: 组织外的用户加入一个组织，该用户必须拥有组织管理员的邀请
+      parameters:
+      - description: token
+        in: header
+        name: x-token
+        required: true
+        type: string
+      - description: 组织ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 是否成功，返回信息
+          schema:
+            $ref: '#/definitions/api.CommonA'
+      summary: 用户加入组织
+      tags:
+      - 社交模块
   /api/v1/problems:
     get:
       consumes:
@@ -395,7 +686,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: 根据用户token，获取用户所属的所有组织
+      description: 根据一个用户的token，获取用户所属的所有组织
       parameters:
       - description: token
         in: header
@@ -406,7 +697,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: 是否成功，返回信息，用户所属的组织
+          description: 是否成功，返回信息，用户所属的组织列表
           schema:
             $ref: '#/definitions/api.GetUserOrganizationA'
       summary: 获取用户所属的所有组织
@@ -458,6 +749,32 @@ paths:
           schema:
             $ref: '#/definitions/api.CommonA'
       summary: 注册
+      tags:
+      - 社交模块
+  /api/v1/users/{id}/invitations:
+    get:
+      consumes:
+      - application/json
+      description: 组织管理员会邀请用户进入，该接口获得一个用户收到的所有邀请
+      parameters:
+      - description: token
+        in: header
+        name: x-token
+        required: true
+        type: string
+      - description: 用户ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 是否成功，返回信息，组织信息列表
+          schema:
+            $ref: '#/definitions/api.GetUserInvitationsA'
+      summary: 获取用户收到的所有组织邀请
       tags:
       - 社交模块
 swagger: "2.0"

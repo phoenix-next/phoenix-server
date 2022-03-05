@@ -31,6 +31,350 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v1/organizations": {
+            "post": {
+                "description": "创建一个组织，创建者比管理员权限高，也算是管理员",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "社交模块"
+                ],
+                "summary": "用户创建一个组织",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "x-token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "组织名称，组织的简介",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.CreateOrganizationQ"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "是否成功，返回信息",
+                        "schema": {
+                            "$ref": "#/definitions/api.CommonA"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/organizations/{id}": {
+            "put": {
+                "description": "更新一个组织的信息，用户必须是管理员",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "社交模块"
+                ],
+                "summary": "更新一个组织的信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "x-token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "组织ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "组织的名称，组织简介",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.UpdateOrganizationQ"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "是否成功，返回信息",
+                        "schema": {
+                            "$ref": "#/definitions/api.CommonA"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "组织创建者删除该组织",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "社交模块"
+                ],
+                "summary": "删除一个组织",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "x-token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "组织ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "是否成功，返回信息",
+                        "schema": {
+                            "$ref": "#/definitions/api.CommonA"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/organizations/{id}/admins": {
+            "post": {
+                "description": "组织创建者在组织中添加一个管理员，组织成员无法拒绝",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "社交模块"
+                ],
+                "summary": "添加组织管理员",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "x-token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "组织ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "用户ID",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.UpdateOrganizationAdminQ"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "是否成功，返回信息",
+                        "schema": {
+                            "$ref": "#/definitions/api.CommonA"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/organizations/{id}/admins/{adminID}": {
+            "delete": {
+                "description": "组织创建者在组织中删除一个管理员，管理员无法拒绝",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "社交模块"
+                ],
+                "summary": "删除组织管理员",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "x-token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "组织ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "管理员ID",
+                        "name": "adminID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "是否成功，返回信息",
+                        "schema": {
+                            "$ref": "#/definitions/api.CommonA"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/organizations/{id}/invitations": {
+            "post": {
+                "description": "组织管理员向组织外人员发出邀请",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "社交模块"
+                ],
+                "summary": "邀请成员进入组织",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "x-token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "组织ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "用户email",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.CreateInvitationQ"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "是否成功，返回信息",
+                        "schema": {
+                            "$ref": "#/definitions/api.CommonA"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/organizations/{id}/users": {
+            "get": {
+                "description": "获取一个组织中，所有组织成员的基础信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "社交模块"
+                ],
+                "summary": "获取组织成员",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "x-token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "组织ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "是否成功，返回信息，组织成员信息列表",
+                        "schema": {
+                            "$ref": "#/definitions/api.GetOrganizationMemberA"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "组织外的用户加入一个组织，该用户必须拥有组织管理员的邀请",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "社交模块"
+                ],
+                "summary": "用户加入组织",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "x-token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "组织ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "是否成功，返回信息",
+                        "schema": {
+                            "$ref": "#/definitions/api.CommonA"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/problems": {
             "get": {
                 "description": "获取用户所能查看的题目列表",
@@ -349,7 +693,7 @@ var doc = `{
         },
         "/api/v1/user/organizations": {
             "get": {
-                "description": "根据用户token，获取用户所属的所有组织",
+                "description": "根据一个用户的token，获取用户所属的所有组织",
                 "consumes": [
                     "application/json"
                 ],
@@ -371,7 +715,7 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "是否成功，返回信息，用户所属的组织",
+                        "description": "是否成功，返回信息，用户所属的组织列表",
                         "schema": {
                             "$ref": "#/definitions/api.GetUserOrganizationA"
                         }
@@ -451,6 +795,45 @@ var doc = `{
                     }
                 }
             }
+        },
+        "/api/v1/users/{id}/invitations": {
+            "get": {
+                "description": "组织管理员会邀请用户进入，该接口获得一个用户收到的所有邀请",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "社交模块"
+                ],
+                "summary": "获取用户收到的所有组织邀请",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "x-token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "用户ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "是否成功，返回信息，组织信息列表",
+                        "schema": {
+                            "$ref": "#/definitions/api.GetUserInvitationsA"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -462,6 +845,25 @@ var doc = `{
                 },
                 "success": {
                     "type": "boolean"
+                }
+            }
+        },
+        "api.CreateInvitationQ": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                }
+            }
+        },
+        "api.CreateOrganizationQ": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "profile": {
+                    "type": "string"
                 }
             }
         },
@@ -501,6 +903,35 @@ var doc = `{
             "properties": {
                 "email": {
                     "type": "string"
+                }
+            }
+        },
+        "api.GetOrganizationMemberA": {
+            "type": "object",
+            "properties": {
+                "member": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "integer"
+                            },
+                            "isAdmin": {
+                                "description": "用户在该组织中是否为管理员",
+                                "type": "boolean"
+                            },
+                            "name": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "message": {
+                    "type": "string"
+                },
+                "success": {
+                    "type": "boolean"
                 }
             }
         },
@@ -587,6 +1018,34 @@ var doc = `{
                 }
             }
         },
+        "api.GetUserInvitationsA": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "organization": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "integer"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "profile": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
         "api.GetUserOrganizationA": {
             "type": "object",
             "properties": {
@@ -657,6 +1116,25 @@ var doc = `{
                     "type": "string"
                 },
                 "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "api.UpdateOrganizationAdminQ": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "api.UpdateOrganizationQ": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "profile": {
                     "type": "string"
                 }
             }

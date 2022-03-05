@@ -51,6 +51,7 @@ func InitRouter(r *gin.Engine) {
 	{
 		userRouter.GET("/profile", v1.GetProfile)
 		userRouter.GET("/organizations", v1.GetUserOrganization)
+		userRouter.GET("/:id/invitations", v1.GetUserInvitations)
 	}
 
 	// 评测模块
@@ -64,6 +65,18 @@ func InitRouter(r *gin.Engine) {
 		problemRouter.GET("/:id/version", v1.GetProblemVersion)
 	}
 
+	// 组织模块
+	teamRouter := basicRouter.Group("/organizations")
+	{
+		teamRouter.POST("", v1.CreateOrganization)
+		teamRouter.DELETE("/:id", v1.DeleteOrganization)
+		teamRouter.PUT("/:id", v1.UpdateOrganization)
+		teamRouter.POST("/:id/invitations", v1.CreateInvitation)
+		teamRouter.POST("/:id/users", v1.UpdateOrganizationMember)
+		teamRouter.GET("/:id/users", v1.GetOrganizationMember)
+		teamRouter.POST("/:id/admins", v1.UpdateOrganizationAdmin)
+		teamRouter.DELETE("/:id/admins", v1.DeleteOrganizationAdmin)
+	}
 }
 
 func RunRouter(r *gin.Engine) {
