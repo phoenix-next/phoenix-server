@@ -1,4 +1,4 @@
-package api
+package model
 
 type CommonA struct {
 	Success bool   `json:"success"`

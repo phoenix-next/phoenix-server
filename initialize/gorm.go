@@ -2,13 +2,13 @@ package initialize
 
 import (
 	"fmt"
+	"github.com/phoenix-next/phoenix-server/model"
 	"log"
 	"os"
 	"path/filepath"
 	"time"
 
 	"github.com/phoenix-next/phoenix-server/global"
-	"github.com/phoenix-next/phoenix-server/model/database"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -52,22 +52,23 @@ func InitMySQL() *gorm.DB {
 		},
 	})
 	if err != nil {
-		panic("初始化失败：连接MySQL数据库失败")
+		//panic("初始化失败：连接MySQL数据库失败")
+		panic(err)
 	}
 	// 更新MySQL数据库内容
 	db.Set("gorm:table_options", "ENGINE=InnoDB")
 	err = db.AutoMigrate(
-		&database.User{},
-		&database.Problem{},
-		&database.Tutorial{},
-		&database.Competition{},
-		&database.Organization{},
-		&database.Comment{},
-		&database.Captcha{},
-		&database.Post{},
+		&model.User{},
+		&model.Problem{},
+		&model.Tutorial{},
+		&model.Competition{},
+		&model.Organization{},
+		&model.Comment{},
+		&model.Captcha{},
+		&model.Post{},
 
-		&database.CompProbRel{},
-		&database.UserOrgRel{},
+		&model.CompProbRel{},
+		&model.UserOrgRel{},
 	)
 	if err != nil {
 		fmt.Println(err)

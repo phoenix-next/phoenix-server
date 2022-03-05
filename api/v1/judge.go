@@ -3,7 +3,7 @@ package v1
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/phoenix-next/phoenix-server/global"
-	"github.com/phoenix-next/phoenix-server/model/api"
+	"github.com/phoenix-next/phoenix-server/model"
 	"github.com/phoenix-next/phoenix-server/service"
 	"net/http"
 	"path/filepath"
@@ -16,12 +16,12 @@ import (
 // @Tags         评测模块
 // @Accept       multipart/form-data
 // @Produce      json
-// @Param        x-token  header    string               true  "token"
-// @Param        data     body      api.CreateProblemQ  true  "题目名称，题目难度，可读权限，可写权限，组织ID，输入文件，输出文件，题目描述"
-// @Success      200      {object}  api.CommonA         "是否成功，返回信息"
+// @Param        x-token  header    string                true  "token"
+// @Param        data     body      model.CreateProblemQ  true  "题目名称，题目难度，可读权限，可写权限，组织ID，输入文件，输出文件，题目描述"
+// @Success      200      {object}  model.CommonA         "是否成功，返回信息"
 // @Router       /api/v1/problems [post]
 func CreateProblem(c *gin.Context) {
-	var data api.CreateProblemQ
+	var data model.CreateProblemQ
 	path := global.VP.GetString("problem_path")
 	err := c.ShouldBind(&data)
 	if err != nil {
@@ -30,7 +30,7 @@ func CreateProblem(c *gin.Context) {
 	problem, err := service.CreateProblem(&data)
 	if err != nil {
 		global.LOG.Warn("CreateProblem: create problem error")
-		c.JSON(http.StatusInternalServerError, api.CommonA{Success: false, Message: "创建题目失败"})
+		c.JSON(http.StatusInternalServerError, model.CommonA{Success: false, Message: "创建题目失败"})
 		return
 	}
 	err1, err2, err3 := c.SaveUploadedFile(data.Description, filepath.Join(path, service.MakeProblemFileName(problem.ID, 1, "description"))), c.SaveUploadedFile(data.Input, filepath.Join(path, service.MakeProblemFileName(problem.ID, 1, "input"))), c.SaveUploadedFile(data.Output, filepath.Join(path, service.MakeProblemFileName(problem.ID, 1, "output")))
@@ -39,7 +39,7 @@ func CreateProblem(c *gin.Context) {
 		service.DeleteProblemByID(problem.ID)
 		global.LOG.Panic("CreateProblem: save problem error")
 	}
-	c.JSON(http.StatusOK, api.CommonA{Success: true, Message: "创建题目成功"})
+	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "创建题目成功"})
 }
 
 // GetProblem
@@ -48,16 +48,16 @@ func CreateProblem(c *gin.Context) {
 // @Tags         评测模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string              true  "token"
-// @Param        id       path      int              true  "题目ID"
-// @Success      200      {object}  api.GetProblemA  "题目ID，题目名称，题目难度，可读权限，可写权限，组织ID，输入文件，输出文件，题目描述"
+// @Param        x-token  header    string             true  "token"
+// @Param        id       path      int                true  "题目ID"
+// @Success      200      {object}  model.GetProblemA  "题目ID，题目名称，题目难度，可读权限，可写权限，组织ID，输入文件，输出文件，题目描述"
 // @Router       /api/v1/problems/{id} [get]
 func GetProblem(c *gin.Context) {
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
 	if problem, notFound := service.GetProblemByID(id); notFound {
 		c.JSON(http.StatusNotFound, nil)
 	} else {
-		c.JSON(http.StatusOK, api.GetProblemA{
+		c.JSON(http.StatusOK, model.GetProblemA{
 			ID:           problem.ID,
 			Name:         problem.Name,
 			Difficulty:   problem.Difficulty,
@@ -78,12 +78,12 @@ func GetProblem(c *gin.Context) {
 // @Tags         评测模块
 // @Accept       multipart/form-data
 // @Produce      json
-// @Param        x-token  header    string              true  "token"
-// @Param        data     body      api.UpdateProblemQ  true  "题目ID，题目名称，题目难度，可读权限，可写权限，组织ID，输入文件，输出文件，题目描述"
-// @Success      200      {object}  api.CommonA         "是否成功，返回信息"
+// @Param        x-token  header    string                true  "token"
+// @Param        data     body      model.UpdateProblemQ  true  "题目ID，题目名称，题目难度，可读权限，可写权限，组织ID，输入文件，输出文件，题目描述"
+// @Success      200      {object}  model.CommonA         "是否成功，返回信息"
 // @Router       /api/v1/problems/{id} [put]
 func UpdateProblem(c *gin.Context) {
-	var data api.UpdateProblemQ
+	var data model.UpdateProblemQ
 	path := filepath.Join(global.VP.GetString("root_path"), "resource", "problems")
 	err := c.ShouldBind(&data)
 	if err != nil {
@@ -103,10 +103,10 @@ func UpdateProblem(c *gin.Context) {
 			// 保存文件失败，回滚数据库
 			service.SaveProblem(&problemOrigin)
 			global.LOG.Warn("save problem " + problem.Name + " file error")
-			c.JSON(http.StatusInternalServerError, api.CommonA{Success: false, Message: "保存题目文件失败"})
+			c.JSON(http.StatusInternalServerError, model.CommonA{Success: false, Message: "保存题目文件失败"})
 			return
 		}
-		c.JSON(http.StatusOK, api.CommonA{Success: true, Message: "更新题目成功"})
+		c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "更新题目成功"})
 	}
 }
 
@@ -116,9 +116,9 @@ func UpdateProblem(c *gin.Context) {
 // @Tags         评测模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string              true  "token"
-// @Param        data     body      api.DeleteProblemQ  true  "DeleteProblemQ"
-// @Success      200      {object}  api.CommonA         "是否成功，返回信息"
+// @Param        x-token  header    string                true  "token"
+// @Param        data     body      model.DeleteProblemQ  true  "DeleteProblemQ"
+// @Success      200      {object}  model.CommonA         "是否成功，返回信息"
 // @Router       /api/v1/problems/{id} [delete]
 func DeleteProblem(c *gin.Context) {
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
@@ -128,7 +128,7 @@ func DeleteProblem(c *gin.Context) {
 		if err := service.DeleteProblemByID(id); err != nil {
 			global.LOG.Panic("DeleteProblem: delete problem error")
 		}
-		c.JSON(http.StatusOK, api.CommonA{Success: true, Message: "删除题目成功"})
+		c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "删除题目成功"})
 	}
 }
 
@@ -138,16 +138,16 @@ func DeleteProblem(c *gin.Context) {
 // @Tags         评测模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string                  true  "token"
-// @Param        id       path      int                     true  "题目ID"
-// @Success      200      {object}  api.GetProblemVersionA  "是否成功，返回信息，题目版本"
+// @Param        x-token  header    string                    true  "token"
+// @Param        id       path      int                       true  "题目ID"
+// @Success      200      {object}  model.GetProblemVersionA  "是否成功，返回信息，题目版本"
 // @Router       /api/v1/problems/{id}/version [get]
 func GetProblemVersion(c *gin.Context) {
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
 	if problem, notFound := service.GetProblemByID(id); notFound {
 		c.JSON(http.StatusNotFound, nil)
 	} else {
-		c.JSON(http.StatusOK, api.GetProblemVersionA{Success: true, Message: "返回题目版本成功", Version: problem.Version})
+		c.JSON(http.StatusOK, model.GetProblemVersionA{Success: true, Message: "返回题目版本成功", Version: problem.Version})
 	}
 }
 
@@ -157,11 +157,11 @@ func GetProblemVersion(c *gin.Context) {
 // @Tags         评测模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string           true  "token"
-// @Param        page     query     int                  true  "用户位于哪一页，页数从1开始"
-// @Param        keyWord  query     string               true  "当前的(题目名称)搜索关键字，为空字符串表示没有关键字，模糊匹配"
-// @Param        sorter   query     int                  true  "用户想按什么排序，1为按题号升序，-1为按题号降序，2为按名称升序，-2为按名称降序，3为按难度升序，-3为按难度降序"
-// @Success      200      {object}  api.GetProblemListA  "是否成功，返回信息，题目列表"
+// @Param        x-token  header    string                 true  "token"
+// @Param        page     query     int                    true  "用户位于哪一页，页数从1开始"
+// @Param        keyWord  query     string                 true  "当前的(题目名称)搜索关键字，为空字符串表示没有关键字，模糊匹配"
+// @Param        sorter   query     int                    true  "用户想按什么排序，1为按题号升序，-1为按题号降序，2为按名称升序，-2为按名称降序，3为按难度升序，-3为按难度降序"
+// @Success      200      {object}  model.GetProblemListA  "是否成功，返回信息，题目列表"
 // @Router       /api/v1/problems [get]
 func GetProblemList(c *gin.Context) {
 	page, _ := strconv.Atoi(c.Request.FormValue("page"))
@@ -170,5 +170,5 @@ func GetProblemList(c *gin.Context) {
 	// TODO 题目名称搜索关键字，模糊查找
 
 	pagedProblems := service.GetProblemsByPage(problems, page, sorter)
-	c.JSON(http.StatusOK, api.GetProblemListA{Success: true, Message: "获取成功", ProblemList: pagedProblems, Total: len(problems)})
+	c.JSON(http.StatusOK, model.GetProblemListA{Success: true, Message: "获取成功", ProblemList: pagedProblems, Total: len(problems)})
 }

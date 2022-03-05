@@ -1,7 +1,6 @@
-package api
+package model
 
 import (
-	"github.com/phoenix-next/phoenix-server/model/database"
 	"mime/multipart"
 )
 
@@ -53,8 +52,8 @@ type GetProblemVersionA struct {
 }
 
 type GetProblemListA struct {
-	Success     bool               `json:"success"`
-	Message     string             `json:"message"`
-	Total       int                `json:"total"`
-	ProblemList []database.Problem `json:"problemList"`
+	Success     bool      `json:"success"`
+	Message     string    `json:"message"`
+	Total       int       `json:"total"`
+	ProblemList []Problem `json:"problemList"`
 }

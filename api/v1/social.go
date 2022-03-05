@@ -3,8 +3,7 @@ package v1
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/phoenix-next/phoenix-server/global"
-	"github.com/phoenix-next/phoenix-server/model/api"
-	"github.com/phoenix-next/phoenix-server/model/database"
+	"github.com/phoenix-next/phoenix-server/model"
 	"github.com/phoenix-next/phoenix-server/service"
 	"net/http"
 	"strconv"
@@ -16,26 +15,26 @@ import (
 // @Tags         社交模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string       true  "token"
-// @Param        data     body      api.CreateOrganizationQ  true  "组织名称，组织的简介"
-// @Success      200      {object}  api.CommonA              "是否成功，返回信息"
+// @Param        x-token  header    string                     true  "token"
+// @Param        data     body      model.CreateOrganizationQ  true  "组织名称，组织的简介"
+// @Success      200      {object}  model.CommonA              "是否成功，返回信息"
 // @Router       /api/v1/organizations [post]
 func CreateOrganization(c *gin.Context) {
-	var data api.CreateOrganizationQ
+	var data model.CreateOrganizationQ
 	if err := c.ShouldBindJSON(&data); err != nil {
 		global.LOG.Panic("CreateOrganization: bind data error")
 	}
 	if _, notFound := service.GetOrganizationByName(data.Name); !notFound {
 		global.LOG.Warn("CreateOrganization: find same organization name")
-		c.JSON(http.StatusBadRequest, api.CommonA{Success: false, Message: "已存在该名称的组织"})
+		c.JSON(http.StatusBadRequest, model.CommonA{Success: false, Message: "已存在该名称的组织"})
 		return
 	}
 	user, _ := service.GetUserByEmail(c.GetString("email"))
-	organization := database.Organization{Name: data.Name, Profile: data.Profile, CreatorName: user.Name, CreatorID: user.ID}
+	organization := model.Organization{Name: data.Name, Profile: data.Profile, CreatorName: user.Name, CreatorID: user.ID}
 	if err := service.CreateOrganization(&organization); err != nil {
 		global.LOG.Panic("CreateOrganization: create organization error")
 	}
-	c.JSON(http.StatusOK, api.CommonA{Success: true, Message: "创建组织成功"})
+	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "创建组织成功"})
 }
 
 // UpdateOrganization
@@ -44,24 +43,24 @@ func CreateOrganization(c *gin.Context) {
 // @Tags         社交模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string                   true  "token"
-// @Param        id       path      int                      true  "组织ID"
-// @Param        data     body      api.UpdateOrganizationQ  true  "组织的名称，组织简介"
-// @Success      200      {object}  api.CommonA              "是否成功，返回信息"
+// @Param        x-token  header    string                     true  "token"
+// @Param        id       path      int                        true  "组织ID"
+// @Param        data     body      model.UpdateOrganizationQ  true  "组织的名称，组织简介"
+// @Success      200      {object}  model.CommonA              "是否成功，返回信息"
 // @Router       /api/v1/organizations/{id} [put]
 func UpdateOrganization(c *gin.Context) {
-	var data api.CreateOrganizationQ
+	var data model.CreateOrganizationQ
 	if err := c.ShouldBindJSON(&data); err != nil {
 		global.LOG.Panic("UpdateOrganization: bind data error")
 	}
 	if _, notFound := service.GetOrganizationByName(data.Name); !notFound {
 		global.LOG.Warn("UpdateOrganization: find same organization name")
-		c.JSON(http.StatusBadRequest, api.CommonA{Success: false, Message: "已存在该名称的组织"})
+		c.JSON(http.StatusBadRequest, model.CommonA{Success: false, Message: "已存在该名称的组织"})
 		return
 	}
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
 	if organization, notFound := service.GetOrganizationByID(id); notFound {
-		c.JSON(http.StatusNotFound, api.CommonA{Success: false, Message: "未找到组织"})
+		c.JSON(http.StatusNotFound, model.CommonA{Success: false, Message: "未找到组织"})
 	} else {
 		service.UpdateOrganization(&organization, data.Name, data.Profile)
 		c.JSON(http.StatusOK, c.GetString("organization"))
@@ -75,9 +74,9 @@ func UpdateOrganization(c *gin.Context) {
 // @Tags         社交模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string                        true  "token"
-// @Param        id       path      int          true  "组织ID"
-// @Success      200      {object}  api.CommonA                   "是否成功，返回信息"
+// @Param        x-token  header    string         true  "token"
+// @Param        id       path      int            true  "组织ID"
+// @Success      200      {object}  model.CommonA                   "是否成功，返回信息"
 // @Router       /api/v1/organizations/{id} [delete]
 func DeleteOrganization(c *gin.Context) {
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
@@ -85,7 +84,7 @@ func DeleteOrganization(c *gin.Context) {
 		global.LOG.Panic("DeleteOrganization: delete organization error")
 	}
 	// TODO 删除已加入某组织的关系
-	c.JSON(http.StatusOK, api.CommonA{Success: true, Message: "删除组织成功"})
+	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "删除组织成功"})
 }
 
 // CreateInvitation
@@ -94,10 +93,10 @@ func DeleteOrganization(c *gin.Context) {
 // @Tags         社交模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string                 true  "token"
-// @Param        id       path      int                    true  "组织ID"
-// @Param        data     body      api.CreateInvitationQ  true  "用户email"
-// @Success      200      {object}  api.CommonA            "是否成功，返回信息"
+// @Param        x-token  header    string         true  "token"
+// @Param        id       path      int                      true  "组织ID"
+// @Param        data     body      model.CreateInvitationQ  true  "用户email"
+// @Success      200      {object}  model.CommonA            "是否成功，返回信息"
 // @Router       /api/v1/organizations/{id}/invitations [post]
 func CreateInvitation(c *gin.Context) {
 	// TODO 逻辑实现
@@ -110,9 +109,9 @@ func CreateInvitation(c *gin.Context) {
 // @Tags         社交模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string       true  "token"
-// @Param        id       path      int          true  "组织ID"
-// @Success      200      {object}  api.CommonA  "是否成功，返回信息"
+// @Param        x-token  header    string         true  "token"
+// @Param        id       path      int            true  "组织ID"
+// @Success      200      {object}  model.CommonA  "是否成功，返回信息"
 // @Router       /api/v1/organizations/{id}/users [post]
 func UpdateOrganizationMember(c *gin.Context) {
 	// TODO 逻辑实现
@@ -125,9 +124,9 @@ func UpdateOrganizationMember(c *gin.Context) {
 // @Tags         社交模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string                      true  "token"
-// @Param        id       path      int                         true  "组织ID"
-// @Success      200      {object}  api.GetOrganizationMemberA  "是否成功，返回信息，组织成员信息列表"
+// @Param        x-token  header    string                        true  "token"
+// @Param        id       path      int                             true  "组织ID"
+// @Success      200      {object}  model.GetOrganizationMemberA  "是否成功，返回信息，组织成员信息列表"
 // @Router       /api/v1/organizations/{id}/users [get]
 func GetOrganizationMember(c *gin.Context) {
 	// TODO 逻辑实现
@@ -140,10 +139,10 @@ func GetOrganizationMember(c *gin.Context) {
 // @Tags         社交模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string       true  "token"
+// @Param        x-token  header    string                          true  "token"
 // @Param        id       path      int                           true  "组织ID"
-// @Param        data     body      api.UpdateOrganizationAdminQ  true  "用户ID"
-// @Success      200      {object}  api.CommonA  "是否成功，返回信息"
+// @Param        data     body      model.UpdateOrganizationAdminQ  true  "用户ID"
+// @Success      200      {object}  model.CommonA  "是否成功，返回信息"
 // @Router       /api/v1/organizations/{id}/admins [post]
 func UpdateOrganizationAdmin(c *gin.Context) {
 	// TODO 逻辑实现
@@ -157,9 +156,9 @@ func UpdateOrganizationAdmin(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        x-token  header    string                   true  "token"
-// @Param        id       path      int          true  "组织ID"
-// @Param        adminID  path      int          true  "管理员的用户ID"
-// @Success      200      {object}  api.CommonA  "是否成功，返回信息"
+// @Param        id       path      int            true  "组织ID"
+// @Param        adminID  path      int            true  "管理员的用户ID"
+// @Success      200      {object}  model.CommonA  "是否成功，返回信息"
 // @Router       /api/v1/organizations/{id}/admins/{adminID} [delete]
 func DeleteOrganizationAdmin(c *gin.Context) {
 	// TODO 逻辑实现
