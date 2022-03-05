@@ -15,6 +15,7 @@ func AuthRequired() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
+
 		c.Set("email", email)
 	}
 }

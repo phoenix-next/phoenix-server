@@ -2,6 +2,10 @@ package v1
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/phoenix-next/phoenix-server/global"
+	"github.com/phoenix-next/phoenix-server/model/api"
+	"github.com/phoenix-next/phoenix-server/model/database"
+	"github.com/phoenix-next/phoenix-server/service"
 	"net/http"
 )
 
@@ -12,12 +16,24 @@ import (
 // @Accept       json
 // @Produce      json
 // @Param        x-token  header    string           true  "token"
-// @Param        data     body      api.CreatePostQ  true  "组织ID，帖子创建者ID，帖子所属板块，帖子标题，帖子内容"
+// @Param        data     body      api.CreatePostQ  true  "组织ID，帖子所属板块，帖子标题，帖子内容"
 // @Success      200      {object}  api.CommonA      "是否成功，返回信息"
 // @Router       /api/v1/posts [post]
 func CreatePost(c *gin.Context) {
-	// TODO 逻辑实现
-	c.JSON(http.StatusOK, c.GetString("organization"))
+	var data api.CreatePostQ
+	err := c.ShouldBindJSON(&data)
+	if err != nil {
+		global.LOG.Panic("CreatePost: bind data error")
+	}
+	user, notFound := service.GetUserByEmail(c.GetString("email"))
+	if notFound {
+		global.LOG.Panic("CreatePost: can not find user")
+	}
+	post := database.Post{Content: data.Content, OrgID: data.OrgID, CreatorID: user.ID, CreatorName: user.Name, Type: data.Type, Title: data.Title}
+	if err = global.DB.Create(&post).Error; err != nil {
+		global.LOG.Panic("CreatePost: can create post")
+	}
+	c.JSON(http.StatusOK, api.CommonA{Success: true, Message: "发帖成功"})
 }
 
 // DeletePost
@@ -31,8 +47,15 @@ func CreatePost(c *gin.Context) {
 // @Success      200      {object}  api.CommonA  "是否成功，返回信息"
 // @Router       /api/v1/posts/{id} [delete]
 func DeletePost(c *gin.Context) {
-	// TODO 逻辑实现
-	c.JSON(http.StatusOK, c.GetString("organization"))
+	//user, notFound := service.GetUserByEmail(c.GetString("email"))
+	//if notFound {
+	//	global.LOG.Panic("DeletePost: can not found user")
+	//}
+	//var post database.Post
+	//id, _ := strconv.Atoi(c.Param("id"))
+	//global.DB.First(&post, id).Error
+	//global.DB.Delete(&post)
+	//c.JSON(http.StatusOK, api.CommonA{Success: true, Message: "删帖成功"})
 }
 
 // UpdatePost

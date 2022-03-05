@@ -3,11 +3,10 @@ package api
 import "time"
 
 type CreatePostQ struct {
-	OrgID     uint64 `json:"orgID"`
-	CreatorID uint64 `json:"creatorID"`
-	Type      int    `json:"type"` // 帖子所属的板块，0为公告板块，1为划水板块，2为讨论板块
-	Title     string `json:"title"`
-	Content   string `json:"content"`
+	OrgID   uint64 `json:"orgID"`
+	Type    int    `json:"type"` // 帖子所属的板块，0为公告板块，1为划水板块，2为讨论板块
+	Title   string `json:"title"`
+	Content string `json:"content"`
 }
 
 type UpdatePostQ struct {
