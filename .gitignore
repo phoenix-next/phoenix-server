@@ -24,8 +24,11 @@ bin
 gin.log
 *.log
 media/
-test/
+
+# Custom Dir
+test
 resource
+docs
 
 # config file
 phoenix-config.yml
