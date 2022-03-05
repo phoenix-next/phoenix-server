@@ -2,6 +2,10 @@ package v1
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/phoenix-next/phoenix-server/global"
+	"github.com/phoenix-next/phoenix-server/model/api"
+	"github.com/phoenix-next/phoenix-server/model/database"
+	"github.com/phoenix-next/phoenix-server/service"
 	"net/http"
 )
 
@@ -16,8 +20,16 @@ import (
 // @Success      200      {object}  api.CommonA              "是否成功，返回信息"
 // @Router       /api/v1/organizations [post]
 func CreateOrganization(c *gin.Context) {
-	// TODO 逻辑实现
-	c.JSON(http.StatusOK, c.GetString("organization"))
+	var data api.CreateOrganizationQ
+	if err := c.ShouldBindJSON(&data); err != nil {
+		global.LOG.Panic("CreateOrganization: bind data error")
+	}
+	user, _ := service.GetUserByEmail(c.GetString("email"))
+	organization := database.Organization{Name: data.Name, Profile: data.Profile, CreatorName: user.Name, CreatorID: user.ID}
+	if err := service.CreateOrganization(&organization); err != nil {
+		global.LOG.Warn("CreateOrganization: create organization error")
+	}
+	c.JSON(http.StatusOK, api.CommonA{Success: true, Message: "创建组织成功"})
 }
 
 // UpdateOrganization

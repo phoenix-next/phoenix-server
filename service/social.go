@@ -77,3 +77,11 @@ func DeleteCaptchaByEmail(email string) (err error) {
 	}
 	return nil
 }
+
+// CreateOrganization 生成组织
+func CreateOrganization(organization *database.Organization) (err error) {
+	if err = global.DB.Create(organization).Error; err != nil {
+		return err
+	}
+	return nil
+}
