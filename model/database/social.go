@@ -10,14 +10,14 @@ type User struct {
 	Password string    `gorm:"size:128; not null;" json:"password"`
 	Avatar   string    `gorm:"size:256;" json:"avatar"`
 	Profile  string    `gorm:"size:256;" json:"profile"`
-	RegTime  time.Time `gorm:"autoCreateTime" json:"reg_time"`
+	RegTime  time.Time `gorm:"autoCreateTime" json:"regTime"`
 }
 
 // Captcha 邮箱验证码
 type Captcha struct {
 	ID       uint64    `gorm:"primary_key; autoIncrement; not null;" json:"id"`
 	Email    string    `gorm:"size:32; not null; unique;" json:"email"`
-	SendTime time.Time `gorm:"autoCreateTime" json:"send_time"`
+	SendTime time.Time `gorm:"autoCreateTime" json:"sendTime"`
 	Captcha  uint64    `gorm:"not null;" json:"captcha"`
 }
 
@@ -26,7 +26,7 @@ type Organization struct {
 	ID          uint64    `gorm:"primary_key; autoIncrement;not null;" json:"id"`
 	Name        string    `gorm:"size:32; not null; unique" json:"name"`
 	Profile     string    `gorm:"size:255;" json:"profile"`
-	CreatorID   uint64    `gorm:"not null;" json:"creator_id"` // 创建者ID
-	CreatorName string    `gorm:"size:32;not null;" json:"creator_name"`
-	CreatedTime time.Time `gorm:"autoCreateTime;" json:"created_time"`
+	CreatorID   uint64    `gorm:"not null;" json:"creatorID"` // 创建者ID
+	CreatorName string    `gorm:"size:32;not null;" json:"creatorName"`
+	CreatedTime time.Time `gorm:"autoCreateTime;" json:"createdTime"`
 }

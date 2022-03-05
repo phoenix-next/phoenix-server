@@ -18,7 +18,7 @@ import (
 // Register
 // @Summary      注册
 // @Description  注册新用户
-// @Tags         社交模块
+// @Tags         用户模块
 // @Accept       json
 // @Produce      json
 // @Param        data  body      api.RegisterQ  true  "用户名, 邮箱, 密码, 验证码"
@@ -56,7 +56,7 @@ func Register(c *gin.Context) {
 // GetCaptcha
 // @Summary      发送验证码
 // @Description  根据邮箱发送验证码，并更新数据库
-// @Tags         社交模块
+// @Tags         用户模块
 // @Accept       json
 // @Produce      json
 // @Param        data  body      api.GetCaptchaQ  true  "邮箱"
@@ -82,7 +82,7 @@ func GetCaptcha(c *gin.Context) {
 // Login
 // @Summary      用户登录
 // @Description  根据用户邮箱和密码等生成token，并将token返回给用户
-// @Tags         社交模块
+// @Tags         用户模块
 // @Accept       json
 // @Produce      json
 // @Param        data  body      api.LoginQ  true  "邮箱，密码"
@@ -110,7 +110,7 @@ func Login(c *gin.Context) {
 // GetProfile
 // @Summary      获取用户资料
 // @Description  根据用户ID，获取用户资料
-// @Tags         社交模块
+// @Tags         用户模块
 // @Accept       json
 // @Produce      json
 // @Param        x-token  header    string                   true  "token"
@@ -124,7 +124,7 @@ func GetProfile(c *gin.Context) {
 // GetUserOrganization
 // @Summary      获取用户所属的所有组织
 // @Description  根据一个用户的ID，获取用户所属的所有组织
-// @Tags         社交模块
+// @Tags         用户模块
 // @Accept       json
 // @Produce      json
 // @Param        x-token  header    string                    true  "token"
@@ -263,7 +263,7 @@ func DeleteOrganizationAdmin(c *gin.Context) {
 // GetUserInvitations
 // @Summary      获取用户收到的所有组织邀请
 // @Description  组织管理员会邀请用户进入，该接口获得一个用户收到的所有邀请
-// @Tags         社交模块
+// @Tags         用户模块
 // @Accept       json
 // @Produce      json
 // @Param        x-token  header    string             true  "token"
@@ -278,7 +278,7 @@ func GetUserInvitations(c *gin.Context) {
 // GetAdminInfo
 // @Summary      获取用户的所有管理员权限信息
 // @Description  用户是哪些组织的管理员？返回这些组织的基础信息
-// @Tags         社交模块
+// @Tags         用户模块
 // @Accept       json
 // @Produce      json
 // @Param        x-token  header    string           true  "token"
