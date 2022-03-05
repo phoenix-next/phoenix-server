@@ -22,8 +22,8 @@ jobs:
           cd ${{github.workspace}}
           go env -w GO111MODULE=on
           go install github.com/swaggo/swag/cmd/swag@latest
-          go mod tidy
           swag init
+          go mod tidy
           go build .
 
       - name: stop
