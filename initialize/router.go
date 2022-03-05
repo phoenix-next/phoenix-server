@@ -75,7 +75,21 @@ func InitRouter(r *gin.Engine) {
 		teamRouter.POST("/:id/users", v1.UpdateOrganizationMember)
 		teamRouter.GET("/:id/users", v1.GetOrganizationMember)
 		teamRouter.POST("/:id/admins", v1.UpdateOrganizationAdmin)
-		teamRouter.DELETE("/:id/admins", v1.DeleteOrganizationAdmin)
+		teamRouter.DELETE("/:id/admins/:adminID", v1.DeleteOrganizationAdmin)
+	}
+
+	// 论坛模块
+	forumRouter := basicRouter.Group("")
+	{
+		forumRouter.POST("/posts", v1.CreatePost)
+		forumRouter.DELETE("/posts/:id", v1.DeletePost)
+		forumRouter.PUT("/posts/:id", v1.UpdatePost)
+		forumRouter.GET("/posts/:id", v1.GetPost)
+		forumRouter.GET("/posts", v1.GetAllPost)
+		forumRouter.POST("/posts/:id/comments", v1.CreateComment)
+		forumRouter.PUT("/comments/:id", v1.UpdateComment)
+		forumRouter.DELETE("/comments/:id", v1.DeleteComment)
+		forumRouter.GET("posts/:id/comments", v1.GetComment)
 	}
 }
 

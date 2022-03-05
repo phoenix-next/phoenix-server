@@ -21,7 +21,7 @@ import (
 // @Accept       json
 // @Produce      json
 // @Param        data  body      api.RegisterQ  true  "用户名, 邮箱, 密码, 验证码"
-// @Success      200      {object}  api.CommonA  "是否成功，返回信息"
+// @Success      200   {object}  api.CommonA    "是否成功，返回信息"
 // @Router       /api/v1/users [post]
 func Register(c *gin.Context) {
 	var data api.RegisterQ
@@ -112,7 +112,7 @@ func Login(c *gin.Context) {
 // @Tags         用户模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string                   true  "token"
+// @Param        x-token  header    string             true  "token"
 // @Param        id       path      string           true  "用户ID"
 // @Success      200      {object}  api.GetProfileA  "是否成功，返回信息，用户资料"
 // @Router       /api/v1/users/{id}/profile [get]
@@ -141,7 +141,7 @@ func GetUserOrganization(c *gin.Context) {
 // @Tags         用户模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string             true  "token"
+// @Param        x-token  header    string                   true  "token"
 // @Param        id       path      int                true  "用户ID"
 // @Success      200      {object}  api.GetUserInvitationsA  "是否成功，返回信息，组织信息列表"
 // @Router       /api/v1/users/{id}/invitations [get]

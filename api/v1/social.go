@@ -122,7 +122,7 @@ func UpdateOrganizationAdmin(c *gin.Context) {
 // @Param        x-token  header    string                   true  "token"
 // @Param        id       path      int          true  "组织ID"
 // @Param        adminID  path      int          true  "管理员的用户ID"
-// @Success      200   {object}  api.CommonA    "是否成功，返回信息"
+// @Success      200      {object}  api.CommonA  "是否成功，返回信息"
 // @Router       /api/v1/organizations/{id}/admins/{adminID} [delete]
 func DeleteOrganizationAdmin(c *gin.Context) {
 	// TODO 逻辑实现
