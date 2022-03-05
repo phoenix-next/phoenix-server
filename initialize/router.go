@@ -17,7 +17,10 @@ import (
 
 func InitRouter(r *gin.Engine) {
 	// 跨域配置
-	r.Use(cors.Default())
+	config := cors.DefaultConfig()
+	config.AllowAllOrigins = true
+	config.AllowHeaders = append(config.AllowHeaders, "x-token")
+	r.Use(cors.New(config))
 	// 是否开启api文档页面
 	if global.VP.GetBool("server.docs") {
 		r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
