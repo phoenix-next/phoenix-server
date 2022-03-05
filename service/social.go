@@ -106,6 +106,19 @@ func GetOrganizationByID(ID uint64) (organization database.Organization, notFoun
 	}
 }
 
+// GetOrganizationByName 根据组织名称查询某个组织
+func GetOrganizationByName(name string) (org database.Organization, notFound bool) {
+	err := global.DB.Where("name = ?", name).First(&org).Error
+	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
+		return org, true
+	} else if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		global.LOG.Panic("GetUserByEmail: search error")
+		return org, true
+	} else {
+		return org, false
+	}
+}
+
 // UpdateOrganization 根据信息更新组织
 func UpdateOrganization(organization *database.Organization, name string, profile string) (err error) {
 	organization.Name = name

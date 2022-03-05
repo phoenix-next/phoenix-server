@@ -25,6 +25,11 @@ func CreateOrganization(c *gin.Context) {
 	if err := c.ShouldBindJSON(&data); err != nil {
 		global.LOG.Panic("CreateOrganization: bind data error")
 	}
+	if _, notFound := service.GetOrganizationByName(data.Name); !notFound {
+		global.LOG.Warn("CreateOrganization: find same organization name")
+		c.JSON(http.StatusBadRequest, api.CommonA{Success: false, Message: "已存在该名称的组织"})
+		return
+	}
 	user, _ := service.GetUserByEmail(c.GetString("email"))
 	organization := database.Organization{Name: data.Name, Profile: data.Profile, CreatorName: user.Name, CreatorID: user.ID}
 	if err := service.CreateOrganization(&organization); err != nil {
@@ -48,6 +53,11 @@ func UpdateOrganization(c *gin.Context) {
 	var data api.CreateOrganizationQ
 	if err := c.ShouldBindJSON(&data); err != nil {
 		global.LOG.Panic("UpdateOrganization: bind data error")
+	}
+	if _, notFound := service.GetOrganizationByName(data.Name); !notFound {
+		global.LOG.Warn("UpdateOrganization: find same organization name")
+		c.JSON(http.StatusBadRequest, api.CommonA{Success: false, Message: "已存在该名称的组织"})
+		return
 	}
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
 	if organization, notFound := service.GetOrganizationByID(id); notFound {
