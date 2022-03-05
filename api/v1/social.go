@@ -2,7 +2,12 @@ package v1
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/phoenix-next/phoenix-server/global"
+	"github.com/phoenix-next/phoenix-server/model/api"
+	"github.com/phoenix-next/phoenix-server/model/database"
+	"github.com/phoenix-next/phoenix-server/service"
 	"net/http"
+	"strconv"
 )
 
 // CreateOrganization
@@ -16,8 +21,21 @@ import (
 // @Success      200      {object}  api.CommonA              "是否成功，返回信息"
 // @Router       /api/v1/organizations [post]
 func CreateOrganization(c *gin.Context) {
-	// TODO 逻辑实现
-	c.JSON(http.StatusOK, c.GetString("organization"))
+	var data api.CreateOrganizationQ
+	if err := c.ShouldBindJSON(&data); err != nil {
+		global.LOG.Panic("CreateOrganization: bind data error")
+	}
+	if _, notFound := service.GetOrganizationByName(data.Name); !notFound {
+		global.LOG.Warn("CreateOrganization: find same organization name")
+		c.JSON(http.StatusBadRequest, api.CommonA{Success: false, Message: "已存在该名称的组织"})
+		return
+	}
+	user, _ := service.GetUserByEmail(c.GetString("email"))
+	organization := database.Organization{Name: data.Name, Profile: data.Profile, CreatorName: user.Name, CreatorID: user.ID}
+	if err := service.CreateOrganization(&organization); err != nil {
+		global.LOG.Panic("CreateOrganization: create organization error")
+	}
+	c.JSON(http.StatusOK, api.CommonA{Success: true, Message: "创建组织成功"})
 }
 
 // UpdateOrganization
@@ -32,8 +50,23 @@ func CreateOrganization(c *gin.Context) {
 // @Success      200      {object}  api.CommonA              "是否成功，返回信息"
 // @Router       /api/v1/organizations/{id} [put]
 func UpdateOrganization(c *gin.Context) {
-	// TODO 逻辑实现
-	c.JSON(http.StatusOK, c.GetString("organization"))
+	var data api.CreateOrganizationQ
+	if err := c.ShouldBindJSON(&data); err != nil {
+		global.LOG.Panic("UpdateOrganization: bind data error")
+	}
+	if _, notFound := service.GetOrganizationByName(data.Name); !notFound {
+		global.LOG.Warn("UpdateOrganization: find same organization name")
+		c.JSON(http.StatusBadRequest, api.CommonA{Success: false, Message: "已存在该名称的组织"})
+		return
+	}
+	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
+	if organization, notFound := service.GetOrganizationByID(id); notFound {
+		c.JSON(http.StatusNotFound, api.CommonA{Success: false, Message: "未找到组织"})
+	} else {
+		service.UpdateOrganization(&organization, data.Name, data.Profile)
+		c.JSON(http.StatusOK, c.GetString("organization"))
+	}
+
 }
 
 // DeleteOrganization
@@ -47,8 +80,12 @@ func UpdateOrganization(c *gin.Context) {
 // @Success      200      {object}  api.CommonA                   "是否成功，返回信息"
 // @Router       /api/v1/organizations/{id} [delete]
 func DeleteOrganization(c *gin.Context) {
-	// TODO 逻辑实现
-	c.JSON(http.StatusOK, c.GetString("organization"))
+	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err := service.DeleteOrganizationByID(id); err != nil {
+		global.LOG.Panic("DeleteOrganization: delete organization error")
+	}
+	// TODO 删除已加入某组织的关系
+	c.JSON(http.StatusOK, api.CommonA{Success: true, Message: "删除组织成功"})
 }
 
 // CreateInvitation
