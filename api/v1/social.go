@@ -5,6 +5,7 @@ import (
 	"github.com/phoenix-next/phoenix-server/global"
 	"github.com/phoenix-next/phoenix-server/model"
 	"github.com/phoenix-next/phoenix-server/service"
+	"github.com/phoenix-next/phoenix-server/utils"
 	"net/http"
 	"strconv"
 )
@@ -29,8 +30,7 @@ func CreateOrganization(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, model.CommonA{Success: false, Message: "已存在该名称的组织"})
 		return
 	}
-	userRaw, _ := c.Get("user")
-	user := userRaw.(model.User)
+	user := utils.SolveUser(c)
 	organization := model.Organization{Name: data.Name, Profile: data.Profile, CreatorName: user.Name, CreatorID: user.ID}
 	if err := service.CreateOrganization(&organization); err != nil {
 		global.LOG.Panic("CreateOrganization: create organization error")

@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/phoenix-next/phoenix-server/global"
 	"github.com/phoenix-next/phoenix-server/model"
+	"github.com/phoenix-next/phoenix-server/utils"
 	"net/http"
 )
 
@@ -18,15 +19,10 @@ import (
 // @Success      200      {object}  model.CommonA      "是否成功，返回信息"
 // @Router       /api/v1/posts [post]
 func CreatePost(c *gin.Context) {
-	var data model.CreatePostQ
-	err := c.ShouldBindJSON(&data)
-	if err != nil {
-		global.LOG.Panic("CreatePost: bind data error")
-	}
-	userRaw, _ := c.Get("user")
-	user := userRaw.(model.User)
+	data := utils.BindJsonData(c, &model.CreatePostQ{}).(*model.CreatePostQ)
+	user := utils.SolveUser(c)
 	post := model.Post{Content: data.Content, OrgID: data.OrgID, CreatorID: user.ID, CreatorName: user.Name, Type: data.Type, Title: data.Title}
-	if err = global.DB.Create(&post).Error; err != nil {
+	if err := global.DB.Create(&post).Error; err != nil {
 		global.LOG.Panic("CreatePost: can create post")
 	}
 	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "发帖成功"})
