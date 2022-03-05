@@ -85,3 +85,11 @@ func CreateOrganization(organization *database.Organization) (err error) {
 	}
 	return nil
 }
+
+// DeleteOrganizationByID 根据ID删除组织
+func DeleteOrganizationByID(ID uint64) (err error) {
+	if err = global.DB.Where("id = ?", ID).Delete(database.Organization{}).Error; err != nil {
+		return err
+	}
+	return nil
+}

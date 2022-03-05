@@ -7,6 +7,7 @@ import (
 	"github.com/phoenix-next/phoenix-server/model/database"
 	"github.com/phoenix-next/phoenix-server/service"
 	"net/http"
+	"strconv"
 )
 
 // CreateOrganization
@@ -27,7 +28,7 @@ func CreateOrganization(c *gin.Context) {
 	user, _ := service.GetUserByEmail(c.GetString("email"))
 	organization := database.Organization{Name: data.Name, Profile: data.Profile, CreatorName: user.Name, CreatorID: user.ID}
 	if err := service.CreateOrganization(&organization); err != nil {
-		global.LOG.Warn("CreateOrganization: create organization error")
+		global.LOG.Panic("CreateOrganization: create organization error")
 	}
 	c.JSON(http.StatusOK, api.CommonA{Success: true, Message: "创建组织成功"})
 }
@@ -59,8 +60,12 @@ func UpdateOrganization(c *gin.Context) {
 // @Success      200      {object}  api.CommonA                   "是否成功，返回信息"
 // @Router       /api/v1/organizations/{id} [delete]
 func DeleteOrganization(c *gin.Context) {
-	// TODO 逻辑实现
-	c.JSON(http.StatusOK, c.GetString("organization"))
+	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err := service.DeleteOrganizationByID(id); err != nil {
+		global.LOG.Panic("DeleteOrganization: delete organization error")
+	}
+	// TODO 删除已加入某组织的关系
+	c.JSON(http.StatusOK, api.CommonA{Success: true, Message: "删除组织成功"})
 }
 
 // CreateInvitation
