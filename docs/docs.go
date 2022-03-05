@@ -400,21 +400,21 @@ var doc = `{
                         "type": "integer",
                         "description": "用户位于哪一页，页数从1开始",
                         "name": "page",
-                        "in": "path",
+                        "in": "query",
                         "required": true
                     },
                     {
                         "type": "string",
                         "description": "当前的(题目名称)搜索关键字，为空字符串表示没有关键字，模糊匹配",
                         "name": "keyWord",
-                        "in": "path",
+                        "in": "query",
                         "required": true
                     },
                     {
                         "type": "integer",
                         "description": "用户想按什么排序，1为按题号升序，-1为按题号降序，2为按名称升序，-2为按名称降序，3为按难度升序，-3为按难度降序",
                         "name": "sorter",
-                        "in": "path",
+                        "in": "query",
                         "required": true
                     }
                 ],
@@ -803,6 +803,45 @@ var doc = `{
                 }
             }
         },
+        "/api/v1/users/{id}/admins": {
+            "get": {
+                "description": "用户是哪些组织的管理员？返回这些组织的基础信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "社交模块"
+                ],
+                "summary": "获取用户的所有管理员权限信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "x-token",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "用户ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "是否成功，返回信息，组织信息列表",
+                        "schema": {
+                            "$ref": "#/definitions/api.GetAdminInfoA"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/users/{id}/invitations": {
             "get": {
                 "description": "组织管理员会邀请用户进入，该接口获得一个用户收到的所有邀请",
@@ -902,6 +941,31 @@ var doc = `{
             "properties": {
                 "id": {
                     "type": "integer"
+                }
+            }
+        },
+        "api.GetAdminInfoA": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "organization": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "integer"
+                            },
+                            "name": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "success": {
+                    "type": "boolean"
                 }
             }
         },

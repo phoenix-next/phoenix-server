@@ -173,9 +173,9 @@ func UpdateOrganization(c *gin.Context) {
 // @Tags         社交模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string                 true  "token"
+// @Param        x-token  header    string                        true  "token"
 // @Param        id       path      int          true  "组织ID"
-// @Success      200      {object}  api.CommonA            "是否成功，返回信息"
+// @Success      200      {object}  api.CommonA                   "是否成功，返回信息"
 // @Router       /api/v1/organizations/{id} [delete]
 func DeleteOrganization(c *gin.Context) {
 	// TODO 逻辑实现
@@ -188,10 +188,10 @@ func DeleteOrganization(c *gin.Context) {
 // @Tags         社交模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string                        true  "token"
+// @Param        x-token  header    string                 true  "token"
 // @Param        id       path      int                    true  "组织ID"
 // @Param        data     body      api.CreateInvitationQ  true  "用户email"
-// @Success      200      {object}  api.CommonA                   "是否成功，返回信息"
+// @Success      200      {object}  api.CommonA            "是否成功，返回信息"
 // @Router       /api/v1/organizations/{id}/invitations [post]
 func CreateInvitation(c *gin.Context) {
 	// TODO 逻辑实现
@@ -266,8 +266,8 @@ func DeleteOrganizationAdmin(c *gin.Context) {
 // @Tags         社交模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string           true  "token"
-// @Param        id       path      int                      true  "用户ID"
+// @Param        x-token  header    string             true  "token"
+// @Param        id       path      int                true  "用户ID"
 // @Success      200      {object}  api.GetUserInvitationsA  "是否成功，返回信息，组织信息列表"
 // @Router       /api/v1/users/{id}/invitations [get]
 func GetUserInvitations(c *gin.Context) {
