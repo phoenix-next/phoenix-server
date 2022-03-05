@@ -16,12 +16,11 @@ func AuthRequired() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		user, notFound := service.GetUserByID(id)
-		if notFound {
+		if user, notFound := service.GetUserByID(id); notFound {
 			c.JSON(http.StatusOK, gin.H{"success": false, "message": "用户不存在"})
 			c.Abort()
-			return
+		} else {
+			c.Set("user", user)
 		}
-		c.Set("user", user)
 	}
 }
