@@ -158,9 +158,9 @@ func GetProblemVersion(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        x-token  header    string           true  "token"
-// @Param        page     path      int                  true  "用户位于哪一页，页数从1开始"
-// @Param        keyWord  path      string               true  "当前的(题目名称)搜索关键字，为空字符串表示没有关键字，模糊匹配"
-// @Param        sorter   path      int                  true  "用户想按什么排序，1为按题号升序，-1为按题号降序，2为按名称升序，-2为按名称降序，3为按难度升序，-3为按难度降序"
+// @Param        page     query      int                  true  "用户位于哪一页，页数从1开始"
+// @Param        keyWord  query      string               true  "当前的(题目名称)搜索关键字，为空字符串表示没有关键字，模糊匹配"
+// @Param        sorter   query      int                  true  "用户想按什么排序，1为按题号升序，-1为按题号降序，2为按名称升序，-2为按名称降序，3为按难度升序，-3为按难度降序"
 // @Success      200      {object}  api.GetProblemListA  "是否成功，返回信息，题目列表"
 // @Router       /api/v1/problems [get]
 func GetProblemList(c *gin.Context) {

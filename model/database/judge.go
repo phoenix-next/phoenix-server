@@ -20,7 +20,7 @@ type Problem struct {
 	Difficulty   int       `gorm:"not null" json:"difficulty"`
 	Readable     int       `gorm:"not null" json:"readable"`
 	Writable     int       `gorm:"not null" json:"writable"`
-	Organization uint64    `gorm:"not null" json:"organization"`
+	Organization uint64    `json:"organization"`
 	Creator      uint64    `gorm:"not null" json:"creator"`
 	CreatedTime  time.Time `gorm:"autoCreateTime" json:"created_time"`
 }

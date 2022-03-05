@@ -274,3 +274,18 @@ func GetUserInvitations(c *gin.Context) {
 	// TODO 逻辑实现
 	c.JSON(http.StatusOK, c.GetString("organization"))
 }
+
+// GetAdminInfo
+// @Summary      获取用户的所有管理员权限信息
+// @Description  用户是哪些组织的管理员？返回这些组织的基础信息
+// @Tags         社交模块
+// @Accept       json
+// @Produce      json
+// @Param        x-token  header    string           true  "token"
+// @Param        id       path      int                      true  "用户ID"
+// @Success      200      {object}  api.GetAdminInfoA  "是否成功，返回信息，组织信息列表"
+// @Router       /api/v1/users/{id}/admins [get]
+func GetAdminInfo(c *gin.Context) {
+	// TODO 逻辑实现
+	c.JSON(http.StatusOK, c.GetString("organization"))
+}

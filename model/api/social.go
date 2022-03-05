@@ -81,3 +81,12 @@ type GetUserInvitationsA struct {
 		Profile string `json:"profile"`
 	}
 }
+
+type GetAdminInfoA struct {
+	Success      bool   `json:"success"`
+	Message      string `json:"message"`
+	Organization []struct {
+		ID   uint64 `json:"id"`
+		Name string `json:"name"`
+	}
+}
