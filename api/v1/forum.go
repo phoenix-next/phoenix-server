@@ -7,7 +7,6 @@ import (
 	"github.com/phoenix-next/phoenix-server/model/database"
 	"github.com/phoenix-next/phoenix-server/service"
 	"net/http"
-	"strconv"
 )
 
 // CreatePost
@@ -48,15 +47,15 @@ func CreatePost(c *gin.Context) {
 // @Success      200      {object}  api.CommonA  "是否成功，返回信息"
 // @Router       /api/v1/posts/{id} [delete]
 func DeletePost(c *gin.Context) {
-	user, notFound := service.GetUserByEmail(c.GetString("email"))
-	if notFound {
-		global.LOG.Panic("DeletePost: can not found user")
-	}
-	var post database.Post
-	id, _ := strconv.Atoi(c.Param("id"))
-	global.DB.First(&post, id).Error
-	global.DB.Delete(&post)
-	c.JSON(http.StatusOK, api.CommonA{Success: true, Message: "删帖成功"})
+	//user, notFound := service.GetUserByEmail(c.GetString("email"))
+	//if notFound {
+	//	global.LOG.Panic("DeletePost: can not found user")
+	//}
+	//var post database.Post
+	//id, _ := strconv.Atoi(c.Param("id"))
+	//global.DB.First(&post, id).Error
+	//global.DB.Delete(&post)
+	//c.JSON(http.StatusOK, api.CommonA{Success: true, Message: "删帖成功"})
 }
 
 // UpdatePost
