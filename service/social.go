@@ -106,3 +106,9 @@ func GetOrganizationMember(oid uint64) (members []model.Member) {
 	}
 	return members
 }
+
+// GetOrganizationAdmin 获取一个组织中所有管理员的用户ID
+func GetOrganizationAdmin(oid uint64) (admin []uint64) {
+	global.DB.Model(&model.UserOrgRel{}).Where("orgID = ? AND IsAdmin = ", oid, true).Find(&admin)
+	return
+}

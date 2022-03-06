@@ -40,11 +40,17 @@ func CreatePost(c *gin.Context) {
 // @Router       /api/v1/posts/{id} [delete]
 func DeletePost(c *gin.Context) {
 	//user := utils.SolveUser(c)
-	//var post model.Post
-	//id, _ := strconv.Atoi(c.Param("id"))
-	//global.DB.First(&post, id).Error
-	//global.DB.Delete(&post)
-	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "删帖成功"})
+	//post, ok := service.GetPostFromParam(c)
+	//if !ok {
+	//	c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "帖子不存在"})
+	//	return
+	//}
+	//admins := service.GetOrganizationAdmin(post.OrgID)
+
+	//if post.CreatorID==user.ID||
+	////global.DB.First(&post, id).Error
+	////global.DB.Delete(&post)
+	//c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "删帖成功"})
 }
 
 // UpdatePost
