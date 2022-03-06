@@ -17,6 +17,8 @@ type CreateProblemQ struct {
 }
 
 type GetProblemA struct {
+	Success      bool   `json:"success"`
+	Message      string `json:"message"`
 	ID           uint64 `json:"id"`
 	Name         string `json:"name"`
 	Difficulty   int    `json:"difficulty"`

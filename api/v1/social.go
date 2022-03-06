@@ -27,7 +27,7 @@ func CreateOrganization(c *gin.Context) {
 	}
 	if _, notFound := service.GetOrganizationByName(data.Name); !notFound {
 		global.LOG.Warn("CreateOrganization: find same organization name")
-		c.JSON(http.StatusBadRequest, model.CommonA{Success: false, Message: "已存在该名称的组织"})
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "已存在该名称的组织"})
 		return
 	}
 	user := utils.SolveUser(c)
@@ -56,15 +56,15 @@ func UpdateOrganization(c *gin.Context) {
 	}
 	if _, notFound := service.GetOrganizationByName(data.Name); !notFound {
 		global.LOG.Warn("UpdateOrganization: find same organization name")
-		c.JSON(http.StatusBadRequest, model.CommonA{Success: false, Message: "已存在该名称的组织"})
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "已存在该名称的组织"})
 		return
 	}
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
 	if organization, notFound := service.GetOrganizationByID(id); notFound {
-		c.JSON(http.StatusNotFound, model.CommonA{Success: false, Message: "未找到组织"})
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "未找到组织"})
 	} else {
 		service.UpdateOrganization(&organization, data.Name, data.Profile)
-		c.JSON(http.StatusOK, c.GetString("organization"))
+		c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "更新组织信息成功"})
 	}
 
 }
@@ -103,7 +103,7 @@ func CreateInvitation(c *gin.Context) {
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
 	data := utils.BindJsonData(c, &model.CreateInvitationQ{}).(*model.CreateInvitationQ)
 	if user, notFound := service.GetUserByEmail(data.Email); notFound {
-		c.JSON(http.StatusNotFound, model.CommonA{Success: false, Message: "未找到被邀请用户"})
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "未找到被邀请用户"})
 	} else if err := service.CreateInvitation(&model.UserOrgRel{UserID: user.ID, UserName: user.Name, IsAdmin: data.IsAdmin, OrgID: id}); err != nil {
 		global.LOG.Panic("CreateInvitation: create invitation error")
 	}
@@ -124,7 +124,7 @@ func UpdateOrganizationMember(c *gin.Context) {
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
 	user := utils.SolveUser(c)
 	if found, err := service.IsUserInThisOrganization(user.ID, id); found {
-		c.JSON(http.StatusBadRequest, model.CommonA{Success: false, Message: "用户已存在该组织中"})
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "用户已存在该组织中"})
 	} else if err != nil {
 		global.LOG.Panic("UpdateOrganizationMember: update invitation error: user or org not exist")
 	}
@@ -147,7 +147,7 @@ func UpdateOrganizationMember(c *gin.Context) {
 func GetOrganizationMember(c *gin.Context) {
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
 	if _, notFound := service.GetOrganizationByID(id); notFound {
-		c.JSON(http.StatusNotFound, nil)
+		c.JSON(http.StatusOK, model.GetOrganizationMemberA{Success: false, Message: "找不到该组织的信息"})
 	} else {
 		c.JSON(http.StatusOK, model.GetOrganizationMemberA{Members: service.GetOrganizationMember(id), Success: true, Message: "获取成功"})
 	}
@@ -171,11 +171,11 @@ func UpdateOrganizationAdmin(c *gin.Context) {
 	uid, _ := strconv.ParseUint(data.ID, 10, 64)
 	organization, _ := service.GetOrganizationByID(oid)
 	if organization.CreatorID != user.ID {
-		c.JSON(http.StatusBadRequest, model.CommonA{Success: false, Message: "组织成员无权操作"})
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "组织成员无权操作"})
 		return
 	}
 	if rel, notFound := service.GetInvitationByUserOrg(uid, oid); notFound {
-		c.JSON(http.StatusBadRequest, model.CommonA{Success: false, Message: "成员未加入组织"})
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "成员未加入组织"})
 	} else {
 		rel.IsAdmin = true
 		_ = service.UpdateInvitation(rel)
@@ -200,11 +200,11 @@ func DeleteOrganizationAdmin(c *gin.Context) {
 	uid, _ := strconv.ParseUint(c.Param("adminID"), 10, 64)
 	organization, _ := service.GetOrganizationByID(oid)
 	if organization.CreatorID != user.ID {
-		c.JSON(http.StatusBadRequest, model.CommonA{Success: false, Message: "组织成员无权操作"})
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "组织成员无权操作"})
 		return
 	}
 	if rel, notFound := service.GetInvitationByUserOrg(uid, oid); notFound {
-		c.JSON(http.StatusBadRequest, model.CommonA{Success: false, Message: "成员未加入组织"})
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "成员未加入组织"})
 	} else {
 		rel.IsAdmin = false
 		_ = service.UpdateInvitation(rel)

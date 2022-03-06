@@ -30,7 +30,7 @@ func CreateProblem(c *gin.Context) {
 	problem, err := service.CreateProblem(&data)
 	if err != nil {
 		global.LOG.Warn("CreateProblem: create problem error")
-		c.JSON(http.StatusInternalServerError, model.CommonA{Success: false, Message: "创建题目失败"})
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "创建题目失败"})
 		return
 	}
 	err1, err2, err3 := c.SaveUploadedFile(data.Description, filepath.Join(path, service.MakeProblemFileName(problem.ID, 1, "description"))), c.SaveUploadedFile(data.Input, filepath.Join(path, service.MakeProblemFileName(problem.ID, 1, "input"))), c.SaveUploadedFile(data.Output, filepath.Join(path, service.MakeProblemFileName(problem.ID, 1, "output")))
@@ -55,9 +55,11 @@ func CreateProblem(c *gin.Context) {
 func GetProblem(c *gin.Context) {
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
 	if problem, notFound := service.GetProblemByID(id); notFound {
-		c.JSON(http.StatusNotFound, nil)
+		c.JSON(http.StatusOK, model.GetProblemA{Success: false, Message: "找不到该题目的信息"})
 	} else {
 		c.JSON(http.StatusOK, model.GetProblemA{
+			Success:      true,
+			Message:      "获取题目成功",
 			ID:           problem.ID,
 			Name:         problem.Name,
 			Difficulty:   problem.Difficulty,
@@ -91,7 +93,7 @@ func UpdateProblem(c *gin.Context) {
 	}
 
 	if problem, notFound := service.GetProblemByID(data.ID); notFound {
-		c.JSON(http.StatusNotFound, nil)
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "找不到该题目的信息"})
 	} else {
 		problemOrigin := problem
 		err = service.UpdateProblem(&problem, &data)
@@ -103,7 +105,7 @@ func UpdateProblem(c *gin.Context) {
 			// 保存文件失败，回滚数据库
 			service.SaveProblem(&problemOrigin)
 			global.LOG.Warn("save problem " + problem.Name + " file error")
-			c.JSON(http.StatusInternalServerError, model.CommonA{Success: false, Message: "保存题目文件失败"})
+			c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "保存题目文件失败"})
 			return
 		}
 		c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "更新题目成功"})
@@ -123,7 +125,9 @@ func UpdateProblem(c *gin.Context) {
 func DeleteProblem(c *gin.Context) {
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
 	if _, notFound := service.GetProblemByID(id); notFound {
-		c.JSON(http.StatusNotFound, nil)
+		c.JSON(http.StatusOK, model.CommonA{
+			Success: false,
+			Message: "找不到该题目的信息"})
 	} else {
 		if err := service.DeleteProblemByID(id); err != nil {
 			global.LOG.Panic("DeleteProblem: delete problem error")
@@ -145,9 +149,11 @@ func DeleteProblem(c *gin.Context) {
 func GetProblemVersion(c *gin.Context) {
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
 	if problem, notFound := service.GetProblemByID(id); notFound {
-		c.JSON(http.StatusNotFound, nil)
+		c.JSON(http.StatusOK, model.GetProblemVersionA{
+			Success: false,
+			Message: "找不到该题目的信息"})
 	} else {
-		c.JSON(http.StatusOK, model.GetProblemVersionA{Success: true, Message: "返回题目版本成功", Version: problem.Version})
+		c.JSON(http.StatusOK, model.GetProblemVersionA{Success: true, Message: "获取题目版本成功", Version: problem.Version})
 	}
 }
 
