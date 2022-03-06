@@ -96,3 +96,13 @@ func UpdateInvitation(rel *model.UserOrgRel) (err error) {
 	err = global.DB.Save(rel).Error
 	return err
 }
+
+// GetOrganizationMember 获取组织所有的用户
+func GetOrganizationMember(oid uint64) (members []model.Member) {
+	var rel *[]model.UserOrgRel
+	global.DB.Where("orgID = ? AND IsValid = ", oid, true).Find(&rel)
+	for _, member := range *rel {
+		members = append(members, model.Member{ID: member.UserID, Name: member.UserName, IsAdmin: member.IsAdmin})
+	}
+	return members
+}

@@ -145,8 +145,12 @@ func UpdateOrganizationMember(c *gin.Context) {
 // @Success      200      {object}  model.GetOrganizationMemberA  "是否成功，返回信息，组织成员信息列表"
 // @Router       /api/v1/organizations/{id}/users [get]
 func GetOrganizationMember(c *gin.Context) {
-	// TODO 逻辑实现
-	c.JSON(http.StatusOK, c.GetString("organization"))
+	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
+	if _, notFound := service.GetOrganizationByID(id); notFound {
+		c.JSON(http.StatusNotFound, model.CommonA{Success: false, Message: "未找到组织"})
+	} else {
+		c.JSON(http.StatusOK, model.GetOrganizationMemberA{Members: service.GetOrganizationMember(id), Success: true, Message: "获取成功"})
+	}
 }
 
 // UpdateOrganizationAdmin

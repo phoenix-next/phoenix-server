@@ -59,14 +59,16 @@ type CreateInvitationQ struct {
 	IsAdmin bool   `json:"isAdmin"`
 }
 
+type Member struct {
+	ID      uint64 `json:"id"`
+	Name    string `json:"name"`
+	IsAdmin bool   `json:"isAdmin"` // 用户在该组织中是否为管理员
+}
+
 type GetOrganizationMemberA struct {
 	Success bool   `json:"success"`
 	Message string `json:"message"`
-	Member  []struct {
-		ID      uint64 `json:"id"`
-		Name    string `json:"name"`
-		IsAdmin bool   `json:"isAdmin"` // 用户在该组织中是否为管理员
-	}
+	Members []Member
 }
 
 type UpdateOrganizationAdminQ struct {
