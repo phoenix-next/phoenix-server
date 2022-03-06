@@ -20,6 +20,8 @@ func IsUserInThisOrganization(uid uint64, orgID uint64) (ok bool, err error) {
 	return !notFound, nil
 }
 
+// 数据库操作
+
 // CreateOrganization 生成组织
 func CreateOrganization(organization *model.Organization) (err error) {
 	if err = global.DB.Create(organization).Error; err != nil {

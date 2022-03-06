@@ -4,8 +4,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/phoenix-next/phoenix-server/global"
 	"github.com/phoenix-next/phoenix-server/model"
+	"github.com/phoenix-next/phoenix-server/service"
 	"github.com/phoenix-next/phoenix-server/utils"
 	"net/http"
+	"strconv"
 )
 
 // CreatePost
@@ -39,23 +41,30 @@ func CreatePost(c *gin.Context) {
 // @Success      200      {object}  model.CommonA  "是否成功，返回信息"
 // @Router       /api/v1/posts/{id} [delete]
 func DeletePost(c *gin.Context) {
-	//user := utils.SolveUser(c)
-	//post, ok := service.GetPostFromParam(c)
-	//if !ok {
-	//	c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "帖子不存在"})
-	//	return
-	//}
-	//admins := service.GetOrganizationAdmin(post.OrgID)
-
-	//if post.CreatorID==user.ID||
-	////global.DB.First(&post, id).Error
-	////global.DB.Delete(&post)
-	//c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "删帖成功"})
+	user := utils.SolveUser(c)
+	post, ok := service.GetPostFromParam(c)
+	if !ok {
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "帖子不存在"})
+		return
+	}
+	if post.CreatorID == user.ID {
+		global.DB.Delete(&post)
+		c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "删帖成功"})
+		return
+	}
+	for _, adminID := range service.GetOrganizationAdmin(post.OrgID) {
+		if adminID == user.ID {
+			global.DB.Delete(&post)
+			c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "删帖成功"})
+			return
+		}
+	}
+	c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "没有权限删帖"})
 }
 
 // UpdatePost
 // @Summary      更新帖子内容
-// @Description  更新一个帖子的内容
+// @Description  更新一个帖子的内容，更新者可以是帖子创建者或者组织管理员
 // @Tags         论坛模块
 // @Accept       json
 // @Produce      json
@@ -65,8 +74,26 @@ func DeletePost(c *gin.Context) {
 // @Success      200      {object}  model.CommonA      "是否成功，返回信息"
 // @Router       /api/v1/posts/{id} [put]
 func UpdatePost(c *gin.Context) {
-	// TODO 逻辑实现
-	c.JSON(http.StatusOK, c.GetString("organization"))
+	user := utils.SolveUser(c)
+	data := utils.BindJsonData(c, &model.UpdatePostQ{}).(*model.UpdatePostQ)
+	post, ok := service.GetPostFromParam(c)
+	if !ok {
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "帖子不存在"})
+		return
+	}
+	if post.CreatorID == user.ID {
+		global.DB.Model(&post).Updates(model.Post{Content: data.Content, Title: data.Title, Type: data.Type})
+		c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "更新帖子成功"})
+		return
+	}
+	for _, adminID := range service.GetOrganizationAdmin(post.OrgID) {
+		if adminID == user.ID {
+			global.DB.Model(&post).Updates(model.Post{Content: data.Content, Title: data.Title, Type: data.Type})
+			c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "更新帖子成功"})
+			return
+		}
+	}
+	c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "没有权限更新帖子"})
 }
 
 // GetPost
@@ -80,8 +107,26 @@ func UpdatePost(c *gin.Context) {
 // @Success      200      {object}  model.GetPostA  "创建者ID，创建者名字，创建者头像路径，标题，内容，最后更新时间"
 // @Router       /api/v1/posts/{id} [get]
 func GetPost(c *gin.Context) {
-	// TODO 逻辑实现
-	c.JSON(http.StatusOK, c.GetString("organization"))
+	post, ok := service.GetPostFromParam(c)
+	if !ok {
+		c.JSON(http.StatusOK, model.GetPostA{Success: false, Message: "帖子不存在"})
+		return
+	}
+	user := utils.SolveUser(c)
+	ok, _ = service.IsUserInThisOrganization(user.ID, post.OrgID)
+	if !ok {
+		c.JSON(http.StatusOK, model.GetPostA{Success: false, Message: "用户没有查阅权限"})
+		return
+	}
+	creator, _ := service.GetUserByID(post.CreatorID)
+	c.JSON(http.StatusOK, model.GetPostA{Success: true,
+		Message:       "获取信息成功",
+		CreatorID:     post.CreatorID,
+		CreatorName:   post.CreatorName,
+		CreatorAvatar: creator.Avatar,
+		Title:         post.Title,
+		Content:       post.Content,
+		UpdatedAt:     post.UpdatedAt})
 }
 
 // GetAllPost
@@ -94,11 +139,46 @@ func GetPost(c *gin.Context) {
 // @Param        id       query     int                true  "组织ID"
 // @Param        type     query     int                true  "帖子板块"
 // @Param        page     query     int                true  "位于第几页，页数从1开始"
-// @Success      200      {object}  model.GetAllPostA  "是否成功，返回信息"
+// @Success      200      {object}  model.GetAllPostA  "是否成功，返回信息，帖子总数，帖子列表"
 // @Router       /api/v1/posts [get]
 func GetAllPost(c *gin.Context) {
-	// TODO 逻辑实现
-	c.JSON(http.StatusOK, c.GetString("organization"))
+	// 获取路径参数
+	oid, err1 := strconv.ParseUint(c.Query("id"), 10, 64)
+	postType, err2 := strconv.Atoi(c.Query("type"))
+	page, err3 := strconv.Atoi(c.Query("page"))
+	if err1 != nil || err2 != nil || err3 != nil {
+		c.JSON(http.StatusOK, model.GetAllPostA{Success: false, Message: "参数非法"})
+		return
+	}
+	// 判断用户权限
+	user := utils.SolveUser(c)
+	ok, err := service.IsUserInThisOrganization(user.ID, oid)
+	if !ok || err != nil {
+		c.JSON(http.StatusOK, model.GetAllPostA{Success: false, Message: "用户没有查看帖子权限"})
+	}
+	// 得到所有帖子，及所有帖子的总数
+	posts := service.GetAllPosts(oid, postType)
+	totalPage := len(posts) / 10
+	if len(posts)%10 != 0 {
+		totalPage += 1
+	}
+	// 页数不合法的情况
+	if page <= 0 || page > totalPage {
+		c.JSON(http.StatusOK, model.GetAllPostA{Success: false, Message: "页数非法"})
+		return
+	}
+	// 获取端点位置，并对帖子切片
+	start, end := (page-1)*10, page*10
+	if length := len(posts); length > end {
+		end = length
+	}
+	filteredPosts := posts[start:end]
+	// 返回
+	c.JSON(http.StatusOK, model.GetAllPostA{
+		Success: true,
+		Message: "获取帖子成功",
+		Total:   len(posts),
+		Posts:   filteredPosts})
 }
 
 // CreateComment
