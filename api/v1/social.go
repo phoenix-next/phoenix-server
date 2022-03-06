@@ -147,7 +147,7 @@ func UpdateOrganizationMember(c *gin.Context) {
 func GetOrganizationMember(c *gin.Context) {
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
 	if _, notFound := service.GetOrganizationByID(id); notFound {
-		c.JSON(http.StatusNotFound, model.CommonA{Success: false, Message: "未找到组织"})
+		c.JSON(http.StatusNotFound, nil)
 	} else {
 		c.JSON(http.StatusOK, model.GetOrganizationMemberA{Members: service.GetOrganizationMember(id), Success: true, Message: "获取成功"})
 	}
@@ -166,7 +166,16 @@ func GetOrganizationMember(c *gin.Context) {
 // @Router       /api/v1/organizations/{id}/admins [post]
 func UpdateOrganizationAdmin(c *gin.Context) {
 	// TODO 逻辑实现
-	c.JSON(http.StatusOK, c.GetString("organization"))
+	oid, _ := strconv.ParseUint(c.Param("id"), 10, 64)
+	data := utils.BindJsonData(c, &model.UpdateOrganizationAdminQ{}).(*model.UpdateOrganizationAdminQ)
+	uid, _ := strconv.ParseUint(data.ID, 10, 64)
+	if rel, notFound := service.GetInvitationByUserOrg(uid, oid); notFound {
+		c.JSON(http.StatusNotFound, model.CommonA{Success: false, Message: "未找到组织"})
+	} else {
+		rel.IsAdmin = true
+		_ = service.UpdateInvitation(rel)
+		c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "更新管理成功"})
+	}
 }
 
 // DeleteOrganizationAdmin
