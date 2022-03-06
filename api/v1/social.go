@@ -165,12 +165,17 @@ func GetOrganizationMember(c *gin.Context) {
 // @Success      200      {object}  model.CommonA  "是否成功，返回信息"
 // @Router       /api/v1/organizations/{id}/admins [post]
 func UpdateOrganizationAdmin(c *gin.Context) {
-	// TODO 逻辑实现
+	user := utils.SolveUser(c)
 	oid, _ := strconv.ParseUint(c.Param("id"), 10, 64)
 	data := utils.BindJsonData(c, &model.UpdateOrganizationAdminQ{}).(*model.UpdateOrganizationAdminQ)
 	uid, _ := strconv.ParseUint(data.ID, 10, 64)
+	organization, _ := service.GetOrganizationByID(oid)
+	if organization.CreatorID != user.ID {
+		c.JSON(http.StatusBadRequest, model.CommonA{Success: false, Message: "组织成员无权操作"})
+		return
+	}
 	if rel, notFound := service.GetInvitationByUserOrg(uid, oid); notFound {
-		c.JSON(http.StatusNotFound, model.CommonA{Success: false, Message: "未找到组织"})
+		c.JSON(http.StatusBadRequest, model.CommonA{Success: false, Message: "成员未加入组织"})
 	} else {
 		rel.IsAdmin = true
 		_ = service.UpdateInvitation(rel)
@@ -190,6 +195,19 @@ func UpdateOrganizationAdmin(c *gin.Context) {
 // @Success      200      {object}  model.CommonA  "是否成功，返回信息"
 // @Router       /api/v1/organizations/{id}/admins/{adminID} [delete]
 func DeleteOrganizationAdmin(c *gin.Context) {
-	// TODO 逻辑实现
-	c.JSON(http.StatusOK, c.GetString("organization"))
+	user := utils.SolveUser(c)
+	oid, _ := strconv.ParseUint(c.Param("id"), 10, 64)
+	uid, _ := strconv.ParseUint(c.Param("adminID"), 10, 64)
+	organization, _ := service.GetOrganizationByID(oid)
+	if organization.CreatorID != user.ID {
+		c.JSON(http.StatusBadRequest, model.CommonA{Success: false, Message: "组织成员无权操作"})
+		return
+	}
+	if rel, notFound := service.GetInvitationByUserOrg(uid, oid); notFound {
+		c.JSON(http.StatusBadRequest, model.CommonA{Success: false, Message: "成员未加入组织"})
+	} else {
+		rel.IsAdmin = false
+		_ = service.UpdateInvitation(rel)
+		c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "删除管理员成功"})
+	}
 }
