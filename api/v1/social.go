@@ -121,7 +121,16 @@ func CreateInvitation(c *gin.Context) {
 // @Success      200      {object}  model.CommonA  "是否成功，返回信息"
 // @Router       /api/v1/organizations/{id}/users [post]
 func UpdateOrganizationMember(c *gin.Context) {
-	// TODO 逻辑实现
+	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
+	user := utils.SolveUser(c)
+	if found, err := service.IsUserInThisOrganization(user.ID, id); found {
+		c.JSON(http.StatusBadRequest, model.CommonA{Success: false, Message: "用户已存在该组织中"})
+	} else if err != nil {
+		global.LOG.Panic("UpdateOrganizationMember: update invitation error: user or org not exist")
+	}
+	rel, _ := service.GetInvitationByUserOrg(user.ID, id)
+	rel.IsValid = true
+	service.UpdateInvitation(rel)
 	c.JSON(http.StatusOK, c.GetString("organization"))
 }
 

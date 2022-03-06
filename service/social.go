@@ -7,6 +7,19 @@ import (
 	"gorm.io/gorm"
 )
 
+// Helper
+
+// IsUserInThisOrganization 判断用户是否在该组织中
+func IsUserInThisOrganization(uid uint64, orgID uint64) (ok bool, err error) {
+	_, notFoundUser := GetUserByID(uid)
+	_, notFoundOrg := GetOrganizationByID(orgID)
+	if notFoundUser || notFoundOrg {
+		return false, errors.New("用户或组织不存在")
+	}
+	_, notFound := GetInvitationByUserOrg(uid, orgID)
+	return !notFound, nil
+}
+
 // CreateOrganization 生成组织
 func CreateOrganization(organization *model.Organization) (err error) {
 	if err = global.DB.Create(organization).Error; err != nil {
@@ -57,10 +70,29 @@ func UpdateOrganization(organization *model.Organization, name string, profile s
 	return err
 }
 
-//  CreateInvitation 生成组织邀请
+// CreateInvitation 生成组织邀请
 func CreateInvitation(invitation *model.UserOrgRel) (err error) {
 	if err = global.DB.Create(invitation).Error; err != nil {
 		return err
 	}
 	return nil
+}
+
+// GetInvitationByUserOrg 根据组织与用户查找邀请
+func GetInvitationByUserOrg(uid uint64, orgID uint64) (rel *model.UserOrgRel, notFound bool) {
+	err := global.DB.Where("uid = ? AND org_id = ? AND IsValid = ?", uid, orgID, true).First(&rel).Error
+	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
+		return rel, true
+	} else if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		global.LOG.Panic("GetInvitationByUserOrg: search error")
+		return rel, true
+	} else {
+		return rel, false
+	}
+}
+
+// UpdateInvitation 根据信息更新邀请
+func UpdateInvitation(rel *model.UserOrgRel) (err error) {
+	err = global.DB.Save(rel).Error
+	return err
 }
