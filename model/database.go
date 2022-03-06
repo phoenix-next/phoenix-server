@@ -105,6 +105,7 @@ type UserOrgRel struct {
 	UserID  uint64 `gorm:"not null;" json:"userID"`
 	OrgID   uint64 `gorm:"not null;" json:"orgID"`
 	IsAdmin bool   `gorm:"not null;" json:"isAdmin"`
+	IsValid bool   `gorm:"not null;default:false" json:"isValid"`
 }
 
 // CompProbRel 比赛问题关系

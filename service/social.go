@@ -56,3 +56,11 @@ func UpdateOrganization(organization *model.Organization, name string, profile s
 	err = global.DB.Save(organization).Error
 	return err
 }
+
+//  CreateInvitation 生成组织邀请
+func CreateInvitation(invitation *model.UserOrgRel) (err error) {
+	if err = global.DB.Create(invitation).Error; err != nil {
+		return err
+	}
+	return nil
+}

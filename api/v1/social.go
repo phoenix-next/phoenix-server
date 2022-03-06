@@ -100,8 +100,14 @@ func DeleteOrganization(c *gin.Context) {
 // @Success      200      {object}  model.CommonA            "是否成功，返回信息"
 // @Router       /api/v1/organizations/{id}/invitations [post]
 func CreateInvitation(c *gin.Context) {
-	// TODO 逻辑实现
-	c.JSON(http.StatusOK, c.GetString("organization"))
+	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
+	data := utils.BindJsonData(c, &model.CreateInvitationQ{}).(*model.CreateInvitationQ)
+	if user, notFound := service.GetUserByEmail(data.Email); notFound {
+		c.JSON(http.StatusNotFound, model.CommonA{Success: false, Message: "未找到被邀请用户"})
+	} else if err := service.CreateInvitation(&model.UserOrgRel{UserID: user.ID, IsAdmin: data.IsAdmin, OrgID: id}); err != nil {
+		global.LOG.Panic("CreateInvitation: create invitation error")
+	}
+	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "创建成功"})
 }
 
 // UpdateOrganizationMember
