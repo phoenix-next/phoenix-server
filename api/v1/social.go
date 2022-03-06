@@ -104,7 +104,7 @@ func CreateInvitation(c *gin.Context) {
 	data := utils.BindJsonData(c, &model.CreateInvitationQ{}).(*model.CreateInvitationQ)
 	if user, notFound := service.GetUserByEmail(data.Email); notFound {
 		c.JSON(http.StatusNotFound, model.CommonA{Success: false, Message: "未找到被邀请用户"})
-	} else if err := service.CreateInvitation(&model.UserOrgRel{UserID: user.ID, IsAdmin: data.IsAdmin, OrgID: id}); err != nil {
+	} else if err := service.CreateInvitation(&model.UserOrgRel{UserID: user.ID, UserName: user.Name, IsAdmin: data.IsAdmin, OrgID: id}); err != nil {
 		global.LOG.Panic("CreateInvitation: create invitation error")
 	}
 	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "创建成功"})
