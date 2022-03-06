@@ -38,15 +38,15 @@ func InitRouter(r *gin.Engine) {
 		rawRouter.POST("/tokens", v1.Login)
 	}
 
-	// 上传文件模块 查看题目不需要登录即查看
-	resourceRouter := rawRouter.Group("/resource")
-	{
-		resourceRouter.StaticFS("/problem", http.Dir(filepath.Join(global.VP.GetString("root_path"), "resource", "problems")))
-	}
-
 	// 除了登录模块之外，都需要身份认证
 	basicRouter := rawRouter.Group("/")
 	basicRouter.Use(middleware.AuthRequired())
+	// 静态文件服务器，需要身份认证
+	resourceRouter := basicRouter.Group("/resource")
+	{
+		resourceRouter.StaticFS("/problem", http.Dir(filepath.Join(global.VP.GetString("root_path"), "resource", "problems")))
+		// TODO: resourceRouter.StaticFS("/tutorial")
+	}
 
 	// 用户模块
 	userRouter := basicRouter.Group("/users")
@@ -93,6 +93,17 @@ func InitRouter(r *gin.Engine) {
 		forumRouter.PUT("/comments/:id", v1.UpdateComment)
 		forumRouter.DELETE("/comments/:id", v1.DeleteComment)
 		forumRouter.GET("posts/:id/comments", v1.GetComment)
+	}
+
+	// 教程模块
+	tutorialRouter := basicRouter.Group("/tutorials")
+	{
+		tutorialRouter.POST("", v1.GetTutorialList)
+		tutorialRouter.POST("", v1.CreateTutorial)
+		tutorialRouter.DELETE("/:id", v1.DeleteTutorial)
+		tutorialRouter.GET("/:id", v1.GetTutorial)
+		tutorialRouter.PUT("/:id", v1.UpdateTutorial)
+		tutorialRouter.GET("/:id/version", v1.GetTutorialVersion)
 	}
 }
 

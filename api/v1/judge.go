@@ -16,9 +16,9 @@ import (
 // @Tags         评测模块
 // @Accept       multipart/form-data
 // @Produce      json
-// @Param        x-token  header    string                true  "token"
+// @Param        x-token  header    string         true  "token"
 // @Param        data     body      model.CreateProblemQ  true  "题目名称，题目难度，可读权限，可写权限，组织ID，输入文件，输出文件，题目描述"
-// @Success      200      {object}  model.CommonA         "是否成功，返回信息"
+// @Success      200      {object}  model.CommonA  "是否成功，返回信息"
 // @Router       /api/v1/problems [post]
 func CreateProblem(c *gin.Context) {
 	var data model.CreateProblemQ
@@ -49,7 +49,7 @@ func CreateProblem(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        x-token  header    string             true  "token"
-// @Param        id       path      int                true  "题目ID"
+// @Param        id       path      int            true  "题目ID"
 // @Success      200      {object}  model.GetProblemA  "题目ID，题目名称，题目难度，可读权限，可写权限，组织ID，输入文件，输出文件，题目描述"
 // @Router       /api/v1/problems/{id} [get]
 func GetProblem(c *gin.Context) {
@@ -119,7 +119,7 @@ func UpdateProblem(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        x-token  header    string                true  "token"
-// @Param        data     body      model.DeleteProblemQ  true  "DeleteProblemQ"
+// @Param        id       path      int                true  "题目ID"
 // @Success      200      {object}  model.CommonA         "是否成功，返回信息"
 // @Router       /api/v1/problems/{id} [delete]
 func DeleteProblem(c *gin.Context) {

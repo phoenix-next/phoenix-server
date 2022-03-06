@@ -43,10 +43,6 @@ type UpdateProblemQ struct {
 	Description  *multipart.FileHeader `form:"description" swaggerignore:"true"`
 }
 
-type DeleteProblemQ struct {
-	ID uint64 `json:"id"`
-}
-
 type GetProblemVersionA struct {
 	Success bool   `json:"success"`
 	Message string `json:"message"`
