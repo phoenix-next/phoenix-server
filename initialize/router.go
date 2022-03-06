@@ -98,7 +98,7 @@ func InitRouter(r *gin.Engine) {
 	// 教程模块
 	tutorialRouter := basicRouter.Group("/tutorials")
 	{
-		tutorialRouter.POST("", v1.GetTutorialList)
+		tutorialRouter.GET("", v1.GetTutorialList)
 		tutorialRouter.POST("", v1.CreateTutorial)
 		tutorialRouter.DELETE("/:id", v1.DeleteTutorial)
 		tutorialRouter.GET("/:id", v1.GetTutorial)
