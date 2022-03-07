@@ -12,9 +12,11 @@ type CreateTutorialQ struct {
 }
 
 type GetTutorialA struct {
+	Success      bool   `json:"success"`
+	Message      string `json:"message"`
 	OrgID        uint64 `json:"orgID"`
 	CreatorID    uint64 `json:"creatorID"`
-	CreatorName  uint64 `json:"creatorName"`
+	CreatorName  string `json:"creatorName"`
 	Name         string `json:"name"`
 	Profile      string `json:"profile"`
 	Version      int    `json:"version"`
