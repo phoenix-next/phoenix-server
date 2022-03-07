@@ -5,6 +5,7 @@ import (
 	"github.com/phoenix-next/phoenix-server/global"
 	"github.com/phoenix-next/phoenix-server/model"
 	"github.com/phoenix-next/phoenix-server/service"
+	"github.com/phoenix-next/phoenix-server/utils"
 	"net/http"
 	"path/filepath"
 	"strconv"
@@ -21,21 +22,34 @@ import (
 // @Success      200      {object}  model.CommonA  "是否成功，返回信息"
 // @Router       /api/v1/problems [post]
 func CreateProblem(c *gin.Context) {
-	var data model.CreateProblemQ
+	// 获取题目保存路径，获取用户
 	path := global.VP.GetString("problem_path")
-	err := c.ShouldBind(&data)
-	if err != nil {
+	user := utils.SolveUser(c)
+	// 获取请求数据
+	var data model.CreateProblemQ
+	if c.ShouldBind(&data) != nil {
 		global.LOG.Panic("CreateProblem: bind data error")
 	}
-	problem, err := service.CreateProblem(&data)
-	if err != nil {
+	// 创建题目
+	problem := model.Problem{
+		Name:         data.Name,
+		Version:      1,
+		Difficulty:   data.Difficulty,
+		Readable:     data.Readable,
+		Writable:     data.Writable,
+		Organization: data.Organization,
+		Creator:      user.ID}
+	if global.DB.Create(&problem).Error != nil {
 		global.LOG.Warn("CreateProblem: create problem error")
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "创建题目失败"})
 		return
 	}
-	err1, err2, err3 := c.SaveUploadedFile(data.Description, filepath.Join(path, service.MakeProblemFileName(problem.ID, 1, "description"))), c.SaveUploadedFile(data.Input, filepath.Join(path, service.MakeProblemFileName(problem.ID, 1, "input"))), c.SaveUploadedFile(data.Output, filepath.Join(path, service.MakeProblemFileName(problem.ID, 1, "output")))
+	// 保存题目相关的文件
+	err1 := c.SaveUploadedFile(data.Description, filepath.Join(path, service.MakeProblemFileName(problem.ID, 1, "description")))
+	err2 := c.SaveUploadedFile(data.Input, filepath.Join(path, service.MakeProblemFileName(problem.ID, 1, "input")))
+	err3 := c.SaveUploadedFile(data.Output, filepath.Join(path, service.MakeProblemFileName(problem.ID, 1, "output")))
 	if err1 != nil || err2 != nil || err3 != nil {
-		//发生错误，回滚删除数据库
+		//发生错误，回滚数据库
 		service.DeleteProblemByID(problem.ID)
 		global.LOG.Panic("CreateProblem: save problem error")
 	}

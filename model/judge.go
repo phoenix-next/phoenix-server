@@ -9,7 +9,6 @@ type CreateProblemQ struct {
 	Difficulty   int                   `form:"difficulty"`
 	Readable     int                   `form:"readable"`
 	Writable     int                   `form:"writable"`
-	Creator      uint64                `form:"creator"`
 	Organization uint64                `form:"organization"`
 	Input        *multipart.FileHeader `form:"input" swaggerignore:"true"`
 	Output       *multipart.FileHeader `form:"output" swaggerignore:"true"`

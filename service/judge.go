@@ -63,16 +63,6 @@ func GetProblemsByPage(problems []model.Problem, page int, sorter int) (problemL
 
 // 数据库操作
 
-// CreateProblem 生成验证码
-func CreateProblem(q *model.CreateProblemQ) (p model.Problem, err error) {
-	//problem := model.Problem{Name: q.Name, Version: 1, Difficulty: 1, Readable: 1, Writable: 1, Organization: 1, Creator: 1}
-	problem := model.Problem{Name: q.Name, Version: 1, Difficulty: q.Difficulty, Readable: q.Readable, Writable: q.Writable, Organization: q.Organization, Creator: q.Creator}
-	if err = global.DB.Create(&problem).Error; err != nil {
-		return p, err
-	}
-	return problem, nil
-}
-
 // GetProblemByID 根据问题 ID 查询某个问题
 func GetProblemByID(ID uint64) (problem model.Problem, notFound bool) {
 	err := global.DB.First(&problem, ID).Error
