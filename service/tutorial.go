@@ -49,3 +49,10 @@ func DeleteTutorialByID(ID uint64) (err error) {
 	}
 	return nil
 }
+
+// GetAllTutorials 查询所有教程
+func GetAllTutorials() (tutorials []model.Tutorial) {
+	tutorials = make([]model.Tutorial, 0)
+	global.DB.Find(&tutorials)
+	return tutorials
+}

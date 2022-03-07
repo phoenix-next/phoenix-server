@@ -6,9 +6,12 @@ import (
 	"github.com/phoenix-next/phoenix-server/model"
 	"github.com/phoenix-next/phoenix-server/service"
 	"github.com/phoenix-next/phoenix-server/utils"
+	"math"
 	"net/http"
 	"path/filepath"
+	"sort"
 	"strconv"
+	"strings"
 )
 
 // CreateTutorial
@@ -160,6 +163,22 @@ func GetTutorialVersion(c *gin.Context) {
 // @Success      200      {object}  model.GetTutorialListA  "是否成功，返回信息，教程列表"
 // @Router       /api/v1/tutorials [get]
 func GetTutorialList(c *gin.Context) {
-	// TODO: 逻辑补全
-	c.JSON(http.StatusOK, gin.H{"TODO": "remaining logic"})
+	allTutorials := service.GetAllTutorials()
+	page, _ := strconv.Atoi(c.Request.FormValue("page"))
+	sorter, _ := strconv.Atoi(c.Request.FormValue("sorter"))
+	// TODO 教程名称搜索关键字，模糊查找
+
+	size := 10
+	sort.Slice(allTutorials, func(i, j int) bool {
+		if math.Abs(float64(sorter)) == 1 {
+			return allTutorials[i].ID > allTutorials[j].ID && sorter > 0
+		} else if math.Abs(float64(sorter)) == 2 {
+			return strings.Compare(allTutorials[i].Name, allTutorials[j].Name) < 0 && sorter > 0
+		} else {
+			return true
+		}
+	})
+	tutorials := allTutorials[(page-1)*size : int(math.Min(float64(page*size), float64(len(allTutorials))))]
+
+	c.JSON(http.StatusOK, model.GetTutorialListA{Success: true, Message: "获取成功", ProblemList: tutorials, Total: len(tutorials)})
 }
