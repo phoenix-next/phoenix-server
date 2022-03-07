@@ -45,7 +45,7 @@ func InitRouter(r *gin.Engine) {
 	resourceRouter := basicRouter.Group("/resource")
 	{
 		resourceRouter.StaticFS("/problem", http.Dir(filepath.Join(global.VP.GetString("root_path"), "resource", "problems")))
-		// TODO: resourceRouter.StaticFS("/tutorial")
+		resourceRouter.StaticFS("/tutorial", http.Dir(filepath.Join(global.VP.GetString("root_path"), "resource", "tutorials")))
 	}
 
 	// 用户模块
