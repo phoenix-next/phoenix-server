@@ -28,6 +28,7 @@ func CreatePost(c *gin.Context) {
 	ok, err := service.IsUserInThisOrganization(user.ID, data.OrgID)
 	if !ok || err != nil {
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "用户没有权限在此发帖"})
+		return
 	}
 	// 成功新建帖子
 	post := model.Post{Content: data.Content, OrgID: data.OrgID, CreatorID: user.ID, CreatorName: user.Name, Type: data.Type, Title: data.Title}
@@ -173,6 +174,7 @@ func GetAllPost(c *gin.Context) {
 	ok, err := service.IsUserInThisOrganization(user.ID, oid)
 	if !ok || err != nil {
 		c.JSON(http.StatusOK, model.GetAllPostA{Success: false, Message: "用户没有查看帖子权限"})
+		return
 	}
 	// 得到所有帖子，及所有帖子的总数
 	posts := service.GetAllPosts(oid, postType)
