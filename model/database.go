@@ -93,7 +93,7 @@ type Tutorial struct {
 	ID          uint64 `gorm:"primary_key;autoIncrement; not null;" json:"id"`
 	OrgID       uint64 `json:"orgID"`
 	CreatorID   uint64 `gorm:"not null" json:"creatorID"`
-	CreatorName uint64 `gorm:"not null" json:"creatorName"`
+	CreatorName string `gorm:"not null" json:"creatorName"`
 	Name        string `gorm:"size:32; not null;" json:"name"`
 	Profile     string `gorm:"not null;" json:"profile"`
 	Version     int    `gorm:"not null;" json:"version"`

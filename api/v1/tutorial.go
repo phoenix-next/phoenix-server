@@ -2,7 +2,13 @@ package v1
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/phoenix-next/phoenix-server/global"
+	"github.com/phoenix-next/phoenix-server/model"
+	"github.com/phoenix-next/phoenix-server/service"
+	"github.com/phoenix-next/phoenix-server/utils"
 	"net/http"
+	"path/filepath"
+	"strconv"
 )
 
 // CreateTutorial
@@ -16,8 +22,21 @@ import (
 // @Success      200      {object}  model.CommonA          "是否成功，返回信息"
 // @Router       /api/v1/tutorials [post]
 func CreateTutorial(c *gin.Context) {
-	// TODO: 逻辑补全
-	c.JSON(http.StatusOK, gin.H{"TODO": "remaining logic"})
+	// 获取数据
+	data := utils.BindJsonData(c, &model.CreateTutorialQ{}).(*model.CreateTutorialQ)
+	user := utils.SolveUser(c)
+	tutorial := model.Tutorial{Name: data.Name, OrgID: data.OrgID, CreatorID: user.ID, CreatorName: user.Name, Profile: data.Profile, Version: 1, Readable: data.Readable, Writable: data.Writable}
+	if err := service.SaveTutorial(&tutorial); err != nil {
+		global.LOG.Warn("CreateTutorial;: create tutorial error")
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "创建教程失败"})
+		return
+	}
+	if err := c.SaveUploadedFile(data.File, filepath.Join(global.VP.GetString("root_path"), "resource", "tutorials", service.GetTutorialFileName(tutorial))); err != nil {
+		// 回滚数据库
+		_ = service.DeleteTutorialByID(tutorial.ID)
+		global.LOG.Panic("CreateTutorial: save tutorial error")
+	}
+	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "创建教程成功"})
 }
 
 // GetTutorial
@@ -31,8 +50,22 @@ func CreateTutorial(c *gin.Context) {
 // @Success      200      {object}  model.GetTutorialA  "组织ID，创建者ID，创建者名称，教程名称，教程简介，教程版本，教程下载路径"
 // @Router       /api/v1/tutorials/{id} [get]
 func GetTutorial(c *gin.Context) {
-	// TODO: 逻辑补全
-	c.JSON(http.StatusOK, gin.H{"TODO": "remaining logic"})
+	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
+	if tutorial, notFound := service.GetTutorialByID(id); notFound {
+		c.JSON(http.StatusOK, model.GetTutorialA{Success: false, Message: "找不到该教程的信息"})
+	} else {
+		c.JSON(http.StatusOK, model.GetTutorialA{
+			Success:      true,
+			Message:      "查找教程成功",
+			OrgID:        tutorial.OrgID,
+			CreatorID:    tutorial.CreatorID,
+			CreatorName:  tutorial.Name,
+			Name:         tutorial.Name,
+			Profile:      tutorial.Profile,
+			Version:      tutorial.Version,
+			TutorialPath: filepath.Join(global.VP.GetString("root_path"), "resource", "tutorials", service.GetTutorialFileName(tutorial)),
+		})
+	}
 }
 
 // UpdateTutorial
@@ -47,8 +80,26 @@ func GetTutorial(c *gin.Context) {
 // @Success      200      {object}  model.CommonA          "是否成功，返回信息"
 // @Router       /api/v1/tutorials/{id} [put]
 func UpdateTutorial(c *gin.Context) {
-	// TODO: 逻辑补全
-	c.JSON(http.StatusOK, gin.H{"TODO": "remaining logic"})
+	// 获取数据
+	data := utils.BindJsonData(c, &model.UpdateTutorialQ{}).(*model.UpdateTutorialQ)
+	//user := utils.SolveUser(c)
+	// TODO 判断可写权限
+	if tutorial, notFound := service.GetTutorialByID(data.ID); notFound {
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "找不到该教程的信息"})
+	} else {
+		tutorialOrigin := tutorial
+		if err := service.UpdateTutorial(&tutorial, data); err != nil {
+			global.LOG.Panic("UpdateTutorial: save tutorial error")
+		}
+		if err := c.SaveUploadedFile(data.File, filepath.Join(global.VP.GetString("root_path"), "resource", "tutorials", service.GetTutorialFileName(tutorial))); err != nil {
+			// 保存文件失败，回滚数据库
+			_ = service.SaveTutorial(&tutorialOrigin)
+			global.LOG.Warn("save tutorial " + tutorialOrigin.Name + " file error")
+			c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "保存教程文件失败"})
+			return
+		}
+		c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "更新教程成功"})
+	}
 }
 
 // DeleteTutorial
@@ -62,8 +113,17 @@ func UpdateTutorial(c *gin.Context) {
 // @Success      200      {object}  model.CommonA  "是否成功，返回信息"
 // @Router       /api/v1/tutorials/{id} [delete]
 func DeleteTutorial(c *gin.Context) {
-	// TODO: 逻辑补全
-	c.JSON(http.StatusOK, gin.H{"TODO": "remaining logic"})
+	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
+	if _, notFound := service.GetTutorialByID(id); notFound {
+		c.JSON(http.StatusOK, model.CommonA{
+			Success: false,
+			Message: "找不到该教程的信息"})
+	} else {
+		if err := service.DeleteTutorialByID(id); err != nil {
+			global.LOG.Panic("DeleteTutorial: delete tutorial error")
+		}
+		c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "删除教程成功"})
+	}
 }
 
 // GetTutorialVersion
@@ -77,8 +137,14 @@ func DeleteTutorial(c *gin.Context) {
 // @Success      200      {object}  model.GetTutorialVersionA  "是否成功，返回信息，教程版本"
 // @Router       /api/v1/tutorials/{id}/version [get]
 func GetTutorialVersion(c *gin.Context) {
-	// TODO: 逻辑补全
-	c.JSON(http.StatusOK, gin.H{"TODO": "remaining logic"})
+	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
+	if tutorial, notFound := service.GetTutorialByID(id); notFound {
+		c.JSON(http.StatusOK, model.GetTutorialVersionA{
+			Success: false,
+			Message: "找不到该教程的信息"})
+	} else {
+		c.JSON(http.StatusOK, model.GetProblemVersionA{Success: true, Message: "获取题目版本成功", Version: tutorial.Version})
+	}
 }
 
 // GetTutorialList
