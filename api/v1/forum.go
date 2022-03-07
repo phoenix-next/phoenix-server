@@ -225,7 +225,7 @@ func GetAllPost(c *gin.Context) {
 // @Produce      json
 // @Param        x-token  header    string                true  "token"
 // @Param        id       path      int                   true  "帖子ID"
-// @Param        data     body      model.CreateCommentQ  true  "回复的评论ID，评论内容"
+// @Param        data     body      model.CreateCommentQ  true  "回复的评论ID(若不回复则为0)，评论内容"
 // @Success      200      {object}  model.CommonA         "是否成功，返回信息"
 // @Router       /api/v1/posts/{id}/comments [post]
 func CreateComment(c *gin.Context) {
@@ -244,7 +244,7 @@ func CreateComment(c *gin.Context) {
 	}
 	// 成功创建评论
 	data := utils.BindJsonData(c, &model.CreateCommentQ{}).(*model.CreateCommentQ)
-	global.DB.Create(model.Comment{
+	global.DB.Create(&model.Comment{
 		OrgID:         post.OrgID,
 		Content:       data.Content,
 		ToID:          data.ToID,
