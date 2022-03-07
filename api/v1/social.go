@@ -54,19 +54,19 @@ func UpdateOrganization(c *gin.Context) {
 	if err := c.ShouldBindJSON(&data); err != nil {
 		global.LOG.Panic("UpdateOrganization: bind data error")
 	}
-	if _, notFound := service.GetOrganizationByName(data.Name); !notFound {
+	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
+	organization, _ := service.GetOrganizationByID(id)
+	if _, notFound := service.GetOrganizationByName(data.Name); !notFound && data.Name != organization.Name {
 		global.LOG.Warn("UpdateOrganization: find same organization name")
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "已存在该名称的组织"})
 		return
 	}
-	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
 	if organization, notFound := service.GetOrganizationByID(id); notFound {
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "未找到组织"})
 	} else {
 		service.UpdateOrganization(&organization, data.Name, data.Profile)
 		c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "更新组织信息成功"})
 	}
-
 }
 
 // DeleteOrganization
