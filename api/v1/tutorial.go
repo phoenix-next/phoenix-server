@@ -180,5 +180,5 @@ func GetTutorialList(c *gin.Context) {
 	})
 	tutorials := allTutorials[(page-1)*size : int(math.Min(float64(page*size), float64(len(allTutorials))))]
 
-	c.JSON(http.StatusOK, model.GetTutorialListA{Success: true, Message: "获取成功", ProblemList: tutorials, Total: len(tutorials)})
+	c.JSON(http.StatusOK, model.GetTutorialListA{Success: true, Message: "获取成功", TutorialList: tutorials, Total: len(tutorials)})
 }
