@@ -102,7 +102,7 @@ func UpdateInvitation(rel *model.UserOrgRel) (err error) {
 // GetOrganizationMember 获取组织所有的用户
 func GetOrganizationMember(oid uint64) (members []model.Member) {
 	var rel *[]model.UserOrgRel
-	global.DB.Where("orgID = ? AND IsValid = ", oid, true).Find(&rel)
+	global.DB.Where("orgID = ? AND IsValid = ?", oid, true).Find(&rel)
 	for _, member := range *rel {
 		members = append(members, model.Member{ID: member.UserID, Name: member.UserName, IsAdmin: member.IsAdmin})
 	}
@@ -111,6 +111,6 @@ func GetOrganizationMember(oid uint64) (members []model.Member) {
 
 // GetOrganizationAdmin 获取一个组织中所有管理员的用户ID
 func GetOrganizationAdmin(oid uint64) (admin []uint64) {
-	global.DB.Model(&model.UserOrgRel{}).Where("orgID = ? AND IsAdmin = ", oid, true).Find(&admin)
+	global.DB.Model(&model.UserOrgRel{}).Where("orgID = ? AND IsValid = ? AND IsAdmin = ?", oid, true, true).Find(&admin)
 	return
 }
