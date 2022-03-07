@@ -31,7 +31,14 @@ func CreatePost(c *gin.Context) {
 		return
 	}
 	// 成功新建帖子
-	post := model.Post{Content: data.Content, OrgID: data.OrgID, CreatorID: user.ID, CreatorName: user.Name, Type: data.Type, Title: data.Title}
+	post := model.Post{
+		Content:       data.Content,
+		OrgID:         data.OrgID,
+		CreatorID:     user.ID,
+		CreatorName:   user.Name,
+		CreatorAvatar: user.Avatar,
+		Type:          data.Type,
+		Title:         data.Title}
 	if err := global.DB.Create(&post).Error; err != nil {
 		global.LOG.Panic("CreatePost: can create post")
 	}
@@ -182,6 +189,15 @@ func GetAllPost(c *gin.Context) {
 	if len(posts)%10 != 0 {
 		totalPage += 1
 	}
+	// 没有帖子的情况
+	if totalPage == 0 {
+		c.JSON(http.StatusOK, model.GetAllPostA{
+			Success: true,
+			Message: "获取帖子成功",
+			Total:   0,
+			Posts:   []model.PostT{}})
+		return
+	}
 	// 页数不合法的情况
 	if page <= 0 || page > totalPage {
 		c.JSON(http.StatusOK, model.GetAllPostA{Success: false, Message: "页数非法"})
@@ -189,7 +205,7 @@ func GetAllPost(c *gin.Context) {
 	}
 	// 获取端点位置，并对帖子切片
 	start, end := (page-1)*10, page*10
-	if length := len(posts); length > end {
+	if length := len(posts); end > length {
 		end = length
 	}
 	filteredPosts := posts[start:end]
@@ -209,33 +225,34 @@ func GetAllPost(c *gin.Context) {
 // @Produce      json
 // @Param        x-token  header    string                true  "token"
 // @Param        id       path      int                   true  "帖子ID"
-// @Param        data     body      model.CreateCommentQ  true  "回复的评论ID，用户ID，评论内容"
+// @Param        data     body      model.CreateCommentQ  true  "回复的评论ID，评论内容"
 // @Success      200      {object}  model.CommonA         "是否成功，返回信息"
 // @Router       /api/v1/posts/{id}/comments [post]
 func CreateComment(c *gin.Context) {
 	// 帖子的存在性判定
 	post, ok := service.GetPostFromParam(c)
 	if !ok {
-		c.JSON(http.StatusOK, model.GetPostA{Success: false, Message: "帖子不存在"})
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "帖子不存在"})
 		return
 	}
 	// 用户权限判定
 	user := utils.SolveUser(c)
-	ok, err := service.IsUserInThisOrganization(user.ID, post.ID)
+	ok, err := service.IsUserInThisOrganization(user.ID, post.OrgID)
 	if !ok || err != nil {
-		c.JSON(http.StatusOK, model.GetPostA{Success: false, Message: "用户没有权限进行该操作"})
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "用户没有权限进行该操作"})
 		return
 	}
 	// 成功创建评论
 	data := utils.BindJsonData(c, &model.CreateCommentQ{}).(*model.CreateCommentQ)
 	global.DB.Create(model.Comment{
-		OrgID:       post.OrgID,
-		Content:     data.Content,
-		ToID:        data.ToID,
-		PostID:      post.ID,
-		CreatorID:   user.ID,
-		CreatorName: user.Name})
-	c.JSON(http.StatusOK, model.GetPostA{Success: true, Message: "评论成功"})
+		OrgID:         post.OrgID,
+		Content:       data.Content,
+		ToID:          data.ToID,
+		PostID:        post.ID,
+		CreatorID:     user.ID,
+		CreatorName:   user.Name,
+		CreatorAvatar: user.Avatar})
+	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "评论成功"})
 }
 
 // UpdateComment

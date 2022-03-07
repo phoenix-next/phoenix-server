@@ -19,6 +19,12 @@ func InitViper() *viper.Viper {
 	if err = os.MkdirAll("./resource/problems", os.ModePerm); err != nil {
 		panic(err)
 	}
+	if err = os.MkdirAll("./resource/tutorials", os.ModePerm); err != nil {
+		panic(err)
+	}
+	if err = os.MkdirAll("./resource/users", os.ModePerm); err != nil {
+		panic(err)
+	}
 	// 初始化viper
 	v := viper.New()
 	v.SetConfigFile(path)

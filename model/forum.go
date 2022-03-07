@@ -53,9 +53,8 @@ type GetAllPostA struct {
 }
 
 type CreateCommentQ struct {
-	ToID      uint64 `json:"toID"`      // 被评论的评论ID，可为空
-	CreatorID uint64 `json:"creatorID"` // 评论者ID
-	Content   string `json:"content"`
+	ToID    uint64 `json:"toID"` // 被评论的评论ID，可为空
+	Content string `json:"content"`
 }
 
 type UpdateCommentQ struct {
