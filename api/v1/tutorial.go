@@ -32,7 +32,8 @@ func CreateTutorial(c *gin.Context) {
 		return
 	}
 	if err := c.SaveUploadedFile(data.File, filepath.Join(global.VP.GetString("root_path"), "resource", "tutorials", service.GetTutorialFileName(tutorial))); err != nil {
-		//TODO 发生错误，回滚数据库
+		// 回滚数据库
+		_ = service.DeleteTutorialByID(tutorial.ID)
 		global.LOG.Panic("CreateTutorial: save tutorial error")
 	}
 	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "创建教程成功"})
