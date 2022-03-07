@@ -33,3 +33,11 @@ func GetTutorialByID(ID uint64) (tutorial model.Tutorial, notFound bool) {
 		return tutorial, false
 	}
 }
+
+//  根据信息更新教程
+func UpdateTutorial(tutorial *model.Tutorial, q *model.UpdateTutorialQ) (err error) {
+	tutorial.Name, tutorial.Profile, tutorial.Readable, tutorial.Writable, tutorial.Version =
+		q.Name, q.Profile, q.Readable, q.Writable, tutorial.Version+1
+	err = global.DB.Save(tutorial).Error
+	return err
+}
