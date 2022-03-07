@@ -107,6 +107,7 @@ type UserOrgRel struct {
 	UserID   uint64 `gorm:"not null;" json:"userID"`
 	UserName string `gorm:"not null;" json:"userName"`
 	OrgID    uint64 `gorm:"not null;" json:"orgID"`
+	OrgName  string `gorm:"not null;" json:"orgName"`
 	IsAdmin  bool   `gorm:"not null;" json:"isAdmin"`
 	IsValid  bool   `gorm:"not null;default:false" json:"isValid"`
 }

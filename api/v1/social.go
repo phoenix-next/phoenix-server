@@ -100,11 +100,29 @@ func DeleteOrganization(c *gin.Context) {
 // @Success      200      {object}  model.CommonA            "是否成功，返回信息"
 // @Router       /api/v1/organizations/{id}/invitations [post]
 func CreateInvitation(c *gin.Context) {
+	// 获取数据
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
 	data := utils.BindJsonData(c, &model.CreateInvitationQ{}).(*model.CreateInvitationQ)
-	if user, notFound := service.GetUserByEmail(data.Email); notFound {
+	// 邀请成员存在性判定
+	user, notFound := service.GetUserByEmail(data.Email)
+	if notFound {
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "未找到被邀请用户"})
-	} else if err := service.CreateInvitation(&model.UserOrgRel{UserID: user.ID, UserName: user.Name, IsAdmin: data.IsAdmin, OrgID: id}); err != nil {
+		return
+	}
+	// 组织存在性判定
+	org, notFound := service.GetOrganizationByID(id)
+	if notFound {
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "该组织不存在"})
+		return
+	}
+	// 创建邀请
+	err := service.CreateInvitation(&model.UserOrgRel{
+		UserID:   user.ID,
+		UserName: user.Name,
+		IsAdmin:  data.IsAdmin,
+		OrgID:    id,
+		OrgName:  org.Name})
+	if err != nil {
 		global.LOG.Panic("CreateInvitation: create invitation error")
 	}
 	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "创建成功"})

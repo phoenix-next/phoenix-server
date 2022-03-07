@@ -1,10 +1,9 @@
 package model
 
 type OrganizationT struct {
-	ID      uint64 `json:"id"`
-	Name    string `json:"name"`
+	OrgID   uint64 `json:"orgID"`
+	OrgName string `json:"orgName"`
 	IsAdmin bool   `json:"isAdmin"` // 用户在该组织中是否为管理员
-	Profile string `json:"profile"`
 }
 
 type CommonA struct {

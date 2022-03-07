@@ -31,6 +31,7 @@ func CreateOrganization(org *model.Organization) (err error) {
 		UserID:   org.CreatorID,
 		UserName: org.CreatorName,
 		OrgID:    org.ID,
+		OrgName:  org.Name,
 		IsAdmin:  true,
 		IsValid:  true}).Error; err != nil {
 		return
