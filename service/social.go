@@ -23,9 +23,17 @@ func IsUserInThisOrganization(uid uint64, orgID uint64) (ok bool, err error) {
 // 数据库操作
 
 // CreateOrganization 生成组织
-func CreateOrganization(organization *model.Organization) (err error) {
-	if err = global.DB.Create(organization).Error; err != nil {
-		return err
+func CreateOrganization(org *model.Organization) (err error) {
+	if err = global.DB.Create(org).Error; err != nil {
+		return
+	}
+	if err = global.DB.Create(&model.UserOrgRel{
+		UserID:   org.CreatorID,
+		UserName: org.CreatorName,
+		OrgID:    org.ID,
+		IsAdmin:  true,
+		IsValid:  true}).Error; err != nil {
+		return
 	}
 	return nil
 }
