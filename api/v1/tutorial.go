@@ -31,7 +31,7 @@ func CreateTutorial(c *gin.Context) {
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "创建教程失败"})
 		return
 	}
-	if err := c.SaveUploadedFile(data.File, filepath.Join(global.VP.GetString("root_path"), "resource", "tutorials", strconv.Itoa(int(tutorial.ID))+"_"+strconv.Itoa(int(tutorial.Version)))); err != nil {
+	if err := c.SaveUploadedFile(data.File, filepath.Join(global.VP.GetString("root_path"), "resource", "tutorials", service.GetTutorialFileName(tutorial))); err != nil {
 		//TODO 发生错误，回滚数据库
 		global.LOG.Panic("CreateProblem: save problem error")
 	}
@@ -49,8 +49,22 @@ func CreateTutorial(c *gin.Context) {
 // @Success      200      {object}  model.GetTutorialA  "组织ID，创建者ID，创建者名称，教程名称，教程简介，教程版本，教程下载路径"
 // @Router       /api/v1/tutorials/{id} [get]
 func GetTutorial(c *gin.Context) {
-	// TODO: 逻辑补全
-	c.JSON(http.StatusOK, gin.H{"TODO": "remaining logic"})
+	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
+	if tutorial, notFound := service.GetTutorialByID(id); notFound {
+		c.JSON(http.StatusOK, model.GetTutorialA{Success: false, Message: "找不到该教程的信息"})
+	} else {
+		c.JSON(http.StatusOK, model.GetTutorialA{
+			Success:      true,
+			Message:      "查找教程成功",
+			OrgID:        tutorial.OrgID,
+			CreatorID:    tutorial.CreatorID,
+			CreatorName:  tutorial.Name,
+			Name:         tutorial.Name,
+			Profile:      tutorial.Profile,
+			Version:      tutorial.Version,
+			TutorialPath: filepath.Join(global.VP.GetString("root_path"), "resource", "tutorials", service.GetTutorialFileName(tutorial)),
+		})
+	}
 }
 
 // UpdateTutorial
