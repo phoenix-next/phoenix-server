@@ -90,7 +90,7 @@ func GetTutorialVersion(c *gin.Context) {
 // @Param        x-token  header    string                 true  "token"
 // @Param        page     query     int                     true  "用户位于哪一页，页数从1开始"
 // @Param        keyWord  query     string                  true  "当前的(教程名称)搜索关键字，为空字符串表示没有关键字，模糊匹配"
-// @Param        sorter   query     int                     true  "用户想按什么排序，1为按名称升序，-1为按名称降序"
+// @Param        sorter   query     int                     true  "用户想按什么排序，1为按ID升序，-1为按ID降序，2为按名称升序，-2为按名称降序"
 // @Success      200      {object}  model.GetTutorialListA  "是否成功，返回信息，教程列表"
 // @Router       /api/v1/tutorials [get]
 func GetTutorialList(c *gin.Context) {
