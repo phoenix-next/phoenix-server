@@ -99,7 +99,6 @@ func UpdateTutorial(c *gin.Context) {
 		}
 		c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "更新教程成功"})
 	}
-
 }
 
 // DeleteTutorial
@@ -113,8 +112,17 @@ func UpdateTutorial(c *gin.Context) {
 // @Success      200      {object}  model.CommonA  "是否成功，返回信息"
 // @Router       /api/v1/tutorials/{id} [delete]
 func DeleteTutorial(c *gin.Context) {
-	// TODO: 逻辑补全
-	c.JSON(http.StatusOK, gin.H{"TODO": "remaining logic"})
+	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
+	if _, notFound := service.GetTutorialByID(id); notFound {
+		c.JSON(http.StatusOK, model.CommonA{
+			Success: false,
+			Message: "找不到该教程的信息"})
+	} else {
+		if err := service.DeleteTutorialByID(id); err != nil {
+			global.LOG.Panic("DeleteTutorial: delete tutorial error")
+		}
+		c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "删除教程成功"})
+	}
 }
 
 // GetTutorialVersion

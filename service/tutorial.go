@@ -41,3 +41,11 @@ func UpdateTutorial(tutorial *model.Tutorial, q *model.UpdateTutorialQ) (err err
 	err = global.DB.Save(tutorial).Error
 	return err
 }
+
+// DeleteTutorialByID 根据教程id 删除教程
+func DeleteTutorialByID(ID uint64) (err error) {
+	if err = global.DB.Where("id = ?", ID).Delete(model.Tutorial{}).Error; err != nil {
+		return err
+	}
+	return nil
+}
