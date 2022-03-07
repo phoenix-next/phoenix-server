@@ -42,7 +42,7 @@ func GetTutorial(c *gin.Context) {
 // @Accept       multipart/form-data
 // @Produce      json
 // @Param        x-token  header    string                 true  "token"
-// @Param        data     body      model.UpdateTutorialQ  true  "教程ID，教程名称，教程简介，可读权限，可写权限"
+// @Param        data     body      model.UpdateTutorialQ  true  "教程名称，教程简介，可读权限，可写权限"
 // @Success      200      {object}  model.CommonA          "是否成功，返回信息"
 // @Router       /api/v1/tutorials/{id} [put]
 func UpdateTutorial(c *gin.Context) {

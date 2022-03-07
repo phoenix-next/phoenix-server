@@ -19,7 +19,6 @@ type GetTutorialA struct {
 }
 
 type UpdateTutorialQ struct {
-	ID       uint64 `json:"id"`
 	Name     string `json:"name"`
 	Profile  string `json:"profile"`
 	Readable int    `json:"readable"`
