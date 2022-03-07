@@ -16,7 +16,7 @@ import (
 // @Tags         社交模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string                     true  "token"
+// @Param        x-token  header    string                  true  "token"
 // @Param        data     body      model.CreateOrganizationQ  true  "组织名称，组织的简介"
 // @Success      200      {object}  model.CommonA              "是否成功，返回信息"
 // @Router       /api/v1/organizations [post]
@@ -36,6 +36,37 @@ func CreateOrganization(c *gin.Context) {
 		global.LOG.Panic("CreateOrganization: create organization error")
 	}
 	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "创建组织成功"})
+}
+
+// GetOrganization
+// @Summary      获取组织信息
+// @Description  获取一个组织的详细信息
+// @Tags         社交模块
+// @Accept       json
+// @Produce      json
+// @Param        x-token  header    string                     true  "token"
+// @Param        id       path      int                     true  "组织ID"
+// @Success      200      {object}  model.GetOrganizationA  "是否成功，返回信息，组织名称，组织简介"
+// @Router       /api/v1/organizations/{id} [get]
+func GetOrganization(c *gin.Context) {
+	// 获取请求数据
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusOK, model.GetOrganizationA{Success: false, Message: "组织ID不合法"})
+	}
+	// 组织存在性判定
+	data, notFound := service.GetOrganizationByID(id)
+	if notFound {
+		c.JSON(http.StatusOK, model.GetOrganizationA{Success: false, Message: "找不到该组织"})
+		return
+	}
+	// 获取信息成功
+	c.JSON(http.StatusOK, model.GetOrganizationA{
+		Success: true,
+		Message: "创建组织成功",
+		Name:    data.Name,
+		Profile: data.Profile})
+	return
 }
 
 // UpdateOrganization

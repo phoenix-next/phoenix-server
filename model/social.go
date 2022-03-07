@@ -5,6 +5,13 @@ type CreateOrganizationQ struct {
 	Profile string `json:"profile"`
 }
 
+type GetOrganizationA struct {
+	Success bool   `json:"success"`
+	Message string `json:"message"`
+	Name    string `json:"name"`
+	Profile string `json:"profile"`
+}
+
 type UpdateOrganizationQ struct {
 	Name    string `json:"name"`
 	Profile string `json:"profile"`

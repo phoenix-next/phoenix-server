@@ -71,6 +71,7 @@ func InitRouter(r *gin.Engine) {
 	teamRouter := basicRouter.Group("/organizations")
 	{
 		teamRouter.POST("", v1.CreateOrganization)
+		teamRouter.GET("/:id", v1.GetOrganization)
 		teamRouter.DELETE("/:id", v1.DeleteOrganization)
 		teamRouter.PUT("/:id", v1.UpdateOrganization)
 		teamRouter.POST("/:id/invitations", v1.CreateInvitation)
