@@ -51,10 +51,9 @@ func InitRouter(r *gin.Engine) {
 	// 用户模块
 	userRouter := basicRouter.Group("/users")
 	{
-		userRouter.GET("/:id/profile", v1.GetProfile)
-		userRouter.GET("/:id/organizations", v1.GetUserOrganization)
-		userRouter.GET("/:id/invitations", v1.GetUserInvitations)
-		userRouter.GET("/:id/admins", v1.GetAdminInfo)
+		userRouter.GET("/profile", v1.GetProfile)
+		userRouter.GET("/organizations", v1.GetUserOrganization)
+		userRouter.GET("/invitations", v1.GetUserInvitations)
 	}
 
 	// 评测模块

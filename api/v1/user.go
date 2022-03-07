@@ -107,28 +107,26 @@ func Login(c *gin.Context) {
 
 // GetProfile
 // @Summary      获取用户资料
-// @Description  根据用户ID，获取用户资料
+// @Description  获取用户的详细资料
 // @Tags         用户模块
 // @Accept       json
 // @Produce      json
 // @Param        x-token  header    string             true  "token"
-// @Param        id       path      string             true  "用户ID"
 // @Success      200      {object}  model.GetProfileA  "是否成功，返回信息，用户资料"
-// @Router       /api/v1/users/{id}/profile [get]
+// @Router       /api/v1/users/profile [get]
 func GetProfile(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"TODO": "logic"})
 }
 
 // GetUserOrganization
 // @Summary      获取用户所属的所有组织
-// @Description  根据一个用户的ID，获取用户所属的所有组织
+// @Description  获取用户所属的所有组织，返回组织列表
 // @Tags         用户模块
 // @Accept       json
 // @Produce      json
 // @Param        x-token  header    string                      true  "token"
-// @Param        id       path      int                         true  "用户ID"
 // @Success      200      {object}  model.GetUserOrganizationA  "是否成功，返回信息，用户所属的组织列表"
-// @Router       /api/v1/users/{id}/organizations [get]
+// @Router       /api/v1/users/organizations [get]
 func GetUserOrganization(c *gin.Context) {
 	user := utils.SolveUser(c)
 	var relation []model.OrganizationT
@@ -143,9 +141,8 @@ func GetUserOrganization(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        x-token  header    string                     true  "token"
-// @Param        id       path      int                        true  "用户ID"
 // @Success      200      {object}  model.GetUserInvitationsA  "是否成功，返回信息，组织信息列表"
-// @Router       /api/v1/users/{id}/invitations [get]
+// @Router       /api/v1/users/invitations [get]
 func GetUserInvitations(c *gin.Context) {
 	// TODO 逻辑实现
 	c.JSON(http.StatusOK, gin.H{"TODO": "logic"})
