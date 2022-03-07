@@ -8,6 +8,7 @@ import (
 	"github.com/phoenix-next/phoenix-server/utils"
 	"net/http"
 	"path/filepath"
+	"strconv"
 )
 
 // CreateTutorial
@@ -30,8 +31,7 @@ func CreateTutorial(c *gin.Context) {
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "创建教程失败"})
 		return
 	}
-	// TODO name
-	if err := c.SaveUploadedFile(data.File, filepath.Join(global.VP.GetString("root_path"), "resource", "tutorials")); err != nil {
+	if err := c.SaveUploadedFile(data.File, filepath.Join(global.VP.GetString("root_path"), "resource", "tutorials", strconv.Itoa(int(tutorial.ID))+"_"+strconv.Itoa(int(tutorial.Version)))); err != nil {
 		//TODO 发生错误，回滚数据库
 		global.LOG.Panic("CreateProblem: save problem error")
 	}
