@@ -116,7 +116,7 @@ func CreateInvitation(c *gin.Context) {
 		return
 	}
 	// 创建邀请
-	err := service.CreateInvitation(&model.UserOrgRel{
+	err := service.CreateInvitation(&model.Invitation{
 		UserID:   user.ID,
 		UserName: user.Name,
 		IsAdmin:  data.IsAdmin,

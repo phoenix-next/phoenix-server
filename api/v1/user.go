@@ -130,7 +130,7 @@ func GetProfile(c *gin.Context) {
 func GetUserOrganization(c *gin.Context) {
 	user := utils.SolveUser(c)
 	var relation []model.OrganizationT
-	global.DB.Model(&model.UserOrgRel{}).Where("user_id = ?", user.ID).Find(&relation)
+	global.DB.Model(&model.Invitation{}).Where("user_id = ?", user.ID).Find(&relation)
 	c.JSON(http.StatusOK, model.GetUserOrganizationA{Success: true, Message: "获取用户所属组织成功", Organization: relation})
 }
 

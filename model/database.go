@@ -103,8 +103,8 @@ type Tutorial struct {
 
 // 关系表
 
-// UserOrgRel 用户组织关系
-type UserOrgRel struct {
+// Invitation 用户组织关系
+type Invitation struct {
 	ID       uint64 `gorm:"primary_key; autoIncrement;not null;" json:"id"`
 	UserID   uint64 `gorm:"not null;" json:"userID"`
 	UserName string `gorm:"not null;" json:"userName"`
