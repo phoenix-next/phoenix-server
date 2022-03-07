@@ -2,7 +2,12 @@ package v1
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/phoenix-next/phoenix-server/global"
+	"github.com/phoenix-next/phoenix-server/model"
+	"github.com/phoenix-next/phoenix-server/service"
+	"github.com/phoenix-next/phoenix-server/utils"
 	"net/http"
+	"path/filepath"
 )
 
 // CreateTutorial
@@ -16,8 +21,21 @@ import (
 // @Success      200      {object}  model.CommonA          "是否成功，返回信息"
 // @Router       /api/v1/tutorials [post]
 func CreateTutorial(c *gin.Context) {
-	// TODO: 逻辑补全
-	c.JSON(http.StatusOK, gin.H{"TODO": "remaining logic"})
+	// 获取数据
+	data := utils.BindJsonData(c, &model.CreateTutorialQ{}).(*model.CreateTutorialQ)
+	user := utils.SolveUser(c)
+	tutorial := model.Tutorial{Name: data.Name, OrgID: data.OrgID, CreatorID: user.ID, CreatorName: user.Name, Profile: data.Profile, Version: 1, Readable: data.Readable, Writable: data.Writable}
+	if err := service.SaveTutorial(&tutorial); err != nil {
+		global.LOG.Warn("CreateTutoria;: create tutorial error")
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "创建教程失败"})
+		return
+	}
+	// TODO name
+	if err := c.SaveUploadedFile(data.File, filepath.Join(global.VP.GetString("root_path"), "resource", "tutorials")); err != nil {
+		//TODO 发生错误，回滚数据库
+		global.LOG.Panic("CreateProblem: save problem error")
+	}
+	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "创建教程成功"})
 }
 
 // GetTutorial
