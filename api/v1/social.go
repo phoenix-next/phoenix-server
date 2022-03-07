@@ -146,7 +146,7 @@ func UpdateOrganizationMember(c *gin.Context) {
 	} else if err != nil {
 		global.LOG.Panic("UpdateOrganizationMember: update invitation error: user or org not exist")
 	}
-	rel, _ := service.GetInvitationByUserOrg(user.ID, id)
+	rel, _ := service.GetInValidInvitationByUserOrg(user.ID, id)
 	rel.IsValid = true
 	service.UpdateInvitation(rel)
 	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "更新成功"})

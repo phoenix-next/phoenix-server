@@ -89,9 +89,22 @@ func CreateInvitation(invitation *model.UserOrgRel) (err error) {
 	return nil
 }
 
-// GetInvitationByUserOrg 根据组织与用户查找邀请
-func GetInvitationByUserOrg(uid uint64, orgID uint64) (rel *model.UserOrgRel, notFound bool) {
+// GetInValidInvitationByUserOrg 根据组织与用户查找失效邀请
+func GetInValidInvitationByUserOrg(uid uint64, orgID uint64) (rel *model.UserOrgRel, notFound bool) {
 	err := global.DB.Where("user_id = ? AND org_id = ? AND is_valid = ?", uid, orgID, false).First(&rel).Error
+	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
+		return rel, true
+	} else if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		global.LOG.Panic("GetInvitationByUserOrg: search error")
+		return rel, true
+	} else {
+		return rel, false
+	}
+}
+
+// GetInvitationByUserOrg 根据组织与用户查找有效邀请
+func GetInvitationByUserOrg(uid uint64, orgID uint64) (rel *model.UserOrgRel, notFound bool) {
+	err := global.DB.Where("user_id = ? AND org_id = ? AND is_valid = ?", uid, orgID, true).First(&rel).Error
 	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
 		return rel, true
 	} else if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
