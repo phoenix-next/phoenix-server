@@ -76,6 +76,7 @@ func InitRouter(r *gin.Engine) {
 		teamRouter.POST("/:id/invitations", v1.CreateInvitation)
 		teamRouter.POST("/:id/users", v1.UpdateOrganizationMember)
 		teamRouter.GET("/:id/users", v1.GetOrganizationMember)
+		teamRouter.DELETE("/:id/users/:userID", v1.DeleteOrganizationMember)
 		teamRouter.POST("/:id/admins", v1.UpdateOrganizationAdmin)
 		teamRouter.DELETE("/:id/admins/:adminID", v1.DeleteOrganizationAdmin)
 	}
