@@ -137,8 +137,14 @@ func DeleteTutorial(c *gin.Context) {
 // @Success      200      {object}  model.GetTutorialVersionA  "是否成功，返回信息，教程版本"
 // @Router       /api/v1/tutorials/{id}/version [get]
 func GetTutorialVersion(c *gin.Context) {
-	// TODO: 逻辑补全
-	c.JSON(http.StatusOK, gin.H{"TODO": "remaining logic"})
+	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
+	if tutorial, notFound := service.GetTutorialByID(id); notFound {
+		c.JSON(http.StatusOK, model.GetTutorialVersionA{
+			Success: false,
+			Message: "找不到该教程的信息"})
+	} else {
+		c.JSON(http.StatusOK, model.GetProblemVersionA{Success: true, Message: "获取题目版本成功", Version: tutorial.Version})
+	}
 }
 
 // GetTutorialList
