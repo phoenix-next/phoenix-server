@@ -1,11 +1,14 @@
 package model
 
+import "mime/multipart"
+
 type CreateTutorialQ struct {
-	OrgID    uint64 `json:"orgID"`
-	Name     string `json:"name"`
-	Profile  string `json:"profile"`
-	Readable int    `json:"readable"`
-	Writable int    `json:"writable"`
+	OrgID    uint64                `form:"orgID"`
+	Name     string                `form:"name"`
+	Profile  string                `form:"profile"`
+	Readable int                   `form:"readable"`
+	Writable int                   `form:"writable"`
+	File     *multipart.FileHeader `form:"file" swaggerignore:"true"`
 }
 
 type GetTutorialA struct {
@@ -19,10 +22,12 @@ type GetTutorialA struct {
 }
 
 type UpdateTutorialQ struct {
-	Name     string `json:"name"`
-	Profile  string `json:"profile"`
-	Readable int    `json:"readable"`
-	Writable int    `json:"writable"`
+	ID       uint64                `form:"id"`
+	Name     string                `form:"name"`
+	Profile  string                `form:"profile"`
+	Readable int                   `form:"readable"`
+	Writable int                   `form:"writable"`
+	File     *multipart.FileHeader `form:"file" swaggerignore:"true"`
 }
 
 type GetTutorialVersionA struct {
