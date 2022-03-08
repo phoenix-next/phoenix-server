@@ -58,6 +58,11 @@ func GetTutorial(c *gin.Context) {
 	if tutorial, notFound := service.GetTutorialByID(id); notFound {
 		c.JSON(http.StatusOK, model.GetTutorialA{Success: false, Message: "找不到该教程的信息"})
 	} else {
+		if !service.JudgeReadPermission(tutorial.OrgID, tutorial.Readable, tutorial.CreatorID, c) {
+			c.JSON(http.StatusOK, model.GetTutorialA{Success: false, Message: "您无可读权限"})
+			return
+		}
+
 		c.JSON(http.StatusOK, model.GetTutorialA{
 			Success:      true,
 			Message:      "查找教程成功",
@@ -91,6 +96,10 @@ func UpdateTutorial(c *gin.Context) {
 	if tutorial, notFound := service.GetTutorialByID(data.ID); notFound {
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "找不到该教程的信息"})
 	} else {
+		if !service.JudgeWritePermission(tutorial.OrgID, tutorial.Writable, tutorial.CreatorID, c) {
+			c.JSON(http.StatusOK, model.GetTutorialA{Success: false, Message: "您无可写权限"})
+			return
+		}
 		tutorialOrigin := tutorial
 		if err := service.UpdateTutorial(&tutorial, data); err != nil {
 			global.LOG.Panic("UpdateTutorial: save tutorial error")
