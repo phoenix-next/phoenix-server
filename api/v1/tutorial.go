@@ -210,15 +210,18 @@ func GetTutorialList(c *gin.Context) {
 			TutorialList: []model.Tutorial{}})
 		return
 	}
-	// 对教程进行分页
+	// 对教程进行排序与分页
 	size := 10
 	sort.Slice(fuzzyTutorials, func(i, j int) bool {
-		if math.Abs(float64(sorter)) == 1 {
-			return fuzzyTutorials[i].ID > fuzzyTutorials[j].ID && sorter > 0
-		} else if math.Abs(float64(sorter)) == 2 {
-			return strings.Compare(fuzzyTutorials[i].Name, fuzzyTutorials[j].Name) < 0 && sorter > 0
-		} else {
-			return true
+		switch sorter {
+		case 1:
+			return fuzzyTutorials[i].ID > fuzzyTutorials[j].ID
+		case -1:
+			return fuzzyTutorials[i].ID < fuzzyTutorials[j].ID
+		case 2:
+			return strings.Compare(fuzzyTutorials[i].Name, fuzzyTutorials[j].Name) < 0
+		default:
+			return strings.Compare(fuzzyTutorials[i].Name, fuzzyTutorials[j].Name) > 0
 		}
 	})
 	tutorials := fuzzyTutorials[(page-1)*size : int(math.Min(float64(page*size), float64(len(fuzzyTutorials))))]
