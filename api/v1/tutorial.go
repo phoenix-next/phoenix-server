@@ -2,6 +2,7 @@ package v1
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/lithammer/fuzzysearch/fuzzy"
 	"github.com/phoenix-next/phoenix-server/global"
 	"github.com/phoenix-next/phoenix-server/model"
 	"github.com/phoenix-next/phoenix-server/service"
@@ -166,19 +167,25 @@ func GetTutorialList(c *gin.Context) {
 	allTutorials := service.GetAllTutorials()
 	page, _ := strconv.Atoi(c.Request.FormValue("page"))
 	sorter, _ := strconv.Atoi(c.Request.FormValue("sorter"))
+	keyWord := c.Request.FormValue("keyWord")
 	// TODO 教程名称搜索关键字，模糊查找
-
+	fuzzyTutorials := make([]model.Tutorial, 0)
+	for _, tutorial := range allTutorials {
+		if fuzzy.Match(keyWord, tutorial.Name) {
+			fuzzyTutorials = append(fuzzyTutorials, tutorial)
+		}
+	}
 	size := 10
-	sort.Slice(allTutorials, func(i, j int) bool {
+	sort.Slice(fuzzyTutorials, func(i, j int) bool {
 		if math.Abs(float64(sorter)) == 1 {
-			return allTutorials[i].ID > allTutorials[j].ID && sorter > 0
+			return fuzzyTutorials[i].ID > fuzzyTutorials[j].ID && sorter > 0
 		} else if math.Abs(float64(sorter)) == 2 {
-			return strings.Compare(allTutorials[i].Name, allTutorials[j].Name) < 0 && sorter > 0
+			return strings.Compare(fuzzyTutorials[i].Name, fuzzyTutorials[j].Name) < 0 && sorter > 0
 		} else {
 			return true
 		}
 	})
-	tutorials := allTutorials[(page-1)*size : int(math.Min(float64(page*size), float64(len(allTutorials))))]
+	tutorials := fuzzyTutorials[(page-1)*size : int(math.Min(float64(page*size), float64(len(fuzzyTutorials))))]
 
 	c.JSON(http.StatusOK, model.GetTutorialListA{Success: true, Message: "获取成功", TutorialList: tutorials, Total: len(tutorials)})
 }
