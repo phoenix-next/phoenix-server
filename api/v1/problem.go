@@ -192,6 +192,7 @@ func GetProblemList(c *gin.Context) {
 	// 请求数据不合法的情况
 	if err1 != nil || err2 != nil {
 		c.JSON(http.StatusOK, model.GetProblemListA{Success: false, Message: "请求参数不合法"})
+		return
 	}
 	// 获取可读的题目
 	problems := service.GetReadableProblems(c)

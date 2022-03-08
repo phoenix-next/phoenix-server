@@ -66,7 +66,7 @@ func InitMySQL() *gorm.DB {
 		&model.Captcha{},
 		&model.Post{},
 
-		&model.CompProbRel{},
+		&model.ContestProblem{},
 		&model.Invitation{},
 	)
 	if err != nil {

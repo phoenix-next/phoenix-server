@@ -178,5 +178,25 @@ func DeleteContest(c *gin.Context) {
 // @Success      200      {object}  model.GetContestListA  "是否成功，返回信息，比赛列表"
 // @Router       /api/v1/contests [get]
 func GetContestList(c *gin.Context) {
-	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "TODO"})
+	// 获取请求数据
+	//page, err1 := strconv.Atoi(c.Query("page"))
+	//sorter, err2 := strconv.Atoi(c.Query("sorter"))
+	//keyWord := c.Query("keyWord")
+	//
+	//// 请求数据不合法的情况
+	//if err1 != nil || err2 != nil {
+	//	c.JSON(http.StatusOK, model.GetContestListA{Success: false, Message: "请求参数不合法"})
+	//	return
+	//}
+	//// 获取可读的比赛
+	//contests := service.GetReadableContest(c)
+	// 对比赛标题进行模糊查找
+	//resProblems := make([]model.Problem, 0)
+	//for _, problem := range problems {
+	//	if fuzzy.Match(problem.Name, keyWord) {
+	//		resProblems = append(resProblems, problem)
+	//	}
+	//}
+	// 对比赛进行分页并返回
+
 }
