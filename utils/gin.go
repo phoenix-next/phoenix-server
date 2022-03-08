@@ -12,6 +12,7 @@ func SolveUser(c *gin.Context) model.User {
 	userRaw, _ := c.Get("user")
 	return userRaw.(model.User)
 }
+
 func BindJsonData(c *gin.Context, model interface{}) interface{} {
 	if err := c.ShouldBindJSON(&model); err != nil {
 		_, file, line, _ := runtime.Caller(1)

@@ -185,9 +185,15 @@ func GetProblemVersion(c *gin.Context) {
 // @Success      200      {object}  model.GetProblemListA  "是否成功，返回信息，题目列表"
 // @Router       /api/v1/problems [get]
 func GetProblemList(c *gin.Context) {
-	page, _ := strconv.Atoi(c.Request.FormValue("page"))
-	sorter, _ := strconv.Atoi(c.Request.FormValue("sorter"))
-	keyWord := c.Request.FormValue("keyWord")
+	// 获取请求数据
+	page, err1 := strconv.Atoi(c.Query("page"))
+	sorter, err2 := strconv.Atoi(c.Query("sorter"))
+	keyWord := c.Query("keyWord")
+	// 请求数据不合法的情况
+	if err1 != nil || err2 != nil {
+		c.JSON(http.StatusOK, model.GetProblemListA{Success: false, Message: "请求参数不合法"})
+	}
+	// 获取可读的题目
 	problems := service.GetReadableProblems(c)
 	// 对题目标题进行模糊查找
 	resProblems := make([]model.Problem, 0)
@@ -196,6 +202,11 @@ func GetProblemList(c *gin.Context) {
 			resProblems = append(resProblems, problem)
 		}
 	}
+	// 对题目进行分页并返回
 	pagedProblems := service.GetProblemsByPage(resProblems, page, sorter)
-	c.JSON(http.StatusOK, model.GetProblemListA{Success: true, Message: "获取成功", ProblemList: pagedProblems, Total: len(resProblems)})
+	c.JSON(http.StatusOK, model.GetProblemListA{
+		Success:     true,
+		Message:     "获取成功",
+		ProblemList: pagedProblems,
+		Total:       len(resProblems)})
 }
