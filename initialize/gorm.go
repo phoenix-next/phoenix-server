@@ -52,8 +52,7 @@ func InitMySQL() *gorm.DB {
 		},
 	})
 	if err != nil {
-		//panic("初始化失败：连接MySQL数据库失败")
-		panic(err)
+		panic("初始化失败：连接MySQL数据库失败")
 	}
 	// 更新MySQL数据库内容
 	db.Set("gorm:table_options", "ENGINE=InnoDB")
@@ -71,7 +70,6 @@ func InitMySQL() *gorm.DB {
 		&model.Invitation{},
 	)
 	if err != nil {
-		fmt.Println(err)
 		panic("初始化失败：更新MySQL数据库内容失败")
 	}
 	return db
