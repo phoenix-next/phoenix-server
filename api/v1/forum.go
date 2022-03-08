@@ -185,8 +185,8 @@ func GetAllPost(c *gin.Context) {
 	}
 	// 得到所有帖子，及所有帖子的总数
 	posts := service.GetAllPosts(oid, postType)
-	totalPage := len(posts) / 10
-	if len(posts)%10 != 0 {
+	totalPage := len(posts) / 5
+	if len(posts)%5 != 0 {
 		totalPage += 1
 	}
 	// 没有帖子的情况
@@ -204,7 +204,7 @@ func GetAllPost(c *gin.Context) {
 		return
 	}
 	// 获取端点位置，并对帖子切片
-	start, end := (page-1)*10, page*10
+	start, end := (page-1)*5, page*5
 	if length := len(posts); end > length {
 		end = length
 	}
