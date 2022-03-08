@@ -84,7 +84,7 @@ func GetTutorial(c *gin.Context) {
 			Name:         tutorial.Name,
 			Profile:      tutorial.Profile,
 			Version:      tutorial.Version,
-			TutorialPath: filepath.Join(global.VP.GetString("tutorial_path"), service.GetTutorialFileName(tutorial))})
+			TutorialPath: "resource/tutorial/" + service.GetTutorialFileName(tutorial)})
 	}
 }
 
@@ -118,7 +118,7 @@ func UpdateTutorial(c *gin.Context) {
 		if err := service.UpdateTutorial(&tutorial, &data); err != nil {
 			global.LOG.Panic("UpdateTutorial: save tutorial error")
 		}
-		if err := c.SaveUploadedFile(data.File, filepath.Join(global.VP.GetString("root_path"), "resource", "tutorials", service.GetTutorialFileName(tutorial))); err != nil {
+		if err := c.SaveUploadedFile(data.File, filepath.Join(global.VP.GetString("tutorial_path"), service.GetTutorialFileName(tutorial))); err != nil {
 			// 保存文件失败，回滚数据库
 			_ = service.SaveTutorial(&tutorialOrigin)
 			global.LOG.Warn("save tutorial " + tutorialOrigin.Name + " file error")

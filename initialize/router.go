@@ -44,8 +44,8 @@ func InitRouter(r *gin.Engine) {
 	// 静态文件服务器，需要身份认证
 	resourceRouter := basicRouter.Group("/resource")
 	{
-		resourceRouter.StaticFS("/problem", http.Dir(filepath.Join(global.VP.GetString("root_path"), "resource", "problems")))
-		resourceRouter.StaticFS("/tutorial", http.Dir(filepath.Join(global.VP.GetString("root_path"), "resource", "tutorials")))
+		resourceRouter.StaticFS("/problem", http.Dir(global.VP.GetString("problem_path")))
+		resourceRouter.StaticFS("/tutorial", http.Dir(global.VP.GetString("tutorial_path")))
 	}
 
 	// 用户模块

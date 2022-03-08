@@ -10,7 +10,7 @@ import (
 
 // Helper
 
-// GetTutorialFileName 获取教程文件夹名称
+// GetTutorialFileName 获取教程对应的文件名称
 func GetTutorialFileName(tutorial model.Tutorial) string {
 	return strconv.Itoa(int(tutorial.ID)) + "_" + strconv.Itoa(int(tutorial.Version))
 }
