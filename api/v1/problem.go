@@ -51,7 +51,7 @@ func CreateProblem(c *gin.Context) {
 	err3 := c.SaveUploadedFile(data.Output, filepath.Join(path, service.MakeProblemFileName(problem.ID, 1, "output")))
 	if err1 != nil || err2 != nil || err3 != nil {
 		//发生错误，回滚数据库
-		service.DeleteProblemByID(problem.ID)
+		_ = service.DeleteProblemByID(problem.ID)
 		global.LOG.Panic("CreateProblem: save problem error")
 	}
 	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "创建题目成功"})
@@ -73,6 +73,10 @@ func GetProblem(c *gin.Context) {
 	if problem, notFound := service.GetProblemByID(id); notFound {
 		c.JSON(http.StatusOK, model.GetProblemA{Success: false, Message: "找不到该题目的信息"})
 	} else {
+		if !service.JudgeReadPermission(problem.OrgID, problem.Readable, problem.Creator, c) {
+			c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "您对该题目无可读权限"})
+			return
+		}
 		c.JSON(http.StatusOK, model.GetProblemA{
 			Success:      true,
 			Message:      "获取题目成功",
@@ -111,6 +115,10 @@ func UpdateProblem(c *gin.Context) {
 	if problem, notFound := service.GetProblemByID(data.ID); notFound {
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "找不到该题目的信息"})
 	} else {
+		if !service.JudgeWritePermission(problem.OrgID, problem.Writable, problem.Creator, c) {
+			c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "您对该题目无可写权限"})
+			return
+		}
 		problemOrigin := problem
 		err = service.UpdateProblem(&problem, &data)
 		if err != nil {
