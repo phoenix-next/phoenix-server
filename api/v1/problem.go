@@ -69,6 +69,7 @@ func CreateProblem(c *gin.Context) {
 // @Router       /api/v1/problems/{id} [get]
 func GetProblem(c *gin.Context) {
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
+
 	if problem, notFound := service.GetProblemByID(id); notFound {
 		c.JSON(http.StatusOK, model.GetProblemA{Success: false, Message: "找不到该题目的信息"})
 	} else {
