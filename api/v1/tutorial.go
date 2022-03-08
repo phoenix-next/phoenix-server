@@ -168,7 +168,7 @@ func GetTutorialList(c *gin.Context) {
 	page, _ := strconv.Atoi(c.Request.FormValue("page"))
 	sorter, _ := strconv.Atoi(c.Request.FormValue("sorter"))
 	keyWord := c.Request.FormValue("keyWord")
-	// TODO 教程名称搜索关键字，模糊查找
+	// 教程名称搜索关键字，模糊查找
 	fuzzyTutorials := make([]model.Tutorial, 0)
 	for _, tutorial := range allTutorials {
 		if fuzzy.Match(keyWord, tutorial.Name) {
