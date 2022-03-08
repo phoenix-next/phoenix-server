@@ -86,7 +86,7 @@ func DeleteProblemByID(ID uint64) (err error) {
 
 // UpdateProblem 根据信息更新题目
 func UpdateProblem(problem *model.Problem, q *model.UpdateProblemQ) (err error) {
-	problem.Name, problem.Version, problem.Difficulty, problem.Organization, problem.Writable, problem.Readable =
+	problem.Name, problem.Version, problem.Difficulty, problem.OrgID, problem.Writable, problem.Readable =
 		q.Name, problem.Version+1, q.Difficulty, q.Organization, q.Writable, q.Readable
 	err = global.DB.Save(problem).Error
 	return err

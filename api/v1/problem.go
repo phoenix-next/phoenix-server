@@ -33,13 +33,13 @@ func CreateProblem(c *gin.Context) {
 	}
 	// 创建题目
 	problem := model.Problem{
-		Name:         data.Name,
-		Version:      1,
-		Difficulty:   data.Difficulty,
-		Readable:     data.Readable,
-		Writable:     data.Writable,
-		Organization: data.Organization,
-		Creator:      user.ID}
+		Name:       data.Name,
+		Version:    1,
+		Difficulty: data.Difficulty,
+		Readable:   data.Readable,
+		Writable:   data.Writable,
+		OrgID:      data.OrgID,
+		Creator:    user.ID}
 	if global.DB.Create(&problem).Error != nil {
 		global.LOG.Warn("CreateProblem: create problem error")
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "创建题目失败"})
@@ -80,7 +80,7 @@ func GetProblem(c *gin.Context) {
 			Difficulty:   problem.Difficulty,
 			Readable:     problem.Readable,
 			Writable:     problem.Writable,
-			Organization: problem.Organization,
+			Organization: problem.OrgID,
 			Creator:      problem.Creator,
 			Input:        service.GetProblemFileUrl(&problem, "input"),
 			Output:       service.GetProblemFileUrl(&problem, "output"),

@@ -5,14 +5,14 @@ import (
 )
 
 type CreateProblemQ struct {
-	Name         string                `form:"name"`
-	Difficulty   int                   `form:"difficulty"`
-	Readable     int                   `form:"readable"`
-	Writable     int                   `form:"writable"`
-	Organization uint64                `form:"organization"`
-	Input        *multipart.FileHeader `form:"input" swaggerignore:"true"`
-	Output       *multipart.FileHeader `form:"output" swaggerignore:"true"`
-	Description  *multipart.FileHeader `form:"description" swaggerignore:"true"`
+	OrgID       uint64                `form:"organization"`
+	Name        string                `form:"name"`
+	Difficulty  int                   `form:"difficulty"`
+	Readable    int                   `form:"readable"`
+	Writable    int                   `form:"writable"`
+	Input       *multipart.FileHeader `form:"input" swaggerignore:"true"`
+	Output      *multipart.FileHeader `form:"output" swaggerignore:"true"`
+	Description *multipart.FileHeader `form:"description" swaggerignore:"true"`
 }
 
 type GetProblemA struct {
