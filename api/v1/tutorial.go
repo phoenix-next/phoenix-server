@@ -47,10 +47,10 @@ func CreateTutorial(c *gin.Context) {
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "创建教程失败"})
 		return
 	}
-	if err := c.SaveUploadedFile(data.File, filepath.Join(global.VP.GetString("root_path"), "resource", "tutorials", service.GetTutorialFileName(tutorial))); err != nil {
+	if err := c.SaveUploadedFile(data.File, filepath.Join(global.VP.GetString("tutorials_path"), service.GetTutorialFileName(tutorial))); err != nil {
 		// 回滚数据库
 		_ = service.DeleteTutorialByID(tutorial.ID)
-		global.LOG.Panic("CreateTutorial: save tutorial error")
+		global.LOG.Panic(err)
 	}
 	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "创建教程成功"})
 }

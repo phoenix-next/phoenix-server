@@ -32,6 +32,7 @@ func InitViper() *viper.Viper {
 	err = v.ReadInConfig()
 	v.Set("root_path", rootPath)
 	v.Set("problem_path", filepath.Join(rootPath, "resource", "problems"))
+	v.Set("tutorial_path", filepath.Join(rootPath, "resource", "tutorials"))
 	if err != nil {
 		panic("初始化失败：读取配置文件失败")
 	}
