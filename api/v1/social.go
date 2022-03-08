@@ -31,10 +31,16 @@ func CreateOrganization(c *gin.Context) {
 		return
 	}
 	user := utils.SolveUser(c)
-	organization := model.Organization{Name: data.Name, Profile: data.Profile, CreatorName: user.Name, CreatorID: user.ID}
-	if err := service.CreateOrganization(&organization); err != nil {
-		global.LOG.Panic("CreateOrganization: create organization error")
-	}
+	org := model.Organization{Name: data.Name, Profile: data.Profile, CreatorName: user.Name, CreatorID: user.ID}
+	global.DB.Create(&org)
+	global.DB.Create(&model.Invitation{
+		UserID:    org.CreatorID,
+		UserName:  org.CreatorName,
+		UserEmail: user.Email,
+		OrgID:     org.ID,
+		OrgName:   org.Name,
+		IsAdmin:   true,
+		IsValid:   true})
 	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "创建组织成功"})
 }
 
@@ -148,11 +154,12 @@ func CreateInvitation(c *gin.Context) {
 	}
 	// 创建邀请
 	err := service.CreateInvitation(&model.Invitation{
-		UserID:   user.ID,
-		UserName: user.Name,
-		IsAdmin:  data.IsAdmin,
-		OrgID:    id,
-		OrgName:  org.Name})
+		UserID:    user.ID,
+		UserName:  user.Name,
+		UserEmail: user.Email,
+		IsAdmin:   data.IsAdmin,
+		OrgID:     id,
+		OrgName:   org.Name})
 	if err != nil {
 		global.LOG.Panic("CreateInvitation: create invitation error")
 	}

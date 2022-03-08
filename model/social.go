@@ -25,6 +25,7 @@ type CreateInvitationQ struct {
 type Member struct {
 	ID      uint64 `json:"id"`
 	Name    string `json:"name"`
+	Email   string `json:"email"`
 	IsAdmin bool   `json:"isAdmin"` // 用户在该组织中是否为管理员
 }
 

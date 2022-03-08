@@ -105,13 +105,14 @@ type Tutorial struct {
 
 // Invitation 用户组织关系
 type Invitation struct {
-	ID       uint64 `gorm:"primary_key; autoIncrement;not null;" json:"id"`
-	UserID   uint64 `gorm:"not null;" json:"userID"`
-	UserName string `gorm:"not null;" json:"userName"`
-	OrgID    uint64 `gorm:"not null;" json:"orgID"`
-	OrgName  string `gorm:"not null;" json:"orgName"`
-	IsAdmin  bool   `gorm:"not null;" json:"isAdmin"`
-	IsValid  bool   `gorm:"not null;default:false" json:"isValid"`
+	ID        uint64 `gorm:"primary_key; autoIncrement;not null;" json:"id"`
+	UserID    uint64 `gorm:"not null;" json:"userID"`
+	UserName  string `gorm:"not null;" json:"userName"`
+	UserEmail string `gorm:"not null;" json:"userEmail"`
+	OrgID     uint64 `gorm:"not null;" json:"orgID"`
+	OrgName   string `gorm:"not null;" json:"orgName"`
+	IsAdmin   bool   `gorm:"not null;" json:"isAdmin"`
+	IsValid   bool   `gorm:"not null;default:false" json:"isValid"`
 }
 
 // CompProbRel 比赛问题关系

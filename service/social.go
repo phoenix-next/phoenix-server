@@ -22,23 +22,6 @@ func IsUserInThisOrganization(uid uint64, orgID uint64) (ok bool, err error) {
 
 // 数据库操作
 
-// CreateOrganization 生成组织
-func CreateOrganization(org *model.Organization) (err error) {
-	if err = global.DB.Create(org).Error; err != nil {
-		return
-	}
-	if err = global.DB.Create(&model.Invitation{
-		UserID:   org.CreatorID,
-		UserName: org.CreatorName,
-		OrgID:    org.ID,
-		OrgName:  org.Name,
-		IsAdmin:  true,
-		IsValid:  true}).Error; err != nil {
-		return
-	}
-	return nil
-}
-
 // DeleteOrganizationByID 根据ID删除组织
 func DeleteOrganizationByID(ID uint64) (err error) {
 	if err = global.DB.Where("id = ?", ID).Delete(model.Organization{}).Error; err != nil {
@@ -126,7 +109,11 @@ func GetOrganizationMember(oid uint64) (members []model.Member) {
 	var rel *[]model.Invitation
 	global.DB.Where("org_id = ? AND is_valid = ?", oid, true).Find(&rel)
 	for _, member := range *rel {
-		members = append(members, model.Member{ID: member.UserID, Name: member.UserName, IsAdmin: member.IsAdmin})
+		members = append(members, model.Member{
+			ID:      member.UserID,
+			Name:    member.UserName,
+			Email:   member.UserEmail,
+			IsAdmin: member.IsAdmin})
 	}
 	return members
 }
