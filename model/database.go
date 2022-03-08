@@ -122,3 +122,17 @@ type CompProbRel struct {
 	CompID uint64 `gorm:"not null;" json:"compID"`
 	ProbID uint64 `gorm:"not null;" json:"probID"`
 }
+
+// TutorialOrgRel 教程读写权限关系
+type TutorialOrgRel struct {
+	ID         uint64 `gorm:"primary_key; autoIncrement;not null;" json:"id"`
+	OrgID      uint64 `gorm:"not null;" json:"orgID"`
+	TutorialID uint64 `gorm:"not null;" json:"tutorialId"`
+}
+
+// ProblemOrgRel  问题读写权限关系
+type ProblemOrgRel struct {
+	ID        uint64 `gorm:"primary_key; autoIncrement;not null;" json:"id"`
+	OrgID     uint64 `gorm:"not null;" json:"orgID"`
+	ProblemID uint64 `gorm:"not null;" json:"problemID"`
+}

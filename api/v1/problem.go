@@ -2,6 +2,7 @@ package v1
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/lithammer/fuzzysearch/fuzzy"
 	"github.com/phoenix-next/phoenix-server/global"
 	"github.com/phoenix-next/phoenix-server/model"
 	"github.com/phoenix-next/phoenix-server/service"
@@ -186,9 +187,15 @@ func GetProblemVersion(c *gin.Context) {
 func GetProblemList(c *gin.Context) {
 	page, _ := strconv.Atoi(c.Request.FormValue("page"))
 	sorter, _ := strconv.Atoi(c.Request.FormValue("sorter"))
+	keyWord := c.Request.FormValue("keyWord")
 	problems := service.GetReadableProblems(c)
-	// TODO 题目名称搜索关键字，模糊查找
-
-	pagedProblems := service.GetProblemsByPage(problems, page, sorter)
-	c.JSON(http.StatusOK, model.GetProblemListA{Success: true, Message: "获取成功", ProblemList: pagedProblems, Total: len(problems)})
+	// 对题目标题进行模糊查找
+	resProblems := make([]model.Problem, 0)
+	for _, problem := range problems {
+		if fuzzy.Match(problem.Name, keyWord) {
+			resProblems = append(resProblems, problem)
+		}
+	}
+	pagedProblems := service.GetProblemsByPage(resProblems, page, sorter)
+	c.JSON(http.StatusOK, model.GetProblemListA{Success: true, Message: "获取成功", ProblemList: pagedProblems, Total: len(resProblems)})
 }
