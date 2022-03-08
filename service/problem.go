@@ -47,21 +47,19 @@ func GetReadableProblems(c *gin.Context) (problems []model.Problem) {
 // GetProblemsByPage 对给定问题做出排序与页选择
 func GetProblemsByPage(problems []model.Problem, page int, sorter int) (problemList []model.Problem) {
 	size := 10
-	sort.Slice(problems, func(i, j int) bool {
+	sort.Slice(problems, func(i, j int) (res bool) {
 		switch sorter {
-		case 1:
-			return problems[i].ID > problems[j].ID
-		case -1:
-			return problems[i].ID < problems[j].ID
-		case 2:
-			return problems[i].Difficulty > problems[j].Difficulty
-		case -2:
-			return problems[i].Difficulty < problems[j].Difficulty
-		case 3:
-			return strings.Compare(problems[i].Name, problems[j].Name) < 0
-		default:
-			return strings.Compare(problems[i].Name, problems[j].Name) > 0
+		case 1, -1:
+			res = problems[i].ID > problems[j].ID
+		case 2, -2:
+			res = problems[i].Difficulty > problems[j].Difficulty
+		case 3, -3:
+			res = strings.Compare(problems[i].Name, problems[j].Name) < 0
 		}
+		if sorter < 0 {
+			res = !res
+		}
+		return
 	})
 	return problems[(page-1)*size : int(math.Min(float64(page*size), float64(len(problems))))]
 }
