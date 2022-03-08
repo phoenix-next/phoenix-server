@@ -2,10 +2,44 @@ package service
 
 import (
 	"errors"
+	"github.com/gin-gonic/gin"
 	"github.com/phoenix-next/phoenix-server/global"
 	"github.com/phoenix-next/phoenix-server/model"
+	"github.com/phoenix-next/phoenix-server/utils"
 	"gorm.io/gorm"
 )
+
+// JudgeReadPermission 判别用户的可读权限
+func JudgeReadPermission(oid uint64, readable int, creatorID uint64, c *gin.Context) bool {
+	user := utils.SolveUser(c)
+	invitation, notFound := GetInvitationByUserOrg(user.ID, oid)
+	switch readable {
+	case 0:
+		return creatorID == user.ID
+	case 1:
+		return !notFound && invitation.IsAdmin == true
+	case 2:
+		return !notFound
+	case 3:
+		return true
+	default:
+		return false
+	}
+}
+
+// JudgeWritePermission 判别用户的可写权限
+func JudgeWritePermission(oid uint64, writable int, creatorID uint64, c *gin.Context) bool {
+	user := utils.SolveUser(c)
+	invitation, notFound := GetInvitationByUserOrg(user.ID, oid)
+	switch writable {
+	case 0:
+		return creatorID == user.ID
+	case 1:
+		return !notFound && invitation.IsAdmin == true
+	default:
+		return false
+	}
+}
 
 // 数据库操作
 
