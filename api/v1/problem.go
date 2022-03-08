@@ -197,9 +197,9 @@ func GetProblemList(c *gin.Context) {
 	// 获取可读的题目
 	problems := service.GetReadableProblems(c)
 	// 对题目标题进行模糊查找
-	resProblems := make([]model.Problem, 0)
+	var resProblems []model.Problem
 	for _, problem := range problems {
-		if fuzzy.Match(problem.Name, keyWord) {
+		if fuzzy.Match(keyWord, problem.Name) {
 			resProblems = append(resProblems, problem)
 		}
 	}
