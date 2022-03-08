@@ -72,7 +72,7 @@ func CreateInvitation(invitation *model.Invitation) (err error) {
 	return nil
 }
 
-// GetInValidInvitationByUserOrg 根据组织与用户查找失效邀请
+// GetInValidInvitationByUserOrg 根据组织与用户查找一个待生效邀请
 func GetInValidInvitationByUserOrg(uid uint64, orgID uint64) (rel *model.Invitation, notFound bool) {
 	err := global.DB.Where("user_id = ? AND org_id = ? AND is_valid = ?", uid, orgID, false).First(&rel).Error
 	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
@@ -85,7 +85,7 @@ func GetInValidInvitationByUserOrg(uid uint64, orgID uint64) (rel *model.Invitat
 	}
 }
 
-// GetInvitationByUserOrg 根据组织与用户查找有效邀请
+// GetInvitationByUserOrg 根据组织与用户查找一个已生效邀请
 func GetInvitationByUserOrg(uid uint64, orgID uint64) (rel *model.Invitation, notFound bool) {
 	err := global.DB.Where("user_id = ? AND org_id = ? AND is_valid = ?", uid, orgID, true).First(&rel).Error
 	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
@@ -98,13 +98,13 @@ func GetInvitationByUserOrg(uid uint64, orgID uint64) (rel *model.Invitation, no
 	}
 }
 
-// UpdateInvitation 根据信息更新邀请
+// UpdateInvitation 更新一个邀请的数据
 func UpdateInvitation(rel *model.Invitation) (err error) {
 	err = global.DB.Save(rel).Error
 	return err
 }
 
-// GetOrganizationMember 获取组织所有的用户
+// GetOrganizationMember 获取一个组织中所有的用户
 func GetOrganizationMember(oid uint64) (members []model.Member) {
 	var rel *[]model.Invitation
 	global.DB.Where("org_id = ? AND is_valid = ?", oid, true).Find(&rel)
@@ -118,8 +118,8 @@ func GetOrganizationMember(oid uint64) (members []model.Member) {
 	return members
 }
 
-// GetOrganizationAdmin 获取一个组织中所有管理员的用户ID
-func GetOrganizationAdmin(oid uint64) (admin []uint64) {
+// GetOrganizationAdmin 获取一个组织中所有管理员的Invitation
+func GetOrganizationAdmin(oid uint64) (admin []model.Invitation) {
 	global.DB.Model(&model.Invitation{}).Where("org_id = ? AND is_valid = ? AND is_admin = ?", oid, true, true).Find(&admin)
 	return
 }

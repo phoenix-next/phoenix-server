@@ -32,5 +32,6 @@ type UpdateContestQ struct {
 type GetContestListA struct {
 	Success     bool       `json:"success"`
 	Message     string     `json:"message"`
+	Total       int        `json:"total"`
 	ContestList []ContestT `json:"contestList"`
 }

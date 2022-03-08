@@ -3,6 +3,7 @@ package v1
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
+	"github.com/lithammer/fuzzysearch/fuzzy"
 	"github.com/phoenix-next/phoenix-server/global"
 	"github.com/phoenix-next/phoenix-server/model"
 	"github.com/phoenix-next/phoenix-server/service"
@@ -28,7 +29,7 @@ func CreateContest(c *gin.Context) {
 	user := utils.SolveUser(c)
 	// 用户权限判定
 	for _, admin := range service.GetOrganizationAdmin(data.OrgID) {
-		if admin == user.ID {
+		if admin.UserID == user.ID {
 			// 创建比赛
 			contest := &model.Contest{
 				OrgID:    data.OrgID,
@@ -151,7 +152,7 @@ func DeleteContest(c *gin.Context) {
 	// 用户权限判定
 	user := utils.SolveUser(c)
 	for _, admin := range service.GetOrganizationAdmin(contest.OrgID) {
-		if user.ID == admin {
+		if user.ID == admin.UserID {
 			// 维护问题 - 比赛关系
 			global.DB.Where("contest_id = ?", contest.ID).Delete(&model.ContestProblem{})
 			// 删除比赛元数据
@@ -179,24 +180,53 @@ func DeleteContest(c *gin.Context) {
 // @Router       /api/v1/contests [get]
 func GetContestList(c *gin.Context) {
 	// 获取请求数据
-	//page, err1 := strconv.Atoi(c.Query("page"))
-	//sorter, err2 := strconv.Atoi(c.Query("sorter"))
-	//keyWord := c.Query("keyWord")
-	//
-	//// 请求数据不合法的情况
-	//if err1 != nil || err2 != nil {
-	//	c.JSON(http.StatusOK, model.GetContestListA{Success: false, Message: "请求参数不合法"})
-	//	return
-	//}
-	//// 获取可读的比赛
-	//contests := service.GetReadableContest(c)
+	page, err1 := strconv.Atoi(c.Query("page"))
+	sorter, err2 := strconv.Atoi(c.Query("sorter"))
+	keyWord := c.Query("keyWord")
+	user := utils.SolveUser(c)
+	// 请求数据不合法的情况
+	if err1 != nil || err2 != nil {
+		c.JSON(http.StatusOK, model.GetContestListA{Success: false, Message: "请求参数不合法"})
+		return
+	}
+	// 获取可读的比赛,并进行排序
+	contests := service.GetReadableContest(user.ID, sorter)
 	// 对比赛标题进行模糊查找
-	//resProblems := make([]model.Problem, 0)
-	//for _, problem := range problems {
-	//	if fuzzy.Match(problem.Name, keyWord) {
-	//		resProblems = append(resProblems, problem)
-	//	}
-	//}
-	// 对比赛进行分页并返回
-
+	var filteredContests []model.ContestT
+	for _, contest := range contests {
+		if fuzzy.Match(contest.Name, keyWord) {
+			filteredContests = append(filteredContests, contest)
+		}
+	}
+	// 得到比赛的总页数
+	totalPage := len(filteredContests) / 5
+	if len(filteredContests)%5 != 0 {
+		totalPage += 1
+	}
+	// 查不到比赛的情况
+	if totalPage == 0 {
+		c.JSON(http.StatusOK, model.GetContestListA{
+			Success:     true,
+			Message:     "获取比赛列表成功",
+			Total:       0,
+			ContestList: []model.ContestT{}})
+		return
+	}
+	// 页数不合法的情况
+	if page <= 0 || page > totalPage {
+		c.JSON(http.StatusOK, model.GetContestListA{Success: false, Message: "页数非法"})
+		return
+	}
+	// 获取端点位置，并对帖子切片
+	start, end := (page-1)*5, page*5
+	if length := len(filteredContests); end > length {
+		end = length
+	}
+	slicedContests := filteredContests[start:end]
+	// 返回
+	c.JSON(http.StatusOK, model.GetContestListA{
+		Success:     true,
+		Message:     "获取比赛列表成功",
+		Total:       len(filteredContests),
+		ContestList: slicedContests})
 }

@@ -43,13 +43,6 @@ func GetUserByEmail(email string) (user model.User, notFound bool) {
 	}
 }
 
-// GetAllUser 查询所有用户
-func GetAllUser() (users []model.User) {
-	users = make([]model.User, 0)
-	global.DB.Find(&users)
-	return users
-}
-
 // CreateCaptcha 生成验证码
 func CreateCaptcha(captcha *model.Captcha) (err error) {
 	if err = global.DB.Create(captcha).Error; err != nil {
@@ -77,4 +70,16 @@ func DeleteCaptchaByEmail(email string) (err error) {
 		return err
 	}
 	return nil
+}
+
+// GetAdminOrganization 获取一个用户的所有Invitation，且在这些Invitation中该用户为管理员
+func GetAdminOrganization(uid uint64) (admin []model.Invitation) {
+	global.DB.Model(&model.Invitation{}).Where("user_id = ? AND is_valid = ? AND is_admin = ?", uid, true, true).Find(&admin)
+	return
+}
+
+// GetUserOrganization 获取一个用户的所有已生效Invitation
+func GetUserOrganization(uid uint64) (invitations []model.Invitation) {
+	global.DB.Model(&model.Invitation{}).Where("user_id = ? AND is_valid = ?", uid, true).Find(&invitations)
+	return
 }

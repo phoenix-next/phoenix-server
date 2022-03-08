@@ -70,8 +70,8 @@ func DeletePost(c *gin.Context) {
 		c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "删帖成功"})
 		return
 	}
-	for _, adminID := range service.GetOrganizationAdmin(post.OrgID) {
-		if adminID == user.ID {
+	for _, admin := range service.GetOrganizationAdmin(post.OrgID) {
+		if admin.UserID == user.ID {
 			global.DB.Delete(&post)
 			c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "删帖成功"})
 			return
@@ -108,8 +108,8 @@ func UpdatePost(c *gin.Context) {
 		c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "更新帖子成功"})
 		return
 	}
-	for _, adminID := range service.GetOrganizationAdmin(post.OrgID) {
-		if adminID == user.ID {
+	for _, admin := range service.GetOrganizationAdmin(post.OrgID) {
+		if admin.UserID == user.ID {
 			global.DB.Model(&post).Updates(model.Post{Content: data.Content, Title: data.Title, Type: data.Type})
 			c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "更新帖子成功"})
 			return
@@ -281,8 +281,8 @@ func UpdateComment(c *gin.Context) {
 		c.JSON(http.StatusOK, model.GetPostA{Success: true, Message: "评论更新成功"})
 		return
 	}
-	for _, adminID := range service.GetOrganizationAdmin(comment.OrgID) {
-		if adminID == user.ID {
+	for _, admin := range service.GetOrganizationAdmin(comment.OrgID) {
+		if admin.UserID == user.ID {
 			global.DB.Model(&comment).Updates(model.Comment{Content: data.Content})
 			c.JSON(http.StatusOK, model.GetPostA{Success: true, Message: "评论更新成功"})
 			return
@@ -317,8 +317,8 @@ func DeleteComment(c *gin.Context) {
 		c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "删除评论成功"})
 		return
 	}
-	for _, adminID := range service.GetOrganizationAdmin(comment.OrgID) {
-		if adminID == user.ID {
+	for _, admin := range service.GetOrganizationAdmin(comment.OrgID) {
+		if admin.UserID == user.ID {
 			global.DB.Delete(&comment)
 			c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "删除评论成功"})
 			return

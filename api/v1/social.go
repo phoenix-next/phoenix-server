@@ -292,7 +292,7 @@ func DeleteOrganizationMember(c *gin.Context) {
 	}
 	// 管理员权限判定
 	for _, admin := range service.GetOrganizationAdmin(oid) {
-		if admin == user.ID {
+		if admin.UserID == user.ID {
 			global.DB.Delete(&rel)
 			c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "删除成员成功"})
 			return
