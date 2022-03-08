@@ -106,6 +106,16 @@ func InitRouter(r *gin.Engine) {
 		tutorialRouter.PUT("/:id", v1.UpdateTutorial)
 		tutorialRouter.GET("/:id/version", v1.GetTutorialVersion)
 	}
+
+	// 比赛模块
+	contestRouter := basicRouter.Group("/contests")
+	{
+		contestRouter.GET("", v1.GetContestList)
+		contestRouter.POST("", v1.CreateContest)
+		contestRouter.GET("/:id", v1.GetContest)
+		contestRouter.DELETE("/:id", v1.DeleteContest)
+		contestRouter.PUT("/:id", v1.UpdateContest)
+	}
 }
 
 func RunRouter(r *gin.Engine) {

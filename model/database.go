@@ -32,12 +32,13 @@ type Comment struct {
 
 // 评测模块
 
-// Competition 比赛
-type Competition struct {
+// Contest 比赛
+type Contest struct {
 	ID        uint64    `gorm:"primary_key; autoIncrement; not null;" json:"id"`
 	OrgID     uint64    `gorm:"not null;" json:"orgID"` // 比赛所属的组织ID
 	Name      string    `gorm:"size:32; not null;" json:"name"`
 	Profile   string    `gorm:"not null;" json:"profile"`
+	Readable  int       `gorm:"not null" json:"readable"`
 	StartTime time.Time `json:"startTime"`
 	EndTime   time.Time `json:"endTime"`
 }

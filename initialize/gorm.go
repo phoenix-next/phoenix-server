@@ -60,7 +60,7 @@ func InitMySQL() *gorm.DB {
 		&model.User{},
 		&model.Problem{},
 		&model.Tutorial{},
-		&model.Competition{},
+		&model.Contest{},
 		&model.Organization{},
 		&model.Comment{},
 		&model.Captcha{},
