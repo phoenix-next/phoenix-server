@@ -188,10 +188,12 @@ func GetTutorialVersion(c *gin.Context) {
 // @Success      200      {object}  model.GetTutorialListA  "是否成功，返回信息，教程列表"
 // @Router       /api/v1/tutorials [get]
 func GetTutorialList(c *gin.Context) {
-	allTutorials := service.GetAllTutorials()
+	// 获取请求中的数据
 	page, _ := strconv.Atoi(c.Query("page"))
 	sorter, _ := strconv.Atoi(c.Query("sorter"))
 	keyWord := c.Query("keyWord")
+	// 获取所有的教程
+	allTutorials := service.GetAllTutorials()
 	// 教程名称搜索关键字，模糊查找
 	var fuzzyTutorials []model.Tutorial
 	for _, tutorial := range allTutorials {
@@ -199,6 +201,16 @@ func GetTutorialList(c *gin.Context) {
 			fuzzyTutorials = append(fuzzyTutorials, tutorial)
 		}
 	}
+	// 找不到教程的情况
+	if len(fuzzyTutorials) == 0 {
+		c.JSON(http.StatusOK, model.GetTutorialListA{
+			Success:      true,
+			Message:      "获取教程成功",
+			Total:        0,
+			TutorialList: []model.Tutorial{}})
+		return
+	}
+	// 对教程进行分页
 	size := 10
 	sort.Slice(fuzzyTutorials, func(i, j int) bool {
 		if math.Abs(float64(sorter)) == 1 {
@@ -210,6 +222,6 @@ func GetTutorialList(c *gin.Context) {
 		}
 	})
 	tutorials := fuzzyTutorials[(page-1)*size : int(math.Min(float64(page*size), float64(len(fuzzyTutorials))))]
-
+	// 返回响应
 	c.JSON(http.StatusOK, model.GetTutorialListA{Success: true, Message: "获取成功", TutorialList: tutorials, Total: len(tutorials)})
 }
