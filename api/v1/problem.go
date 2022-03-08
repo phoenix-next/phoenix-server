@@ -212,6 +212,15 @@ func GetProblemList(c *gin.Context) {
 			resProblems = append(resProblems, problem)
 		}
 	}
+	// 找不到题目的情况
+	if len(resProblems) == 0 {
+		c.JSON(http.StatusOK, model.GetProblemListA{
+			Success:     true,
+			Message:     "获取成功",
+			ProblemList: []model.Problem{},
+			Total:       0})
+		return
+	}
 	// 对题目进行分页并返回
 	pagedProblems := service.GetProblemsByPage(resProblems, page, sorter)
 	c.JSON(http.StatusOK, model.GetProblemListA{
