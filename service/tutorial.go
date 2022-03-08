@@ -1,9 +1,9 @@
 package service
 
 import (
+	"errors"
 	"github.com/phoenix-next/phoenix-server/global"
 	"github.com/phoenix-next/phoenix-server/model"
-	"github.com/pkg/errors"
 	"gorm.io/gorm"
 	"strconv"
 )
