@@ -21,10 +21,7 @@ import (
 // @Success      200      {object}  model.CommonA              "是否成功，返回信息"
 // @Router       /api/v1/organizations [post]
 func CreateOrganization(c *gin.Context) {
-	var data model.CreateOrganizationQ
-	if err := c.ShouldBindJSON(&data); err != nil {
-		global.LOG.Panic("CreateOrganization: bind data error")
-	}
+	data := utils.BindJsonData(c, &model.CreateOrganizationQ{}).(*model.CreateOrganizationQ)
 	if _, notFound := service.GetOrganizationByName(data.Name); !notFound {
 		global.LOG.Warn("CreateOrganization: find same organization name")
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "已存在该名称的组织"})
@@ -87,10 +84,7 @@ func GetOrganization(c *gin.Context) {
 // @Success      200      {object}  model.CommonA              "是否成功，返回信息"
 // @Router       /api/v1/organizations/{id} [put]
 func UpdateOrganization(c *gin.Context) {
-	var data model.CreateOrganizationQ
-	if err := c.ShouldBindJSON(&data); err != nil {
-		global.LOG.Panic("UpdateOrganization: bind data error")
-	}
+	data := utils.BindJsonData(c, &model.CreateOrganizationQ{}).(*model.CreateOrganizationQ)
 	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
 	organization, _ := service.GetOrganizationByID(id)
 	if _, notFound := service.GetOrganizationByName(data.Name); !notFound && data.Name != organization.Name {

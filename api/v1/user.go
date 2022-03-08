@@ -23,10 +23,7 @@ import (
 // @Success      200   {object}  model.CommonA    "是否成功，返回信息"
 // @Router       /api/v1/users [post]
 func Register(c *gin.Context) {
-	var data model.RegisterQ
-	if err := c.ShouldBindJSON(&data); err != nil {
-		global.LOG.Panic("Register: bind data error")
-	}
+	data := utils.BindJsonData(c, &model.RegisterQ{}).(*model.RegisterQ)
 	if _, notFound := service.GetUserByEmail(data.Email); !notFound {
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "用户已存在"})
 		return
@@ -61,16 +58,12 @@ func Register(c *gin.Context) {
 // @Success      200   {object}  model.CommonA      "是否成功，返回信息"
 // @Router       /api/v1/captcha [post]
 func GetCaptcha(c *gin.Context) {
-	var data model.GetCaptchaQ
-	err := c.ShouldBindJSON(&data)
-	if err != nil {
-		global.LOG.Panic("GetCaptcha: bind data error")
-	}
+	data := utils.BindJsonData(c, &model.GetCaptchaQ{}).(*model.GetCaptchaQ)
 	confirmNumber := rand.New(rand.NewSource(time.Now().UnixNano())).Int() % 1000000
-	if err = service.DeleteCaptchaByEmail(data.Email); err != nil {
+	if err := service.DeleteCaptchaByEmail(data.Email); err != nil {
 		global.LOG.Panic("GetCaptcha: delete captcha error")
 	}
-	if err = service.CreateCaptcha(&model.Captcha{Email: data.Email, Captcha: uint64(confirmNumber)}); err != nil {
+	if err := service.CreateCaptcha(&model.Captcha{Email: data.Email, Captcha: uint64(confirmNumber)}); err != nil {
 		global.LOG.Panic("GetCaptcha: create captcha error")
 	}
 	utils.SendRegisterEmail(data.Email, confirmNumber)
@@ -87,11 +80,7 @@ func GetCaptcha(c *gin.Context) {
 // @Success      200   {object}  model.LoginA  "是否成功，返回信息，Token"
 // @Router       /api/v1/tokens [post]
 func Login(c *gin.Context) {
-	var data model.LoginQ
-	err := c.ShouldBindJSON(&data)
-	if err != nil {
-		global.LOG.Panic("Login: bind data error")
-	}
+	data := utils.BindJsonData(c, &model.LoginQ{}).(*model.LoginQ)
 	user, notFound := service.GetUserByEmail(data.Email)
 	if notFound {
 		c.JSON(http.StatusOK, model.LoginA{Success: false, Message: "登录失败，邮箱不存在", Token: "", ID: 0})

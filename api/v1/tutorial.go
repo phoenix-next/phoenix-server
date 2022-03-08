@@ -26,10 +26,22 @@ import (
 // @Success      200      {object}  model.CommonA          "是否成功，返回信息"
 // @Router       /api/v1/tutorials [post]
 func CreateTutorial(c *gin.Context) {
-	// 获取数据
-	data := utils.BindJsonData(c, &model.CreateTutorialQ{}).(*model.CreateTutorialQ)
+	// 获取请求数据
+	var data model.CreateTutorialQ
+	if err := c.ShouldBind(&data); err != nil {
+		global.LOG.Panic("CreateTutorial: bind data error")
+	}
 	user := utils.SolveUser(c)
-	tutorial := model.Tutorial{Name: data.Name, OrgID: data.OrgID, CreatorID: user.ID, CreatorName: user.Name, Profile: data.Profile, Version: 1, Readable: data.Readable, Writable: data.Writable}
+	// 新建教程
+	tutorial := model.Tutorial{
+		Name:        data.Name,
+		OrgID:       data.OrgID,
+		CreatorID:   user.ID,
+		CreatorName: user.Name,
+		Profile:     data.Profile,
+		Version:     1,
+		Readable:    data.Readable,
+		Writable:    data.Writable}
 	if err := service.SaveTutorial(&tutorial); err != nil {
 		global.LOG.Warn("CreateTutorial;: create tutorial error")
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "创建教程失败"})
@@ -90,7 +102,10 @@ func GetTutorial(c *gin.Context) {
 // @Router       /api/v1/tutorials/{id} [put]
 func UpdateTutorial(c *gin.Context) {
 	// 获取数据
-	data := utils.BindJsonData(c, &model.UpdateTutorialQ{}).(*model.UpdateTutorialQ)
+	var data model.UpdateTutorialQ
+	if err := c.ShouldBind(&data); err != nil {
+		global.LOG.Panic("UpdateTutorial: bind data error")
+	}
 	//user := utils.SolveUser(c)
 	// TODO 判断可写权限
 	if tutorial, notFound := service.GetTutorialByID(data.ID); notFound {
@@ -101,7 +116,7 @@ func UpdateTutorial(c *gin.Context) {
 			return
 		}
 		tutorialOrigin := tutorial
-		if err := service.UpdateTutorial(&tutorial, data); err != nil {
+		if err := service.UpdateTutorial(&tutorial, &data); err != nil {
 			global.LOG.Panic("UpdateTutorial: save tutorial error")
 		}
 		if err := c.SaveUploadedFile(data.File, filepath.Join(global.VP.GetString("root_path"), "resource", "tutorials", service.GetTutorialFileName(tutorial))); err != nil {
@@ -174,11 +189,11 @@ func GetTutorialVersion(c *gin.Context) {
 // @Router       /api/v1/tutorials [get]
 func GetTutorialList(c *gin.Context) {
 	allTutorials := service.GetAllTutorials()
-	page, _ := strconv.Atoi(c.Request.FormValue("page"))
-	sorter, _ := strconv.Atoi(c.Request.FormValue("sorter"))
-	keyWord := c.Request.FormValue("keyWord")
+	page, _ := strconv.Atoi(c.Query("page"))
+	sorter, _ := strconv.Atoi(c.Query("sorter"))
+	keyWord := c.Query("keyWord")
 	// 教程名称搜索关键字，模糊查找
-	fuzzyTutorials := make([]model.Tutorial, 0)
+	var fuzzyTutorials []model.Tutorial
 	for _, tutorial := range allTutorials {
 		if fuzzy.Match(keyWord, tutorial.Name) {
 			fuzzyTutorials = append(fuzzyTutorials, tutorial)
