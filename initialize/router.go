@@ -33,9 +33,9 @@ func InitRouter(r *gin.Engine) {
 	// 登录模块
 	rawRouter := r.Group("/api/v1")
 	{
-		rawRouter.POST("/users", v1.Register)
-		rawRouter.POST("/captcha", v1.GetCaptcha)
-		rawRouter.POST("/tokens", v1.Login)
+		rawRouter.POST("/users", v1.CreateUser)
+		rawRouter.POST("/captcha", v1.CreateCaptcha)
+		rawRouter.POST("/tokens", v1.CreateToken)
 	}
 
 	// 除了登录模块之外，都需要身份认证
@@ -46,14 +46,16 @@ func InitRouter(r *gin.Engine) {
 	{
 		resourceRouter.StaticFS("/problem", http.Dir(global.VP.GetString("problem_path")))
 		resourceRouter.StaticFS("/tutorial", http.Dir(global.VP.GetString("tutorial_path")))
+		resourceRouter.StaticFS("/user", http.Dir(global.VP.GetString("user_path")))
 	}
 
 	// 用户模块
 	userRouter := basicRouter.Group("/users")
 	{
-		userRouter.GET("/profile", v1.GetProfile)
+		userRouter.PUT("", v1.UpdateUser)
+		userRouter.GET("/:id", v1.GetUser)
 		userRouter.GET("/organizations", v1.GetUserOrganization)
-		userRouter.GET("/invitations", v1.GetUserInvitations)
+		userRouter.GET("/invitations", v1.GetUserInvitation)
 	}
 
 	// 评测模块

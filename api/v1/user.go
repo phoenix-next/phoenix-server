@@ -13,17 +13,17 @@ import (
 	"time"
 )
 
-// Register
+// CreateUser
 // @Summary      注册
 // @Description  注册新用户
 // @Tags         登录模块
 // @Accept       json
 // @Produce      json
-// @Param        data  body      model.RegisterQ  true  "用户名, 邮箱, 密码, 验证码"
+// @Param        data  body      model.CreateUserQ  true  "用户名, 邮箱, 密码, 验证码"
 // @Success      200   {object}  model.CommonA    "是否成功，返回信息"
 // @Router       /api/v1/users [post]
-func Register(c *gin.Context) {
-	data := utils.BindJsonData(c, &model.RegisterQ{}).(*model.RegisterQ)
+func CreateUser(c *gin.Context) {
+	data := utils.BindJsonData(c, &model.CreateUserQ{}).(*model.CreateUserQ)
 	if _, notFound := service.GetUserByEmail(data.Email); !notFound {
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "用户已存在"})
 		return
@@ -40,70 +40,84 @@ func Register(c *gin.Context) {
 	}
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(data.Password), 12)
 	if err != nil {
-		global.LOG.Panic("Register: hash password error")
+		global.LOG.Panic("CreateUser: hash password error")
 	}
 	if err := service.CreateUser(&model.User{Name: data.Name, Password: string(hashedPassword), Email: data.Email}); err != nil {
-		global.LOG.Panic("Register: create user error")
+		global.LOG.Panic("CreateUser: create user error")
 	}
 	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "创建用户成功"})
 }
 
-// GetCaptcha
+// CreateCaptcha
 // @Summary      发送验证码
 // @Description  根据邮箱发送验证码，并更新数据库
 // @Tags         登录模块
 // @Accept       json
 // @Produce      json
-// @Param        data  body      model.GetCaptchaQ  true  "邮箱"
+// @Param        data  body      model.CreateCaptchaQ  true  "邮箱"
 // @Success      200   {object}  model.CommonA      "是否成功，返回信息"
 // @Router       /api/v1/captcha [post]
-func GetCaptcha(c *gin.Context) {
-	data := utils.BindJsonData(c, &model.GetCaptchaQ{}).(*model.GetCaptchaQ)
+func CreateCaptcha(c *gin.Context) {
+	data := utils.BindJsonData(c, &model.CreateCaptchaQ{}).(*model.CreateCaptchaQ)
 	confirmNumber := rand.New(rand.NewSource(time.Now().UnixNano())).Int() % 1000000
 	if err := service.DeleteCaptchaByEmail(data.Email); err != nil {
-		global.LOG.Panic("GetCaptcha: delete captcha error")
+		global.LOG.Panic("CreateCaptcha: delete captcha error")
 	}
 	if err := service.CreateCaptcha(&model.Captcha{Email: data.Email, Captcha: uint64(confirmNumber)}); err != nil {
-		global.LOG.Panic("GetCaptcha: create captcha error")
+		global.LOG.Panic("CreateCaptcha: create captcha error")
 	}
 	utils.SendRegisterEmail(data.Email, confirmNumber)
 	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "发送验证码成功"})
 }
 
-// Login
+// CreateToken
 // @Summary      用户登录
 // @Description  根据用户邮箱和密码等生成token，并将token返回给用户
 // @Tags         登录模块
 // @Accept       json
 // @Produce      json
-// @Param        data  body      model.LoginQ  true  "邮箱，密码"
-// @Success      200   {object}  model.LoginA  "是否成功，返回信息，Token"
+// @Param        data  body      model.CreateTokenQ  true  "邮箱，密码"
+// @Success      200   {object}  model.CreateTokenA  "是否成功，返回信息，Token"
 // @Router       /api/v1/tokens [post]
-func Login(c *gin.Context) {
-	data := utils.BindJsonData(c, &model.LoginQ{}).(*model.LoginQ)
+func CreateToken(c *gin.Context) {
+	data := utils.BindJsonData(c, &model.CreateTokenQ{}).(*model.CreateTokenQ)
 	user, notFound := service.GetUserByEmail(data.Email)
 	if notFound {
-		c.JSON(http.StatusOK, model.LoginA{Success: false, Message: "登录失败，邮箱不存在", Token: "", ID: 0})
+		c.JSON(http.StatusOK, model.CreateTokenA{Success: false, Message: "登录失败，邮箱不存在", Token: "", ID: 0})
 		return
 	}
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(data.Password)); err != nil {
-		c.JSON(http.StatusOK, model.LoginA{Success: false, Message: "登录失败，密码错误", Token: "", ID: 0})
+		c.JSON(http.StatusOK, model.CreateTokenA{Success: false, Message: "登录失败，密码错误", Token: "", ID: 0})
 		return
 	}
 	token := utils.GenerateToken(user.ID)
-	c.JSON(http.StatusOK, model.LoginA{Success: true, Message: "登录成功", Token: token, ID: user.ID})
+	c.JSON(http.StatusOK, model.CreateTokenA{Success: true, Message: "登录成功", Token: token, ID: user.ID})
 }
 
-// GetProfile
-// @Summary      获取用户资料
-// @Description  获取用户的详细资料
+// UpdateUser
+// @Summary      更新用户资料
+// @Description  更新发出请求的用户的详细资料
 // @Tags         用户模块
 // @Accept       json
 // @Produce      json
 // @Param        x-token  header    string             true  "token"
-// @Success      200      {object}  model.GetProfileA  "是否成功，返回信息，用户资料"
-// @Router       /api/v1/users/profile [get]
-func GetProfile(c *gin.Context) {
+// @Success      200      {object}  model.GetUserA  "是否成功，返回信息，用户资料"
+// @Router       /api/v1/users [put]
+func UpdateUser(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{"TODO": "logic"})
+}
+
+// GetUser
+// @Summary      获取用户资料
+// @Description  获取一个用户公开的详细资料
+// @Tags         用户模块
+// @Accept       json
+// @Produce      json
+// @Param        x-token  header    string             true  "token"
+// @Param        id       path      int                        true  "用户ID"
+// @Success      200      {object}  model.GetUserA  "是否成功，返回信息，用户资料"
+// @Router       /api/v1/users/{id} [get]
+func GetUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"TODO": "logic"})
 }
 
@@ -123,16 +137,16 @@ func GetUserOrganization(c *gin.Context) {
 	c.JSON(http.StatusOK, model.GetUserOrganizationA{Success: true, Message: "获取用户所属组织成功", Organization: relation})
 }
 
-// GetUserInvitations
+// GetUserInvitation
 // @Summary      获取用户收到的所有组织邀请
 // @Description  组织管理员会邀请用户进入，该接口获得一个用户收到的所有邀请
 // @Tags         用户模块
 // @Accept       json
 // @Produce      json
 // @Param        x-token  header    string                     true  "token"
-// @Success      200      {object}  model.GetUserInvitationsA  "是否成功，返回信息，组织信息列表"
+// @Success      200      {object}  model.GetUserInvitationA  "是否成功，返回信息，组织信息列表"
 // @Router       /api/v1/users/invitations [get]
-func GetUserInvitations(c *gin.Context) {
+func GetUserInvitation(c *gin.Context) {
 	// TODO 逻辑实现
 	c.JSON(http.StatusOK, gin.H{"TODO": "logic"})
 }

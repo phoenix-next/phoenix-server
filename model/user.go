@@ -11,30 +11,30 @@ type CommonA struct {
 	Message string `json:"message"`
 }
 
-type RegisterQ struct {
+type CreateUserQ struct {
 	Name     string `json:"name"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
 	Captcha  string `json:"captcha"`
 }
 
-type GetCaptchaQ struct {
+type CreateCaptchaQ struct {
 	Email string `json:"email"`
 }
 
-type LoginQ struct {
+type CreateTokenQ struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
-type LoginA struct {
+type CreateTokenA struct {
 	Success bool   `json:"success"`
 	Message string `json:"message"`
 	Token   string `json:"token"`
 	ID      uint64 `json:"id"`
 }
 
-type GetProfileA struct {
+type GetUserA struct {
 	Success bool   `json:"success"`
 	Message string `json:"message"`
 	Name    string `json:"name"`
@@ -46,7 +46,7 @@ type GetUserOrganizationA struct {
 	Organization []OrganizationT `json:"organization"`
 }
 
-type GetUserInvitationsA struct {
+type GetUserInvitationA struct {
 	Success      bool            `json:"success"`
 	Message      string          `json:"message"`
 	Organization []OrganizationT `json:"organization"`
