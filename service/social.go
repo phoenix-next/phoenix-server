@@ -22,14 +22,6 @@ func IsUserInThisOrganization(uid uint64, orgID uint64) (ok bool, err error) {
 
 // 数据库操作
 
-// DeleteOrganizationByID 根据ID删除组织
-func DeleteOrganizationByID(ID uint64) (err error) {
-	if err = global.DB.Where("id = ?", ID).Delete(model.Organization{}).Error; err != nil {
-		return err
-	}
-	return nil
-}
-
 // GetOrganizationByID 根据组织 ID 查询某个组织
 func GetOrganizationByID(ID uint64) (organization model.Organization, notFound bool) {
 	err := global.DB.First(&organization, ID).Error

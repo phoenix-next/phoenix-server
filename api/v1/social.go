@@ -111,11 +111,28 @@ func UpdateOrganization(c *gin.Context) {
 // @Success      200      {object}  model.CommonA                   "是否成功，返回信息"
 // @Router       /api/v1/organizations/{id} [delete]
 func DeleteOrganization(c *gin.Context) {
-	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
-	if err := service.DeleteOrganizationByID(id); err != nil {
-		global.LOG.Panic("DeleteOrganization: delete organization error")
+	// 获取请求数据
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "请求参数非法"})
+		return
 	}
-	// TODO 删除已加入某组织的关系
+	// 组织的存在性判定
+	org, notFound := service.GetOrganizationByID(id)
+	if notFound {
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "该组织不存在"})
+		return
+	}
+	// 用户权限判定
+	user := utils.SolveUser(c)
+	if user.ID != org.CreatorID {
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "用户没有权限进行该操作"})
+		return
+	}
+	// 维护成员 - 组织关系
+	global.DB.Where("org_id = ?", org.ID).Delete(&model.Invitation{})
+	// 删除组织元数据
+	global.DB.Delete(&org)
 	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "删除组织成功"})
 }
 

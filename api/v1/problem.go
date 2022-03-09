@@ -68,30 +68,39 @@ func CreateProblem(c *gin.Context) {
 // @Success      200      {object}  model.GetProblemA  "题目ID，题目名称，题目难度，可读权限，可写权限，组织ID，输入文件，输出文件，题目描述"
 // @Router       /api/v1/problems/{id} [get]
 func GetProblem(c *gin.Context) {
-	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
-
-	if problem, notFound := service.GetProblemByID(id); notFound {
-		c.JSON(http.StatusOK, model.GetProblemA{Success: false, Message: "找不到该题目的信息"})
-	} else {
-		if !service.JudgeReadPermission(problem.OrgID, problem.Readable, problem.Creator, c) {
-			c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "您对该题目无可读权限"})
-			return
-		}
-		c.JSON(http.StatusOK, model.GetProblemA{
-			Success:      true,
-			Message:      "获取题目成功",
-			ID:           problem.ID,
-			Name:         problem.Name,
-			Difficulty:   problem.Difficulty,
-			Readable:     problem.Readable,
-			Writable:     problem.Writable,
-			Organization: problem.OrgID,
-			Creator:      problem.Creator,
-			Input:        service.GetProblemFileUrl(&problem, "input"),
-			Output:       service.GetProblemFileUrl(&problem, "output"),
-			Description:  service.GetProblemFileUrl(&problem, "description"),
-		})
+	// 获取请求参数
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusOK, model.GetProblemA{Success: false, Message: "请求参数非法"})
+		return
 	}
+	// 题目的存在性判定
+	problem, notFound := service.GetProblemByID(id)
+	if notFound {
+		c.JSON(http.StatusOK, model.GetProblemA{Success: false, Message: "找不到该题目的信息"})
+		return
+	}
+	// 用户权限判定
+	if !service.JudgeReadPermission(problem.OrgID, problem.Readable, problem.Creator, c) {
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "您对该题目无可读权限"})
+		return
+	}
+	// 返回结果
+	c.JSON(http.StatusOK, model.GetProblemA{
+		Success:      true,
+		Message:      "获取题目成功",
+		ID:           problem.ID,
+		Name:         problem.Name,
+		Difficulty:   problem.Difficulty,
+		Readable:     problem.Readable,
+		Writable:     problem.Writable,
+		Organization: problem.OrgID,
+		Creator:      problem.Creator,
+		Input:        service.GetProblemFileUrl(&problem, "input"),
+		Output:       service.GetProblemFileUrl(&problem, "output"),
+		Description:  service.GetProblemFileUrl(&problem, "description"),
+	})
+
 }
 
 // UpdateProblem
@@ -147,17 +156,24 @@ func UpdateProblem(c *gin.Context) {
 // @Success      200      {object}  model.CommonA         "是否成功，返回信息"
 // @Router       /api/v1/problems/{id} [delete]
 func DeleteProblem(c *gin.Context) {
-	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
-	if _, notFound := service.GetProblemByID(id); notFound {
-		c.JSON(http.StatusOK, model.CommonA{
-			Success: false,
-			Message: "找不到该题目的信息"})
-	} else {
-		if err := service.DeleteProblemByID(id); err != nil {
-			global.LOG.Panic("DeleteProblem: delete problem error")
-		}
-		c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "删除题目成功"})
+	// 获取请求参数
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "请求参数非法"})
+		return
 	}
+	// 题目的存在性判定
+	problem, notFound := service.GetProblemByID(id)
+	if notFound {
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "找不到该题目的信息"})
+		return
+	}
+	// 删除题目
+	if err = global.DB.Delete(&problem).Error; err != nil {
+		global.LOG.Panic("DeleteProblem: delete problem error")
+	}
+	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "删除题目成功"})
+
 }
 
 // GetProblemVersion
@@ -171,14 +187,20 @@ func DeleteProblem(c *gin.Context) {
 // @Success      200      {object}  model.GetProblemVersionA  "是否成功，返回信息，题目版本"
 // @Router       /api/v1/problems/{id}/version [get]
 func GetProblemVersion(c *gin.Context) {
-	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
-	if problem, notFound := service.GetProblemByID(id); notFound {
-		c.JSON(http.StatusOK, model.GetProblemVersionA{
-			Success: false,
-			Message: "找不到该题目的信息"})
-	} else {
-		c.JSON(http.StatusOK, model.GetProblemVersionA{Success: true, Message: "获取题目版本成功", Version: problem.Version})
+	// 获取请求数据
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusOK, model.GetProblemVersionA{Success: false, Message: "找不到该题目的信息"})
+		return
 	}
+	// 题目的存在性判定
+	problem, notFound := service.GetProblemByID(id)
+	if notFound {
+		c.JSON(http.StatusOK, model.GetProblemVersionA{Success: false, Message: "找不到该题目的信息"})
+		return
+	}
+	c.JSON(http.StatusOK, model.GetProblemVersionA{Success: true, Message: "获取题目版本成功", Version: problem.Version})
+
 }
 
 // GetProblemList
