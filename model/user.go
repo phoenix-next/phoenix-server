@@ -58,9 +58,9 @@ type GetUserInvitationA struct {
 }
 
 type UpdateUserQ struct {
-	Name           string                `form:"name"`
-	Password       string                `form:"password"`
-	RepeatPassword string                `form:"repeatPassword"`
-	Profile        string                `form:"profile"`
-	Avatar         *multipart.FileHeader `form:"avatar" swaggerignore:"true"`
+	Name        string                `form:"name"`
+	Password    string                `form:"password"`
+	OldPassword string                `form:"oldPassword"`
+	Profile     string                `form:"profile"`
+	Avatar      *multipart.FileHeader `form:"avatar" swaggerignore:"true"`
 }

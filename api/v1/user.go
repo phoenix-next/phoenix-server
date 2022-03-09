@@ -9,6 +9,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"math/rand"
 	"net/http"
+	"path/filepath"
 	"strconv"
 	"time"
 )
@@ -101,17 +102,40 @@ func CreateToken(c *gin.Context) {
 // @Accept       multipart/form-data
 // @Produce      json
 // @Param        x-token  header    string          true  "token"
-// @Param        data     body      model.UpdateUserQ  true  "用户名，密码，重复密码，用户简介，用户头像"
+// @Param        data     body      model.UpdateUserQ  true  "用户名，密码，旧密码，用户简介，用户头像"
 // @Success      200      {object}  model.CommonA      "是否成功，返回信息"
 // @Router       /api/v1/users [put]
 func UpdateUser(c *gin.Context) {
 	// 获取请求数据
+	user := utils.SolveUser(c)
 	var data model.UpdateUserQ
 	if err := c.ShouldBind(&data); err != nil {
 		global.LOG.Panic("UpdateUser: bind data error")
 	}
-	// TODO
-	c.JSON(http.StatusOK, gin.H{"TODO": "logic"})
+	// 按照需要更新数据
+	if data.Name != "" {
+		user.Name = data.Name
+	}
+	if data.Password != "" {
+		hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(data.OldPassword), 12)
+		if string(hashedPassword) != user.Password {
+			c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "当前密码输入不正确"})
+			return
+		}
+		hashedPassword, _ = bcrypt.GenerateFromPassword([]byte(data.Password), 12)
+		user.Password = string(hashedPassword)
+	}
+	if data.Profile != "" {
+		user.Profile = data.Profile
+	}
+	if data.Avatar != nil {
+		filename := service.GetAvatarFilename(user.ID)
+		c.SaveUploadedFile(data.Avatar, filepath.Join(global.VP.GetString("user_path"), filename))
+		user.Avatar = "resource/users/" + service.GetAvatarFilename(user.ID)
+	}
+	// 进行数据库操作并返回
+	global.DB.Save(&user)
+	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "更新用户信息成功"})
 }
 
 // GetUser

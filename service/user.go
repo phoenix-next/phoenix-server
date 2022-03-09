@@ -44,8 +44,8 @@ func JudgeWritePermission(oid uint64, writable int, creatorID uint64, c *gin.Con
 	}
 }
 
-// GetAvatarPath 根据用户ID获取用户头像的文件名
-func GetAvatarPath(uid uint64) string {
+// GetAvatarFilename 根据用户ID获取用户头像的文件名
+func GetAvatarFilename(uid uint64) string {
 	return strconv.FormatUint(uid, 10) + "_avatar"
 }
 
