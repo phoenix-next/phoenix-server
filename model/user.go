@@ -1,5 +1,7 @@
 package model
 
+import "mime/multipart"
+
 type OrganizationT struct {
 	OrgID   uint64 `json:"orgID"`
 	OrgName string `json:"orgName"`
@@ -38,6 +40,9 @@ type GetUserA struct {
 	Success bool   `json:"success"`
 	Message string `json:"message"`
 	Name    string `json:"name"`
+	Email   string `json:"email"`
+	Profile string `json:"profile"`
+	Avatar  string `json:"avatar"`
 }
 
 type GetUserOrganizationA struct {
@@ -50,4 +55,12 @@ type GetUserInvitationA struct {
 	Success      bool            `json:"success"`
 	Message      string          `json:"message"`
 	Organization []OrganizationT `json:"organization"`
+}
+
+type UpdateUserQ struct {
+	Name           string                `form:"name"`
+	Password       string                `form:"password"`
+	RepeatPassword string                `form:"repeatPassword"`
+	Profile        string                `form:"profile"`
+	Avatar         *multipart.FileHeader `form:"avatar" swaggerignore:"true"`
 }

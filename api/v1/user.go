@@ -20,7 +20,7 @@ import (
 // @Accept       json
 // @Produce      json
 // @Param        data  body      model.CreateUserQ  true  "用户名, 邮箱, 密码, 验证码"
-// @Success      200   {object}  model.CommonA    "是否成功，返回信息"
+// @Success      200   {object}  model.CommonA         "是否成功，返回信息"
 // @Router       /api/v1/users [post]
 func CreateUser(c *gin.Context) {
 	data := utils.BindJsonData(c, &model.CreateUserQ{}).(*model.CreateUserQ)
@@ -98,10 +98,11 @@ func CreateToken(c *gin.Context) {
 // @Summary      更新用户资料
 // @Description  更新发出请求的用户的详细资料
 // @Tags         用户模块
-// @Accept       json
+// @Accept       multipart/form-data
 // @Produce      json
-// @Param        x-token  header    string             true  "token"
-// @Success      200      {object}  model.GetUserA  "是否成功，返回信息，用户资料"
+// @Param        x-token  header    string          true  "token"
+// @Param        data     body      model.UpdateUserQ  true  "用户名，密码，重复密码，用户简介，用户头像"
+// @Success      200      {object}  model.CommonA      "是否成功，返回信息"
 // @Router       /api/v1/users [put]
 func UpdateUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"TODO": "logic"})
@@ -114,8 +115,8 @@ func UpdateUser(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        x-token  header    string             true  "token"
-// @Param        id       path      int                        true  "用户ID"
-// @Success      200      {object}  model.GetUserA  "是否成功，返回信息，用户资料"
+// @Param        id       path      int             true  "用户ID"
+// @Success      200      {object}  model.GetUserA  "是否成功，返回信息，用户名，用户邮箱，用户头像，用户简介"
 // @Router       /api/v1/users/{id} [get]
 func GetUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"TODO": "logic"})
@@ -143,7 +144,7 @@ func GetUserOrganization(c *gin.Context) {
 // @Tags         用户模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string                     true  "token"
+// @Param        x-token  header    string                    true  "token"
 // @Success      200      {object}  model.GetUserInvitationA  "是否成功，返回信息，组织信息列表"
 // @Router       /api/v1/users/invitations [get]
 func GetUserInvitation(c *gin.Context) {

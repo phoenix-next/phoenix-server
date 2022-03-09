@@ -63,8 +63,8 @@ type User struct {
 	ID       uint64    `gorm:"primary_key; autoIncrement; not null;" json:"id"`
 	Name     string    `gorm:"size:32; not null;" json:"name"`
 	Email    string    `gorm:"size:32; not null; unique;" json:"email"`
-	Password string    `gorm:"size:128; not null;" json:"password"`
-	Avatar   string    `gorm:"size:256;" json:"avatar"`
+	Password string    `gorm:"size:32; not null;" json:"password"`
+	Avatar   string    `json:"avatar"`
 	Profile  string    `gorm:"size:256;" json:"profile"`
 	RegTime  time.Time `gorm:"autoCreateTime" json:"regTime"`
 }
@@ -73,8 +73,8 @@ type User struct {
 type Captcha struct {
 	ID       uint64    `gorm:"primary_key; autoIncrement; not null;" json:"id"`
 	Email    string    `gorm:"size:32; not null; unique;" json:"email"`
-	SendTime time.Time `gorm:"autoCreateTime" json:"sendTime"`
 	Captcha  uint64    `gorm:"not null;" json:"captcha"`
+	SendTime time.Time `gorm:"autoCreateTime" json:"sendTime"`
 }
 
 // Organization 组织
