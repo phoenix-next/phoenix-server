@@ -118,7 +118,8 @@ type Invitation struct {
 
 // ContestProblem 比赛问题关系
 type ContestProblem struct {
-	ID        uint64 `gorm:"primary_key; autoIncrement;not null;" json:"id"`
-	ContestID uint64 `gorm:"not null;" json:"contestID"`
-	ProblemID uint64 `gorm:"not null;" json:"problemID"`
+	ID          uint64 `gorm:"primary_key; autoIncrement;not null;" json:"id"`
+	ContestID   uint64 `gorm:"not null;" json:"contestID"`
+	ProblemID   uint64 `gorm:"not null;" json:"problemID"`
+	ProblemName string `gorm:"not null;" json:"problemName"`
 }

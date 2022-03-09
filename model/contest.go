@@ -6,6 +6,11 @@ type ContestT struct {
 	Profile string `json:"profile"`
 }
 
+type ProblemT struct {
+	ProblemID   uint64 `json:"problemID"`
+	ProblemName string `json:"problemName"`
+}
+
 type CreateContestQ struct {
 	OrgID      uint64   `json:"orgID"`
 	Name       string   `json:"name"`
@@ -15,12 +20,12 @@ type CreateContestQ struct {
 }
 
 type GetContestA struct {
-	Success    bool     `json:"success"`
-	Message    string   `json:"message"`
-	ID         uint64   `json:"ID"`
-	Name       string   `json:"name"`
-	Profile    string   `json:"profile"`
-	ProblemIDs []uint64 `json:"problemIDs"`
+	Success bool       `json:"success"`
+	Message string     `json:"message"`
+	ID      uint64     `json:"ID"`
+	Name    string     `json:"name"`
+	Profile string     `json:"profile"`
+	Problem []ProblemT `json:"problem"`
 }
 
 type UpdateContestQ struct {

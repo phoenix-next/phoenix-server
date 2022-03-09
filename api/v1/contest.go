@@ -38,10 +38,18 @@ func CreateContest(c *gin.Context) {
 				Readable: data.Readable}
 			global.DB.Create(&contest)
 			// 维护比赛 - 题目关系
-			for _, problem := range data.ProblemIDs {
+			for _, problemID := range data.ProblemIDs {
+				// 获得对应ID的题目
+				problem, notFound := service.GetProblemByID(problemID)
+				if notFound {
+					c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "题目列表中有题目不存在"})
+					return
+				}
+				// 维护关系
 				global.DB.Create(&model.ContestProblem{
-					ContestID: contest.ID,
-					ProblemID: problem})
+					ContestID:   contest.ID,
+					ProblemID:   problem.ID,
+					ProblemName: problem.Name})
 			}
 			// 返回结果
 			c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "创建比赛成功"})
@@ -76,15 +84,15 @@ func GetContest(c *gin.Context) {
 		return
 	}
 	// 获取所有题目
-	var problems []uint64
+	var problems []model.ProblemT
 	global.DB.Model(&model.ContestProblem{}).Where("contest_id = ?", contest.ID).Find(&problems)
 	// 返回结果
 	c.JSON(http.StatusOK, model.GetContestA{
-		Success:    true,
-		Message:    "获取比赛信息成功",
-		Name:       contest.Name,
-		Profile:    contest.Profile,
-		ProblemIDs: problems})
+		Success: true,
+		Message: "获取比赛信息成功",
+		Name:    contest.Name,
+		Profile: contest.Profile,
+		Problem: problems})
 }
 
 // UpdateContest
@@ -117,10 +125,18 @@ func UpdateContest(c *gin.Context) {
 	global.DB.Save(&contest)
 	// 更新题目 - 比赛关系
 	global.DB.Where("contest_id = ?", contest.ID).Delete(&model.ContestProblem{})
-	for _, problem := range data.ProblemIDs {
+	for _, problemID := range data.ProblemIDs {
+		// 获得对应ID的题目
+		problem, notFound := service.GetProblemByID(problemID)
+		if notFound {
+			c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "题目列表中有题目不存在"})
+			return
+		}
+		// 维护关系
 		global.DB.Create(&model.ContestProblem{
-			ContestID: contest.ID,
-			ProblemID: problem})
+			ContestID:   contest.ID,
+			ProblemID:   problem.ID,
+			ProblemName: problem.Name})
 	}
 	// 返回响应
 	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "修改比赛信息成功"})
