@@ -105,6 +105,12 @@ func CreateToken(c *gin.Context) {
 // @Success      200      {object}  model.CommonA      "是否成功，返回信息"
 // @Router       /api/v1/users [put]
 func UpdateUser(c *gin.Context) {
+	// 获取请求数据
+	var data model.UpdateUserQ
+	if err := c.ShouldBind(&data); err != nil {
+		global.LOG.Panic("UpdateUser: bind data error")
+	}
+	// TODO
 	c.JSON(http.StatusOK, gin.H{"TODO": "logic"})
 }
 
@@ -119,7 +125,26 @@ func UpdateUser(c *gin.Context) {
 // @Success      200      {object}  model.GetUserA  "是否成功，返回信息，用户名，用户邮箱，用户头像，用户简介"
 // @Router       /api/v1/users/{id} [get]
 func GetUser(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"TODO": "logic"})
+	// 获取请求数据
+	id, err := strconv.ParseUint(c.Query("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusOK, model.GetUserA{Success: false, Message: "请求参数非法"})
+		return
+	}
+	// 查询对应ID的用户
+	user, notFound := service.GetUserByID(id)
+	if notFound {
+		c.JSON(http.StatusOK, model.GetUserA{Success: false, Message: "找不到对应的用户"})
+		return
+	}
+	// 返回响应
+	c.JSON(http.StatusOK, model.GetUserA{
+		Success: true,
+		Message: "获取用户信息成功",
+		Name:    user.Name,
+		Email:   user.Email,
+		Avatar:  user.Avatar,
+		Profile: user.Profile})
 }
 
 // GetUserOrganization
@@ -140,7 +165,7 @@ func GetUserOrganization(c *gin.Context) {
 
 // GetUserInvitation
 // @Summary      获取用户收到的所有组织邀请
-// @Description  组织管理员会邀请用户进入，该接口获得一个用户收到的所有邀请
+// @Description  组织管理员会邀请用户进入，该接口用于获取用户未确认的所有邀请
 // @Tags         用户模块
 // @Accept       json
 // @Produce      json
@@ -148,6 +173,8 @@ func GetUserOrganization(c *gin.Context) {
 // @Success      200      {object}  model.GetUserInvitationA  "是否成功，返回信息，组织信息列表"
 // @Router       /api/v1/users/invitations [get]
 func GetUserInvitation(c *gin.Context) {
-	// TODO 逻辑实现
-	c.JSON(http.StatusOK, gin.H{"TODO": "logic"})
+	user := utils.SolveUser(c)
+	var invitations []model.OrganizationT
+	global.DB.Model(&model.Invitation{}).Where("user_id = ? AND is_valid = ?", user.ID, false).Find(&invitations)
+	c.JSON(http.StatusOK, model.GetUserInvitationA{Success: true, Message: "获取用户未确认邀请成功", Organization: invitations})
 }
