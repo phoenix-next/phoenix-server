@@ -234,8 +234,8 @@ func UpdateOrganizationAdmin(c *gin.Context) {
 }
 
 // DeleteOrganizationAdmin
-// @Summary      删除组织管理员
-// @Description  组织创建者在组织中删除一个管理员，管理员无法拒绝
+// @Summary      取消组织管理员
+// @Description  组织创建者在组织中取消某管理员的管理员权限，管理员无法拒绝
 // @Tags         社交模块
 // @Accept       json
 // @Produce      json
@@ -245,21 +245,36 @@ func UpdateOrganizationAdmin(c *gin.Context) {
 // @Success      200      {object}  model.CommonA  "是否成功，返回信息"
 // @Router       /api/v1/organizations/{id}/admins/{adminID} [delete]
 func DeleteOrganizationAdmin(c *gin.Context) {
+	// 获取请求中的数据
 	user := utils.SolveUser(c)
-	oid, _ := strconv.ParseUint(c.Param("id"), 10, 64)
-	uid, _ := strconv.ParseUint(c.Param("adminID"), 10, 64)
-	organization, _ := service.GetOrganizationByID(oid)
+	oid, err1 := strconv.ParseUint(c.Param("id"), 10, 64)
+	uid, err2 := strconv.ParseUint(c.Param("adminID"), 10, 64)
+	if err1 != nil || err2 != nil {
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "请求参数非法"})
+		return
+	}
+	// 组织的存在性判定
+	organization, notFound := service.GetOrganizationByID(oid)
+	if notFound {
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "该组织不存在"})
+		return
+	}
+	// 当前用户权限判定
 	if organization.CreatorID != user.ID {
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "组织成员无权操作"})
 		return
 	}
-	if rel, notFound := service.GetInvitationByUserOrg(uid, oid); notFound {
+	// 操作对象不在组织中的情况
+	rel, notFound := service.GetInvitationByUserOrg(uid, oid)
+	if notFound {
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "成员未加入组织"})
-	} else {
-		rel.IsAdmin = false
-		_ = service.UpdateInvitation(rel)
-		c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "删除管理员成功"})
+		return
 	}
+	// 请求成功
+	rel.IsAdmin = false
+	_ = service.UpdateInvitation(rel)
+	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "取消管理员成功"})
+
 }
 
 // DeleteOrganizationMember
