@@ -49,7 +49,8 @@ func CreateContest(c *gin.Context) {
 				global.DB.Create(&model.ContestProblem{
 					ContestID:   contest.ID,
 					ProblemID:   problem.ID,
-					ProblemName: problem.Name})
+					ProblemName: problem.Name,
+					Difficulty:  problem.Difficulty})
 			}
 			// 返回结果
 			c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "创建比赛成功"})
@@ -101,7 +102,7 @@ func GetContest(c *gin.Context) {
 // @Tags         比赛模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string                true  "token"
+// @Param        x-token  header    string                         true  "token"
 // @Param        data     body      model.UpdateContestQ  true  "比赛名称，比赛简介，比赛包含的题目ID"
 // @Success      200      {object}  model.CommonA         "是否成功，返回信息"
 // @Router       /api/v1/contests/{id} [put]
@@ -136,7 +137,8 @@ func UpdateContest(c *gin.Context) {
 		global.DB.Create(&model.ContestProblem{
 			ContestID:   contest.ID,
 			ProblemID:   problem.ID,
-			ProblemName: problem.Name})
+			ProblemName: problem.Name,
+			Difficulty:  problem.Difficulty})
 	}
 	// 返回响应
 	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "修改比赛信息成功"})
@@ -245,4 +247,43 @@ func GetContestList(c *gin.Context) {
 		Message:     "获取比赛列表成功",
 		Total:       len(filteredContests),
 		ContestList: slicedContests})
+}
+
+// GetOrganizationProblem
+// @Summary      获取组织中的题目
+// @Description  获取组织中的管理员可见的题目，即属于组织管理员可读的题目
+// @Tags         比赛模块
+// @Accept       json
+// @Produce      json
+// @Param        x-token  header    string                true  "token"
+// @Param        id       path      int                            true  "组织ID"
+// @Success      200      {object}  model.GetOrganizationProblemA  "是否成功，返回信息，题目列表"
+// @Router       /api/v1/organizations/{id}/problems [get]
+func GetOrganizationProblem(c *gin.Context) {
+	// 获取请求数据
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusOK, model.GetOrganizationProblemA{Success: false, Message: "组织ID不合法"})
+		return
+	}
+	// 组织的存在性判定
+	_, notFound := service.GetOrganizationByID(id)
+	if notFound {
+		c.JSON(http.StatusOK, model.GetOrganizationProblemA{Success: false, Message: "该组织不存在"})
+		return
+	}
+	// 用户权限判定
+	user := utils.SolveUser(c)
+	for _, admin := range service.GetOrganizationAdmin(id) {
+		if user.ID == admin.UserID {
+			// 获取组织中的题目
+			var problems []model.Problem
+			global.DB.Where("org_id = ? AND (readable = ? OR readable = ?)", id, 2, 1).Find(&problems)
+			// 返回响应
+			c.JSON(http.StatusOK, model.GetOrganizationProblemA{Success: true, Message: "获取组织可见的题目成功", ProblemList: problems})
+			return
+		}
+	}
+	// 用户没有权限操作
+	c.JSON(http.StatusOK, model.GetOrganizationProblemA{Success: false, Message: "用户没有管理员权限"})
 }

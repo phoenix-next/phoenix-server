@@ -82,6 +82,7 @@ func InitRouter(r *gin.Engine) {
 		teamRouter.DELETE("/:id/users/:userID", v1.DeleteOrganizationMember)
 		teamRouter.POST("/:id/admins", v1.UpdateOrganizationAdmin)
 		teamRouter.DELETE("/:id/admins/:adminID", v1.DeleteOrganizationAdmin)
+		teamRouter.GET("/:id/problems", v1.GetOrganizationProblem)
 	}
 
 	// 论坛模块

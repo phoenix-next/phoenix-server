@@ -9,6 +9,7 @@ type ContestT struct {
 type ProblemT struct {
 	ProblemID   uint64 `json:"problemID"`
 	ProblemName string `json:"problemName"`
+	Difficulty  int    `json:"difficulty"`
 }
 
 type CreateContestQ struct {
@@ -39,4 +40,10 @@ type GetContestListA struct {
 	Message     string     `json:"message"`
 	Total       int        `json:"total"`
 	ContestList []ContestT `json:"contestList"`
+}
+
+type GetOrganizationProblemA struct {
+	Success     bool      `json:"success"`
+	Message     string    `json:"message"`
+	ProblemList []Problem `json:"problemList"`
 }

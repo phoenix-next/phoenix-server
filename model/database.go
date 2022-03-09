@@ -122,4 +122,5 @@ type ContestProblem struct {
 	ContestID   uint64 `gorm:"not null;" json:"contestID"`
 	ProblemID   uint64 `gorm:"not null;" json:"problemID"`
 	ProblemName string `gorm:"not null;" json:"problemName"`
+	Difficulty  int    `gorm:"not null;" json:"difficulty"`
 }
