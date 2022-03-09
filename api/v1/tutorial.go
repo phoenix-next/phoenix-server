@@ -106,7 +106,7 @@ func UpdateTutorial(c *gin.Context) {
 		global.LOG.Panic("UpdateTutorial: bind data error")
 	}
 	//user := utils.SolveUser(c)
-	// TODO 判断可写权限
+
 	if tutorial, notFound := service.GetTutorialByID(data.ID); notFound {
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "找不到该教程的信息"})
 	} else {
@@ -115,6 +115,7 @@ func UpdateTutorial(c *gin.Context) {
 			return
 		}
 		tutorialOrigin := tutorial
+		// 判断可写权限
 		if err := service.UpdateTutorial(&tutorial, &data); err != nil {
 			global.LOG.Panic("UpdateTutorial: save tutorial error")
 		}

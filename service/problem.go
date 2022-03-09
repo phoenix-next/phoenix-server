@@ -30,17 +30,29 @@ func GetProblemFileUrl(problem *model.Problem, kind string) string {
 	return "resource/problem/" + GetProblemFileName(problem, kind)
 }
 
-// GetReadableProblems 获取所有可访问问题 TODO 组织管理员权限
+// GetReadableProblems 获取所有可访问问题
 func GetReadableProblems(c *gin.Context) (problems []model.Problem) {
 	user := utils.SolveUser(c)
 	allProblems := QueryAllProblems()
 	problems = make([]model.Problem, 0)
+
+	// 创建组织到是否是组织管理员的映射
+	orgAdminMap := make(map[uint64]bool)
+	for _, invitation := range GetUserOrganization(user.ID) {
+		orgAdminMap[invitation.OrgID] = invitation.IsAdmin
+	}
 	for _, problem := range allProblems {
 		if problem.Readable == 3 || problem.Creator == user.ID {
 			problems = append(problems, problem)
+		} else if isAdmin, ok := orgAdminMap[problem.OrgID]; ok && isAdmin {
+			// 在题目的组织中且是管理员，直接加入
+			problems = append(problems, problem)
+		} else if ok && !isAdmin && problem.Readable == 2 {
+			// 在题目所属组织中，但不是管理员，仅当可读为2
+			problems = append(problems, problem)
 		}
 	}
-	//TODO 组织管理员权限
+
 	return problems
 }
 
