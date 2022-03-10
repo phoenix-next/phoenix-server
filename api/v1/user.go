@@ -113,13 +113,16 @@ func UpdateUser(c *gin.Context) {
 		user.Name = name
 	}
 	if oldPassword, found := c.GetPostForm("oldPassword"); found {
-		hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(oldPassword), 12)
-		if string(hashedPassword) != user.Password {
+		if err := bcrypt.CompareHashAndPassword([]byte(oldPassword), []byte(user.Password)); err != nil {
 			c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "当前密码输入不正确"})
 			return
 		}
 		password, _ := c.GetPostForm("password")
-		hashedPassword, _ = bcrypt.GenerateFromPassword([]byte(password), 12)
+		if password == "" {
+			c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "新密码为空"})
+			return
+		}
+		hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(password), 12)
 		user.Password = string(hashedPassword)
 	}
 	if profile, found := c.GetPostForm("profile"); found {
