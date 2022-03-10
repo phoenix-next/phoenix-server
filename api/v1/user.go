@@ -108,29 +108,26 @@ func CreateToken(c *gin.Context) {
 func UpdateUser(c *gin.Context) {
 	// 获取请求数据
 	user := utils.SolveUser(c)
-	var data model.UpdateUserQ
-	if err := c.ShouldBind(&data); err != nil {
-		global.LOG.Panic("UpdateUser: bind data error")
-	}
 	// 按照需要更新数据
-	if data.Name != "" {
-		user.Name = data.Name
+	if name, found := c.GetPostForm("name"); found {
+		user.Name = name
 	}
-	if data.Password != "" {
-		hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(data.OldPassword), 12)
+	if oldPassword, found := c.GetPostForm("oldPassword"); found {
+		hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(oldPassword), 12)
 		if string(hashedPassword) != user.Password {
 			c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "当前密码输入不正确"})
 			return
 		}
-		hashedPassword, _ = bcrypt.GenerateFromPassword([]byte(data.Password), 12)
+		password, _ := c.GetPostForm("password")
+		hashedPassword, _ = bcrypt.GenerateFromPassword([]byte(password), 12)
 		user.Password = string(hashedPassword)
 	}
-	if data.Profile != "" {
-		user.Profile = data.Profile
+	if profile, found := c.GetPostForm("profile"); found {
+		user.Profile = profile
 	}
-	if data.Avatar != nil {
+	if avatar, err := c.FormFile("avatar"); err == nil && avatar != nil {
 		filename := service.GetAvatarFilename(user.ID)
-		c.SaveUploadedFile(data.Avatar, filepath.Join(global.VP.GetString("user_path"), filename))
+		c.SaveUploadedFile(avatar, filepath.Join(global.VP.GetString("user_path"), filename))
 		user.Avatar = "resource/users/" + service.GetAvatarFilename(user.ID)
 	}
 	// 进行数据库操作并返回
