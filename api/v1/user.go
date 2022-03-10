@@ -150,7 +150,7 @@ func UpdateUser(c *gin.Context) {
 // @Router       /api/v1/users/{id} [get]
 func GetUser(c *gin.Context) {
 	// 获取请求数据
-	id, err := strconv.ParseUint(c.Query("id"), 10, 64)
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusOK, model.GetUserA{Success: false, Message: "请求参数非法"})
 		return
