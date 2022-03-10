@@ -91,11 +91,13 @@ func GetContest(c *gin.Context) {
 	global.DB.Model(&model.ContestProblem{}).Where("contest_id = ?", contest.ID).Find(&problems)
 	// 返回结果
 	c.JSON(http.StatusOK, model.GetContestA{
-		Success: true,
-		Message: "获取比赛信息成功",
-		Name:    contest.Name,
-		Profile: contest.Profile,
-		Problem: problems})
+		Success:   true,
+		Message:   "获取比赛信息成功",
+		Name:      contest.Name,
+		Profile:   contest.Profile,
+		StartTime: contest.StartTime,
+		EndTime:   contest.EndTime,
+		Problem:   problems})
 }
 
 // UpdateContest

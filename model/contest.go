@@ -25,11 +25,13 @@ type CreateContestQ struct {
 }
 
 type GetContestA struct {
-	Success bool       `json:"success"`
-	Message string     `json:"message"`
-	Name    string     `json:"name"`
-	Profile string     `json:"profile"`
-	Problem []ProblemT `json:"problem"`
+	Success   bool       `json:"success"`
+	Message   string     `json:"message"`
+	Name      string     `json:"name"`
+	Profile   string     `json:"profile"`
+	StartTime time.Time  `json:"startTime"`
+	EndTime   time.Time  `json:"endTime"`
+	Problem   []ProblemT `json:"problem"`
 }
 
 type UpdateContestQ struct {
