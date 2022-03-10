@@ -37,18 +37,22 @@ func InitRouter(r *gin.Engine) {
 		rawRouter.POST("/captcha", v1.CreateCaptcha)
 		rawRouter.POST("/tokens", v1.CreateToken)
 	}
+	// 用户头像资源服务器
+	avatarRouter := rawRouter.Group("/resource")
+	{
+		avatarRouter.StaticFS("/user", http.Dir(global.VP.GetString("user_path")))
+	}
 
-	// 除了登录模块之外，都需要身份认证
+	// 除了登录模块和头像资源之外，都需要身份认证
 	basicRouter := rawRouter.Group("/")
 	basicRouter.Use(middleware.AuthRequired())
-	// 静态文件服务器，需要身份认证
+
+	// 静态资源服务器
 	resourceRouter := basicRouter.Group("/resource")
 	{
 		resourceRouter.StaticFS("/problem", http.Dir(global.VP.GetString("problem_path")))
 		resourceRouter.StaticFS("/tutorial", http.Dir(global.VP.GetString("tutorial_path")))
-		resourceRouter.StaticFS("/user", http.Dir(global.VP.GetString("user_path")))
 	}
-
 	// 用户模块
 	userRouter := basicRouter.Group("/users")
 	{
@@ -57,7 +61,6 @@ func InitRouter(r *gin.Engine) {
 		userRouter.GET("/organizations", v1.GetUserOrganization)
 		userRouter.GET("/invitations", v1.GetUserInvitation)
 	}
-
 	// 评测模块
 	problemRouter := basicRouter.Group("/problems")
 	{
@@ -68,7 +71,6 @@ func InitRouter(r *gin.Engine) {
 		problemRouter.PUT("/:id", v1.UpdateProblem)
 		problemRouter.GET("/:id/version", v1.GetProblemVersion)
 	}
-
 	// 组织模块
 	teamRouter := basicRouter.Group("/organizations")
 	{
@@ -84,7 +86,6 @@ func InitRouter(r *gin.Engine) {
 		teamRouter.DELETE("/:id/admins/:adminID", v1.DeleteOrganizationAdmin)
 		teamRouter.GET("/:id/problems", v1.GetOrganizationProblem)
 	}
-
 	// 论坛模块
 	forumRouter := basicRouter.Group("")
 	{
@@ -98,7 +99,6 @@ func InitRouter(r *gin.Engine) {
 		forumRouter.DELETE("/comments/:id", v1.DeleteComment)
 		forumRouter.GET("posts/:id/comments", v1.GetComment)
 	}
-
 	// 教程模块
 	tutorialRouter := basicRouter.Group("/tutorials")
 	{
@@ -109,7 +109,6 @@ func InitRouter(r *gin.Engine) {
 		tutorialRouter.PUT("/:id", v1.UpdateTutorial)
 		tutorialRouter.GET("/:id/version", v1.GetTutorialVersion)
 	}
-
 	// 比赛模块
 	contestRouter := basicRouter.Group("/contests")
 	{
