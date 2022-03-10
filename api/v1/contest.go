@@ -20,7 +20,7 @@ import (
 // @Accept       json
 // @Produce      json
 // @Param        x-token  header    string         true  "token"
-// @Param        data     body      model.CreateContestQ  true  "组织ID，比赛名称，比赛简介，可读权限，比赛包含的题目ID"
+// @Param        data     body      model.CreateContestQ  true  "组织ID，比赛名称，比赛简介，可读权限，开始时间，结束时间，题目列表"
 // @Success      200      {object}  model.CommonA  "是否成功，返回信息"
 // @Router       /api/v1/contests [post]
 func CreateContest(c *gin.Context) {
@@ -32,10 +32,12 @@ func CreateContest(c *gin.Context) {
 		if admin.UserID == user.ID {
 			// 创建比赛
 			contest := &model.Contest{
-				OrgID:    data.OrgID,
-				Profile:  data.Profile,
-				Name:     data.Name,
-				Readable: data.Readable}
+				OrgID:     data.OrgID,
+				Profile:   data.Profile,
+				Name:      data.Name,
+				Readable:  data.Readable,
+				StartTime: data.StartTime,
+				EndTime:   data.EndTime}
 			global.DB.Create(&contest)
 			// 维护比赛 - 题目关系
 			for _, problemID := range data.ProblemIDs {

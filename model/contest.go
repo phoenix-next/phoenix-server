@@ -1,5 +1,7 @@
 package model
 
+import "time"
+
 type ContestT struct {
 	ID      uint64 `json:"ID"`
 	Name    string `json:"name"`
@@ -13,11 +15,13 @@ type ProblemT struct {
 }
 
 type CreateContestQ struct {
-	OrgID      uint64   `json:"orgID"`
-	Name       string   `json:"name"`
-	Profile    string   `json:"profile"`
-	Readable   int      `json:"readable"`
-	ProblemIDs []uint64 `json:"problemIDs"`
+	OrgID      uint64    `json:"orgID"`
+	Name       string    `json:"name"`
+	Profile    string    `json:"profile"`
+	Readable   int       `json:"readable"`
+	StartTime  time.Time `json:"startTime"`
+	EndTime    time.Time `json:"endTime"`
+	ProblemIDs []uint64  `json:"problemIDs"`
 }
 
 type GetContestA struct {
