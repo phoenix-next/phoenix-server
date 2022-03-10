@@ -3,7 +3,7 @@ package model
 import "time"
 
 type ContestT struct {
-	ID      uint64 `json:"ID"`
+	ID      uint64 `json:"id"`
 	Name    string `json:"name"`
 	Profile string `json:"profile"`
 }
@@ -27,7 +27,7 @@ type CreateContestQ struct {
 type GetContestA struct {
 	Success bool       `json:"success"`
 	Message string     `json:"message"`
-	ID      uint64     `json:"ID"`
+	ID      uint64     `json:"id"`
 	Name    string     `json:"name"`
 	Profile string     `json:"profile"`
 	Problem []ProblemT `json:"problem"`
