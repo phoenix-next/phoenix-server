@@ -113,7 +113,7 @@ func UpdateUser(c *gin.Context) {
 		user.Name = name
 	}
 	if oldPassword, found := c.GetPostForm("oldPassword"); found {
-		if err := bcrypt.CompareHashAndPassword([]byte(oldPassword), []byte(user.Password)); err != nil {
+		if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(oldPassword)); err != nil {
 			c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "当前密码输入不正确"})
 			return
 		}
