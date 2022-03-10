@@ -71,7 +71,7 @@ func CreateContest(c *gin.Context) {
 // @Produce      json
 // @Param        x-token  header    string             true  "token"
 // @Param        id       path      int            true  "比赛ID"
-// @Success      200      {object}  model.GetContestA  "是否成功，返回信息，比赛ID，比赛名称，比赛简介，比赛包含的题目ID"
+// @Success      200      {object}  model.GetContestA  "是否成功，返回信息，比赛名称，比赛简介，题目列表"
 // @Router       /api/v1/contests/{id} [get]
 func GetContest(c *gin.Context) {
 	// 获取请求数据

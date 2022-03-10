@@ -27,7 +27,6 @@ type CreateContestQ struct {
 type GetContestA struct {
 	Success bool       `json:"success"`
 	Message string     `json:"message"`
-	ID      uint64     `json:"id"`
 	Name    string     `json:"name"`
 	Profile string     `json:"profile"`
 	Problem []ProblemT `json:"problem"`
