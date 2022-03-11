@@ -64,3 +64,9 @@ type UpdateUserQ struct {
 	Profile     string                `form:"profile"`
 	Avatar      *multipart.FileHeader `form:"avatar" swaggerignore:"true"`
 }
+
+type ForgetPasswordQ struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+	Captcha  string `json:"captcha"`
+}

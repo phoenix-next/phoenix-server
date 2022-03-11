@@ -60,6 +60,7 @@ func InitRouter(r *gin.Engine) {
 		userRouter.GET("/:id", v1.GetUser)
 		userRouter.GET("/organizations", v1.GetUserOrganization)
 		userRouter.GET("/invitations", v1.GetUserInvitation)
+		userRouter.POST("/forget", v1.ForgetPassword)
 	}
 	// 评测模块
 	problemRouter := basicRouter.Group("/problems")
