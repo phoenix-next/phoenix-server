@@ -202,3 +202,40 @@ func GetUserInvitation(c *gin.Context) {
 	global.DB.Model(&model.Invitation{}).Where("user_id = ? AND is_valid = ?", user.ID, false).Find(&invitations)
 	c.JSON(http.StatusOK, model.GetUserInvitationA{Success: true, Message: "获取用户未确认邀请成功", Organization: invitations})
 }
+
+// ForgetPassword
+// @Summary      忘记密码
+// @Description  用户忘记密码，根据邮箱验证码重新设置密码
+// @Tags         用户模块
+// @Accept       json
+// @Produce      json
+// @Param        x-token  header    string                    true  "token"
+// @Param        data     body      model.ForgetPasswordQ  true  "用户名，密码，旧密码，用户简介，用户头像"
+// @Success      200      {object}  model.CommonA      "是否成功，返回信息"
+// @Router       /api/v1/users/forget [post]
+func ForgetPassword(c *gin.Context) {
+	user := utils.SolveUser(c)
+	data := utils.BindJsonData(c, &model.ForgetPasswordQ{}).(*model.ForgetPasswordQ)
+	if realCaptcha, notFound := service.GetCaptchaByEmail(data.Email); notFound {
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "验证码未发送"})
+		return
+	} else {
+		captcha, err := strconv.ParseUint(data.Captcha, 10, 64)
+		if captcha != realCaptcha.Captcha || err != nil {
+			c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "验证码错误"})
+			return
+		}
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(data.Password), 12)
+		if err != nil {
+			global.LOG.Panic("ForgetPassword: hash password error")
+		}
+		user.Password = string(hashedPassword)
+		if err = global.DB.Save(user).Error; err != nil {
+			global.LOG.Panic("ForgetPassword: save password error")
+		}
+		// 删除验证码，防止用户二次利用验证码
+		service.DeleteCaptchaByEmail(data.Email)
+		c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "忘记密码成功"})
+	}
+
+}
