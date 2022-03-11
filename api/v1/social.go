@@ -281,6 +281,11 @@ func DeleteOrganizationAdmin(c *gin.Context) {
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "组织成员无权操作"})
 		return
 	}
+	// 创建者不能移除自己
+	if organization.CreatorID != uid {
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "您无法取消自己的创建者权限"})
+		return
+	}
 	// 操作对象不在组织中的情况
 	rel, notFound := service.GetInvitationByUserOrg(uid, oid)
 	if notFound {
@@ -314,6 +319,10 @@ func DeleteOrganizationMember(c *gin.Context) {
 	rel, notFound := service.GetInvitationByUserOrg(uid, oid)
 	if notFound {
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "成员未加入组织"})
+		return
+	}
+	if uid == user.ID {
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "您作为创建者无法删除自己"})
 		return
 	}
 	// 管理员权限判定
