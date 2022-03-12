@@ -103,15 +103,18 @@ func CreateToken(c *gin.Context) {
 // @Produce      json
 // @Param        x-token  header    string          true  "token"
 // @Param        data     body      model.UpdateUserQ  true  "用户名，密码，旧密码，用户简介，用户头像"
-// @Success      200      {object}  model.CommonA      "是否成功，返回信息"
+// @Success      200      {object}  model.CommonA          "是否成功，返回信息"
 // @Router       /api/v1/users [put]
 func UpdateUser(c *gin.Context) {
 	// 获取请求数据
 	user := utils.SolveUser(c)
-	// 按照需要更新数据
+	// 更新用户名
 	if name, found := c.GetPostForm("name"); found {
 		user.Name = name
+		// 维护成员 - 组织关系
+		global.DB.Model(&model.Invitation{}).Where("user_id = ?", user.ID).Update("user_name", name)
 	}
+	// 更新用户密码
 	if oldPassword, found := c.GetPostForm("oldPassword"); found {
 		if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(oldPassword)); err != nil {
 			c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "当前密码输入不正确"})
@@ -125,9 +128,11 @@ func UpdateUser(c *gin.Context) {
 		hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(password), 12)
 		user.Password = string(hashedPassword)
 	}
+	// 更新用户简介
 	if profile, found := c.GetPostForm("profile"); found {
 		user.Profile = profile
 	}
+	// 更新用户头像
 	if avatar, err := c.FormFile("avatar"); err == nil && avatar != nil {
 		filename := strconv.FormatUint(user.ID, 10) + "_avatar_" + avatar.Filename
 		c.SaveUploadedFile(avatar, filepath.Join(global.VP.GetString("user_path"), filename))
@@ -193,7 +198,7 @@ func GetUserOrganization(c *gin.Context) {
 // @Tags         用户模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string                    true  "token"
+// @Param        x-token  header    string                 true  "token"
 // @Success      200      {object}  model.GetUserInvitationA  "是否成功，返回信息，组织信息列表"
 // @Router       /api/v1/users/invitations [get]
 func GetUserInvitation(c *gin.Context) {

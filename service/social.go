@@ -48,14 +48,6 @@ func GetOrganizationByName(name string) (org model.Organization, notFound bool) 
 	}
 }
 
-// UpdateOrganization 根据信息更新组织
-func UpdateOrganization(organization *model.Organization, name string, profile string) (err error) {
-	organization.Name = name
-	organization.Profile = profile
-	err = global.DB.Save(organization).Error
-	return err
-}
-
 // CreateInvitation 生成组织邀请
 func CreateInvitation(invitation *model.Invitation) (err error) {
 	if err = global.DB.Create(invitation).Error; err != nil {
