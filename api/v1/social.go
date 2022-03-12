@@ -201,13 +201,25 @@ func CreateInvitation(c *gin.Context) {
 // @Success      200      {object}  model.CommonA  "是否成功，返回信息"
 // @Router       /api/v1/organizations/{id}/users [post]
 func UpdateOrganizationMember(c *gin.Context) {
-	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
-	user := utils.SolveUser(c)
-	if found, err := service.IsUserInThisOrganization(user.ID, id); found {
-		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "用户已存在该组织中"})
-	} else if err != nil {
-		global.LOG.Panic("UpdateOrganizationMember: update invitation error: user or org not exist")
+	// 获取请求数据
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "组织ID非法"})
+		return
 	}
+	user := utils.SolveUser(c)
+	// 用户与组织的关系判定
+	found, err := service.IsUserInThisOrganization(user.ID, id)
+	if found {
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "用户已存在该组织中"})
+		return
+	}
+	// 组织不存在的情况
+	if err != nil {
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "该组织不存在"})
+		return
+	}
+	// 更新数据库
 	rel, _ := service.GetInValidInvitationByUserOrg(user.ID, id)
 	rel.IsValid = true
 	service.UpdateInvitation(rel)
@@ -225,12 +237,22 @@ func UpdateOrganizationMember(c *gin.Context) {
 // @Success      200      {object}  model.GetOrganizationMemberA  "是否成功，返回信息，组织成员信息列表"
 // @Router       /api/v1/organizations/{id}/users [get]
 func GetOrganizationMember(c *gin.Context) {
-	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
+	// 获取请求数据
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "组织ID非法"})
+		return
+	}
+	// 找不到组织的情况
 	if _, notFound := service.GetOrganizationByID(id); notFound {
 		c.JSON(http.StatusOK, model.GetOrganizationMemberA{Success: false, Message: "找不到该组织的信息"})
-	} else {
-		c.JSON(http.StatusOK, model.GetOrganizationMemberA{Members: service.GetOrganizationMember(id), Success: true, Message: "获取成功"})
+		return
 	}
+	// 成功返回
+	c.JSON(http.StatusOK, model.GetOrganizationMemberA{
+		Members: service.GetOrganizationMember(id),
+		Success: true,
+		Message: "获取组织成员成功"})
 }
 
 // UpdateOrganizationAdmin
@@ -245,22 +267,36 @@ func GetOrganizationMember(c *gin.Context) {
 // @Success      200      {object}  model.CommonA  "是否成功，返回信息"
 // @Router       /api/v1/organizations/{id}/admins [post]
 func UpdateOrganizationAdmin(c *gin.Context) {
-	user := utils.SolveUser(c)
-	oid, _ := strconv.ParseUint(c.Param("id"), 10, 64)
-	data := utils.BindJsonData(c, &model.UpdateOrganizationAdminQ{}).(*model.UpdateOrganizationAdminQ)
-	uid, _ := strconv.ParseUint(data.ID, 10, 64)
-	organization, _ := service.GetOrganizationByID(oid)
-	if organization.CreatorID != user.ID {
-		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "组织成员无权操作"})
+	// 获取请求参数
+	oid, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "组织ID非法"})
 		return
 	}
-	if rel, notFound := service.GetInvitationByUserOrg(uid, oid); notFound {
-		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "成员未加入组织"})
-	} else {
-		rel.IsAdmin = true
-		_ = service.UpdateInvitation(rel)
-		c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "更新管理成功"})
+	user := utils.SolveUser(c)
+	uid := utils.BindJsonData(c, &model.UpdateOrganizationAdminQ{}).(*model.UpdateOrganizationAdminQ).ID
+	// 组织不存在的情况
+	organization, notFound := service.GetOrganizationByID(oid)
+	if notFound {
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "该组织不存在"})
+		return
 	}
+	// 请求用户权限判定
+	if organization.CreatorID != user.ID {
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "非组织创建者无权进行该操作"})
+		return
+	}
+	// 成员未加入组织的情况
+	rel, notFound := service.GetInvitationByUserOrg(uid, oid)
+	if notFound {
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "成员未加入组织"})
+		return
+	}
+	// 成功返回
+	rel.IsAdmin = true
+	_ = service.UpdateInvitation(rel)
+	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "更新管理成功"})
+
 }
 
 // DeleteOrganizationAdmin

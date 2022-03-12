@@ -36,5 +36,5 @@ type GetOrganizationMemberA struct {
 }
 
 type UpdateOrganizationAdminQ struct {
-	ID string `json:"id"`
+	ID uint64 `json:"id"`
 }
