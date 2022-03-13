@@ -222,7 +222,7 @@ func CreateInvitation(c *gin.Context) {
 	if err != nil {
 		global.LOG.Panic("CreateInvitation: create invitation error")
 	}
-	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "创建成功"})
+	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "成功发送邀请"})
 }
 
 // UpdateOrganizationMember
@@ -258,7 +258,7 @@ func UpdateOrganizationMember(c *gin.Context) {
 	rel, _ := service.GetInValidInvitationByUserOrg(user.ID, id)
 	rel.IsValid = true
 	service.UpdateInvitation(rel)
-	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "更新成功"})
+	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "成功进入该组织"})
 }
 
 // GetOrganizationMember
