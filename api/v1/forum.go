@@ -33,13 +33,11 @@ func CreatePost(c *gin.Context) {
 	}
 	// 成功新建帖子
 	post := model.Post{
-		Content:       data.Content,
-		OrgID:         data.OrgID,
-		CreatorID:     user.ID,
-		CreatorName:   user.Name,
-		CreatorAvatar: user.Avatar,
-		Type:          data.Type,
-		Title:         data.Title}
+		Content:   data.Content,
+		OrgID:     data.OrgID,
+		CreatorID: user.ID,
+		Type:      data.Type,
+		Title:     data.Title}
 	if err := global.DB.Create(&post).Error; err != nil {
 		global.LOG.Panic("CreatePost: can create post")
 	}
@@ -137,7 +135,7 @@ func GetPost(c *gin.Context) {
 		c.JSON(http.StatusOK, model.GetPostA{Success: false, Message: "帖子不存在"})
 		return
 	}
-	// 用户权限判定s
+	// 用户权限判定
 	user := utils.SolveUser(c)
 	ok, _ = service.IsUserInThisOrganization(user.ID, post.OrgID)
 	if !ok {
@@ -149,7 +147,7 @@ func GetPost(c *gin.Context) {
 	c.JSON(http.StatusOK, model.GetPostA{Success: true,
 		Message:       "",
 		CreatorID:     post.CreatorID,
-		CreatorName:   post.CreatorName,
+		CreatorName:   creator.Name,
 		CreatorAvatar: creator.Avatar,
 		Title:         post.Title,
 		Content:       post.Content,
@@ -188,7 +186,7 @@ func GetAllPost(c *gin.Context) {
 	}
 	// 得到所有帖子，并进行模糊查找
 	rawPosts := service.GetAllPosts(oid, postType)
-	var posts []model.PostT
+	var posts []model.Post
 	for _, item := range rawPosts {
 		if fuzzy.Match(keyWord, item.Title) {
 			posts = append(posts, item)
@@ -219,12 +217,24 @@ func GetAllPost(c *gin.Context) {
 		end = length
 	}
 	filteredPosts := posts[start:end]
-	// 返回
+	// 获取帖子创建者的名称和头像
+	var finalPosts []model.PostT
+	for _, item := range filteredPosts {
+		creator, _ := service.GetUserByID(item.CreatorID)
+		finalPosts = append(finalPosts, model.PostT{
+			ID:            item.ID,
+			CreatorID:     item.CreatorID,
+			UpdatedAt:     item.UpdatedAt,
+			Title:         item.Title,
+			CreatorAvatar: creator.Avatar,
+			CreatorName:   creator.Name})
+	}
+	// 返回响应
 	c.JSON(http.StatusOK, model.GetAllPostA{
 		Success: true,
 		Message: "",
 		Total:   len(posts),
-		Posts:   filteredPosts})
+		Posts:   finalPosts})
 }
 
 // CreateComment

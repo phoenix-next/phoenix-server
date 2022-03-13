@@ -50,8 +50,8 @@ func GetPostByID(id uint64) (post model.Post, notFound bool) {
 }
 
 // GetAllPosts 已知组织ID和帖子板块，获取所有帖子
-func GetAllPosts(oid uint64, postType int) (posts []model.PostT) {
-	global.DB.Model(&model.Post{}).Where("org_id = ? AND type = ?", oid, postType).Find(&posts)
+func GetAllPosts(oid uint64, postType int) (posts []model.Post) {
+	global.DB.Where("org_id = ? AND type = ?", oid, postType).Find(&posts)
 	return
 }
 

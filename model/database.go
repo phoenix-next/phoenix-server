@@ -6,15 +6,13 @@ import "time"
 
 // Post 帖子
 type Post struct {
-	ID            uint64    `gorm:"primary_key; autoIncrement; not null;" json:"id"`
-	OrgID         uint64    `gorm:"not null;" json:"orgID"`
-	CreatorID     uint64    `gorm:"not null;" json:"creatorID"`
-	CreatorName   string    `gorm:"not null;" json:"creatorName"`
-	CreatorAvatar string    `json:"creatorAvatar"`
-	Type          int       `gorm:"not null;" json:"type"` // 帖子所属的板块，0为公告板块，1为划水板块，2为讨论板块
-	Title         string    `gorm:"not null;" json:"title"`
-	Content       string    `gorm:"not null;" json:"content"`
-	UpdatedAt     time.Time `gorm:"autoUpdateTime; not null;" json:"updatedAt"`
+	ID        uint64    `gorm:"primary_key; autoIncrement; not null;" json:"id"`
+	OrgID     uint64    `gorm:"not null;" json:"orgID"`
+	CreatorID uint64    `gorm:"not null;" json:"creatorID"`
+	Type      int       `gorm:"not null;" json:"type"` // 帖子所属的板块，0为公告板块，1为划水板块，2为讨论板块
+	Title     string    `gorm:"not null;" json:"title"`
+	Content   string    `gorm:"not null;" json:"content"`
+	UpdatedAt time.Time `gorm:"autoUpdateTime; not null;" json:"updatedAt"`
 }
 
 // Comment 评论
