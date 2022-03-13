@@ -138,8 +138,8 @@ func UpdateOrganization(c *gin.Context) {
 }
 
 // DeleteOrganization
-// @Summary      删除一个组织
-// @Description  组织创建者删除该组织
+// @Summary      解散一个组织
+// @Description  组织创建者解散该组织
 // @Tags         社交模块
 // @Accept       json
 // @Produce      json
@@ -170,7 +170,7 @@ func DeleteOrganization(c *gin.Context) {
 	global.DB.Where("org_id = ?", org.ID).Delete(&model.Invitation{})
 	// 删除组织元数据
 	global.DB.Delete(&org)
-	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "删除组织成功"})
+	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "解散组织成功"})
 }
 
 // CreateInvitation

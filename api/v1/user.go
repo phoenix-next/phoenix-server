@@ -182,7 +182,7 @@ func GetUser(c *gin.Context) {
 // @Tags         用户模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string                      true  "token"
+// @Param        x-token  header    string         true  "token"
 // @Success      200      {object}  model.GetUserOrganizationA  "是否成功，返回信息，用户所属的组织列表"
 // @Router       /api/v1/users/organizations [get]
 func GetUserOrganization(c *gin.Context) {
@@ -214,6 +214,12 @@ func QuitOrganization(c *gin.Context) {
 	rel, notFound := service.GetInvitationByUserOrg(user.ID, oid)
 	if notFound {
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "未加入该组织"})
+		return
+	}
+	// 组织创建者不能退出该组织,只能解散
+	org, _ := service.GetOrganizationByID(oid)
+	if org.CreatorID == user.ID {
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "组织创建者不能退出组织"})
 		return
 	}
 	// 退出组织成功
