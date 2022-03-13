@@ -259,6 +259,7 @@ func UpdateOrganizationMember(c *gin.Context) {
 	// 用户拒绝加入组织
 	rel, _ := service.GetInValidInvitationByUserOrg(user.ID, id)
 	if !data.Accept {
+		global.DB.Delete(rel)
 		c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "已拒绝组织邀请"})
 		return
 	}
