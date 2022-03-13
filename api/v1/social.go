@@ -185,9 +185,13 @@ func DeleteOrganization(c *gin.Context) {
 // @Success      200      {object}  model.CommonA            "是否成功，返回信息"
 // @Router       /api/v1/organizations/{id}/invitations [post]
 func CreateInvitation(c *gin.Context) {
-	// 获取数据
-	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
+	// 获取请求数据
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	data := utils.BindJsonData(c, &model.CreateInvitationQ{}).(*model.CreateInvitationQ)
+	if err != nil {
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "请求参数非法"})
+		return
+	}
 	// 邀请成员存在性判定
 	user, notFound := service.GetUserByEmail(data.Email)
 	if notFound {
@@ -200,8 +204,15 @@ func CreateInvitation(c *gin.Context) {
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "该组织不存在"})
 		return
 	}
+	// 无需重复创建邀请
+	var invitation []model.Invitation
+	global.DB.Model(&model.Invitation{}).Where("user_id = ? AND org_id = ?", user.ID, org.ID).Find(&invitation)
+	if len(invitation) > 0 {
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "已经邀请过该用户"})
+		return
+	}
 	// 创建邀请
-	err := service.CreateInvitation(&model.Invitation{
+	err = service.CreateInvitation(&model.Invitation{
 		UserID:    user.ID,
 		UserName:  user.Name,
 		UserEmail: user.Email,
