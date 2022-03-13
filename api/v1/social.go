@@ -46,7 +46,7 @@ func CreateOrganization(c *gin.Context) {
 		IsAdmin:   true,
 		IsValid:   true})
 	// 返回响应
-	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: ""})
+	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "创建成功"})
 }
 
 // GetOrganization
