@@ -146,7 +146,7 @@ func GetPost(c *gin.Context) {
 	// 成功获取信息
 	creator, _ := service.GetUserByID(post.CreatorID)
 	c.JSON(http.StatusOK, model.GetPostA{Success: true,
-		Message:       "获取信息成功",
+		Message:       "",
 		CreatorID:     post.CreatorID,
 		CreatorName:   post.CreatorName,
 		CreatorAvatar: creator.Avatar,
@@ -193,7 +193,7 @@ func GetAllPost(c *gin.Context) {
 	if totalPage == 0 {
 		c.JSON(http.StatusOK, model.GetAllPostA{
 			Success: true,
-			Message: "获取帖子成功",
+			Message: "",
 			Total:   0,
 			Posts:   []model.PostT{}})
 		return
@@ -212,7 +212,7 @@ func GetAllPost(c *gin.Context) {
 	// 返回
 	c.JSON(http.StatusOK, model.GetAllPostA{
 		Success: true,
-		Message: "获取帖子成功",
+		Message: "",
 		Total:   len(posts),
 		Posts:   filteredPosts})
 }

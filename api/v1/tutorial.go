@@ -171,7 +171,7 @@ func GetTutorialVersion(c *gin.Context) {
 			Success: false,
 			Message: "找不到该教程的信息"})
 	} else {
-		c.JSON(http.StatusOK, model.GetProblemVersionA{Success: true, Message: "获取题目版本成功", Version: tutorial.Version})
+		c.JSON(http.StatusOK, model.GetProblemVersionA{Success: true, Message: "", Version: tutorial.Version})
 	}
 }
 
@@ -205,7 +205,7 @@ func GetTutorialList(c *gin.Context) {
 	if len(fuzzyTutorials) == 0 {
 		c.JSON(http.StatusOK, model.GetTutorialListA{
 			Success:      true,
-			Message:      "获取教程成功",
+			Message:      "",
 			Total:        0,
 			TutorialList: []model.Tutorial{}})
 		return
@@ -226,5 +226,5 @@ func GetTutorialList(c *gin.Context) {
 	})
 	tutorials := fuzzyTutorials[(page-1)*size : int(math.Min(float64(page*size), float64(len(fuzzyTutorials))))]
 	// 返回响应
-	c.JSON(http.StatusOK, model.GetTutorialListA{Success: true, Message: "获取成功", TutorialList: tutorials, Total: len(tutorials)})
+	c.JSON(http.StatusOK, model.GetTutorialListA{Success: true, Message: "", TutorialList: tutorials, Total: len(tutorials)})
 }

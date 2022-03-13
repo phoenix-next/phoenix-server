@@ -92,7 +92,7 @@ func GetContest(c *gin.Context) {
 	// 返回结果
 	c.JSON(http.StatusOK, model.GetContestA{
 		Success:   true,
-		Message:   "获取比赛信息成功",
+		Message:   "",
 		Name:      contest.Name,
 		Profile:   contest.Profile,
 		StartTime: contest.StartTime,
@@ -145,7 +145,7 @@ func UpdateContest(c *gin.Context) {
 			Difficulty:  problem.Difficulty})
 	}
 	// 返回响应
-	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "修改比赛信息成功"})
+	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "已修改比赛信息"})
 }
 
 // DeleteContest
@@ -180,7 +180,7 @@ func DeleteContest(c *gin.Context) {
 			// 删除比赛元数据
 			global.DB.Delete(&contest)
 			// 返回响应
-			c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "删除比赛成功"})
+			c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "已删除比赛"})
 			return
 		}
 	}
@@ -229,7 +229,7 @@ func GetContestList(c *gin.Context) {
 	if totalPage == 0 {
 		c.JSON(http.StatusOK, model.GetContestListA{
 			Success:     true,
-			Message:     "获取比赛列表成功",
+			Message:     "",
 			Total:       0,
 			ContestList: []model.ContestT{}})
 		return

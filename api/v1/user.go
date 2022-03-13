@@ -55,7 +55,7 @@ func CreateUser(c *gin.Context) {
 	// 删除验证码，防止用户利用
 	global.DB.Delete(&realCaptcha)
 	// 返回响应
-	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "创建用户成功"})
+	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "注册成功"})
 }
 
 // CreateCaptcha
@@ -85,7 +85,7 @@ func CreateCaptcha(c *gin.Context) {
 		utils.SendResetEmail(data.Email, confirmNumber)
 	}
 	// 返回响应
-	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "发送验证码成功"})
+	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "成功发送验证码"})
 }
 
 // CreateToken
@@ -157,7 +157,7 @@ func UpdateUser(c *gin.Context) {
 	}
 	// 进行数据库操作并返回
 	global.DB.Save(&user)
-	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "更新用户信息成功"})
+	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "成功更新个人资料"})
 }
 
 // GetUser
@@ -186,7 +186,7 @@ func GetUser(c *gin.Context) {
 	// 返回响应
 	c.JSON(http.StatusOK, model.GetUserA{
 		Success: true,
-		Message: "获取用户信息成功",
+		Message: "",
 		Name:    user.Name,
 		Email:   user.Email,
 		Avatar:  user.Avatar,
@@ -206,7 +206,7 @@ func GetUserOrganization(c *gin.Context) {
 	user := utils.SolveUser(c)
 	var relation []model.OrganizationT
 	global.DB.Model(&model.Invitation{}).Where("user_id = ? and is_valid = ?", user.ID, true).Find(&relation)
-	c.JSON(http.StatusOK, model.GetUserOrganizationA{Success: true, Message: "获取用户所属组织成功", Organization: relation})
+	c.JSON(http.StatusOK, model.GetUserOrganizationA{Success: true, Message: "", Organization: relation})
 }
 
 // QuitOrganization
@@ -241,7 +241,7 @@ func QuitOrganization(c *gin.Context) {
 	}
 	// 退出组织成功
 	global.DB.Delete(&rel)
-	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "退出组织成功"})
+	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "已退出组织"})
 }
 
 // GetUserInvitation
@@ -257,7 +257,7 @@ func GetUserInvitation(c *gin.Context) {
 	user := utils.SolveUser(c)
 	var invitations []model.OrganizationT
 	global.DB.Model(&model.Invitation{}).Where("user_id = ? AND is_valid = ?", user.ID, false).Find(&invitations)
-	c.JSON(http.StatusOK, model.GetUserInvitationA{Success: true, Message: "获取用户未确认邀请成功", Organization: invitations})
+	c.JSON(http.StatusOK, model.GetUserInvitationA{Success: true, Message: "", Organization: invitations})
 }
 
 // ResetPassword
@@ -299,6 +299,6 @@ func ResetPassword(c *gin.Context) {
 	// 删除验证码，防止用户利用验证码
 	global.DB.Delete(&realCaptcha)
 	// 返回响应
-	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "忘记密码成功"})
+	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "已重置密码"})
 
 }

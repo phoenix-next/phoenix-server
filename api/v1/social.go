@@ -78,7 +78,7 @@ func GetOrganization(c *gin.Context) {
 	if notFound {
 		c.JSON(http.StatusOK, model.GetOrganizationA{
 			Success: true,
-			Message: "获取组织信息成功",
+			Message: "",
 			Name:    org.Name,
 			Profile: org.Profile,
 			IsValid: false,
@@ -88,7 +88,7 @@ func GetOrganization(c *gin.Context) {
 	// 当前用户是组织中的成员
 	c.JSON(http.StatusOK, model.GetOrganizationA{
 		Success: true,
-		Message: "获取组织信息成功",
+		Message: "",
 		Name:    org.Name,
 		Profile: org.Profile,
 		IsValid: true,

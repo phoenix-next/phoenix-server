@@ -88,7 +88,7 @@ func GetProblem(c *gin.Context) {
 	// 返回结果
 	c.JSON(http.StatusOK, model.GetProblemA{
 		Success:      true,
-		Message:      "获取题目成功",
+		Message:      "",
 		ID:           problem.ID,
 		Name:         problem.Name,
 		Difficulty:   problem.Difficulty,
@@ -199,7 +199,7 @@ func GetProblemVersion(c *gin.Context) {
 		c.JSON(http.StatusOK, model.GetProblemVersionA{Success: false, Message: "找不到该题目的信息"})
 		return
 	}
-	c.JSON(http.StatusOK, model.GetProblemVersionA{Success: true, Message: "获取题目版本成功", Version: problem.Version})
+	c.JSON(http.StatusOK, model.GetProblemVersionA{Success: true, Message: "", Version: problem.Version})
 
 }
 
@@ -238,7 +238,7 @@ func GetProblemList(c *gin.Context) {
 	if len(resProblems) == 0 {
 		c.JSON(http.StatusOK, model.GetProblemListA{
 			Success:     true,
-			Message:     "获取成功",
+			Message:     "",
 			ProblemList: []model.Problem{},
 			Total:       0})
 		return
@@ -247,7 +247,7 @@ func GetProblemList(c *gin.Context) {
 	pagedProblems := service.GetProblemsByPage(resProblems, page, sorter)
 	c.JSON(http.StatusOK, model.GetProblemListA{
 		Success:     true,
-		Message:     "获取成功",
+		Message:     "",
 		ProblemList: pagedProblems,
 		Total:       len(resProblems)})
 }
