@@ -373,8 +373,8 @@ func DeleteOrganizationAdmin(c *gin.Context) {
 }
 
 // DeleteOrganizationMember
-// @Summary      删除组织成员
-// @Description  组织管理员在组织中删除一个成员，成员无法拒绝
+// @Summary      踢出组织成员
+// @Description  组织管理员在组织中删除一个非管理员成员，该成员无法拒绝
 // @Tags         社交模块
 // @Accept       json
 // @Produce      json
@@ -386,20 +386,28 @@ func DeleteOrganizationAdmin(c *gin.Context) {
 func DeleteOrganizationMember(c *gin.Context) {
 	// 获取请求数据
 	user := utils.SolveUser(c)
-	oid, _ := strconv.ParseUint(c.Param("id"), 10, 64)
-	uid, _ := strconv.ParseUint(c.Param("userID"), 10, 64)
-	// 成员是否属于该组织
+	oid, err1 := strconv.ParseUint(c.Param("id"), 10, 64)
+	uid, err2 := strconv.ParseUint(c.Param("userID"), 10, 64)
+	if err1 != nil || err2 != nil {
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "请求参数非法"})
+		return
+	}
+	// 成员不属于该组织的情况
 	rel, notFound := service.GetInvitationByUserOrg(uid, oid)
 	if notFound {
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "成员未加入组织"})
 		return
 	}
-	if uid == user.ID {
-		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "您作为创建者无法删除自己"})
-		return
+	// 管理员无法踢出一个管理员
+	invitation := service.GetOrganizationAdmin(oid)
+	for _, admin := range invitation {
+		if admin.UserID == uid {
+			c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "无法删除具有管理员权限的成员"})
+			return
+		}
 	}
-	// 管理员权限判定
-	for _, admin := range service.GetOrganizationAdmin(oid) {
+	// 管理员将成员踢出组织
+	for _, admin := range invitation {
 		if admin.UserID == user.ID {
 			global.DB.Delete(&rel)
 			c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "删除成员成功"})

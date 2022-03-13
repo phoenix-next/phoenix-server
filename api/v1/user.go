@@ -192,6 +192,35 @@ func GetUserOrganization(c *gin.Context) {
 	c.JSON(http.StatusOK, model.GetUserOrganizationA{Success: true, Message: "获取用户所属组织成功", Organization: relation})
 }
 
+// QuitOrganization
+// @Summary      用户主动退出组织
+// @Description  用户主动退出一个已加入的组织
+// @Tags         用户模块
+// @Accept       json
+// @Produce      json
+// @Param        x-token  header    string                      true  "token"
+// @Param        id       path      int            true  "组织ID"
+// @Success      200      {object}  model.CommonA  "是否成功，返回信息"
+// @Router       /api/v1/users/organizations/{id} [delete]
+func QuitOrganization(c *gin.Context) {
+	// 获取请求参数
+	user := utils.SolveUser(c)
+	oid, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "请求参数非法"})
+		return
+	}
+	// 成员不属于该组织的情况
+	rel, notFound := service.GetInvitationByUserOrg(user.ID, oid)
+	if notFound {
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "未加入该组织"})
+		return
+	}
+	// 退出组织成功
+	global.DB.Delete(&rel)
+	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "退出组织成功"})
+}
+
 // GetUserInvitation
 // @Summary      获取用户收到的所有组织邀请
 // @Description  组织管理员会邀请用户进入，该接口用于获取用户未确认的所有邀请
