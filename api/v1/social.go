@@ -300,13 +300,13 @@ func UpdateOrganizationAdmin(c *gin.Context) {
 	user := utils.SolveUser(c)
 	uid := utils.BindJsonData(c, &model.UpdateOrganizationAdminQ{}).(*model.UpdateOrganizationAdminQ).ID
 	// 组织不存在的情况
-	organization, notFound := service.GetOrganizationByID(oid)
+	org, notFound := service.GetOrganizationByID(oid)
 	if notFound {
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "该组织不存在"})
 		return
 	}
 	// 请求用户权限判定
-	if organization.CreatorID != user.ID {
+	if org.CreatorID != user.ID {
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "非组织创建者无权进行该操作"})
 		return
 	}
@@ -319,7 +319,7 @@ func UpdateOrganizationAdmin(c *gin.Context) {
 	// 成功返回
 	rel.IsAdmin = true
 	_ = service.UpdateInvitation(rel)
-	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "更新管理成功"})
+	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "添加管理员成功"})
 
 }
 
@@ -344,19 +344,19 @@ func DeleteOrganizationAdmin(c *gin.Context) {
 		return
 	}
 	// 组织的存在性判定
-	organization, notFound := service.GetOrganizationByID(oid)
+	org, notFound := service.GetOrganizationByID(oid)
 	if notFound {
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "该组织不存在"})
 		return
 	}
 	// 当前用户权限判定
-	if organization.CreatorID != user.ID {
+	if org.CreatorID != user.ID {
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "组织成员无权操作"})
 		return
 	}
-	// 创建者不能移除自己
-	if organization.CreatorID != uid {
-		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "您无法取消自己的创建者权限"})
+	// 创建者不能取消自己的管理员权限
+	if org.CreatorID == uid {
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "您无法取消自己的管理员权限"})
 		return
 	}
 	// 操作对象不在组织中的情况
