@@ -2,6 +2,7 @@ package v1
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/lithammer/fuzzysearch/fuzzy"
 	"github.com/phoenix-next/phoenix-server/global"
 	"github.com/phoenix-next/phoenix-server/model"
 	"github.com/phoenix-next/phoenix-server/service"
@@ -16,7 +17,7 @@ import (
 // @Tags         论坛模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string             true  "token"
+// @Param        x-token  header    string             true   "token"
 // @Param        data     body      model.CreatePostQ  true  "组织ID，帖子所属板块，帖子标题，帖子内容"
 // @Success      200      {object}  model.CommonA      "是否成功，返回信息"
 // @Router       /api/v1/posts [post]
@@ -162,9 +163,10 @@ func GetPost(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        x-token  header    string             true  "token"
-// @Param        id       query     int                true  "组织ID"
-// @Param        type     query     int                true  "帖子板块"
-// @Param        page     query     int                true  "位于第几页，页数从1开始"
+// @Param        id       query     int                true   "组织ID"
+// @Param        type     query     int                true   "帖子板块"
+// @Param        page     query     int                true   "位于第几页，页数从1开始"
+// @Param        keyWord  query     string             false  "帖子标题查找关键字，模糊匹配"
 // @Success      200      {object}  model.GetAllPostA  "是否成功，返回信息，帖子总数，帖子列表"
 // @Router       /api/v1/posts [get]
 func GetAllPost(c *gin.Context) {
@@ -172,6 +174,7 @@ func GetAllPost(c *gin.Context) {
 	oid, err1 := strconv.ParseUint(c.Query("id"), 10, 64)
 	postType, err2 := strconv.Atoi(c.Query("type"))
 	page, err3 := strconv.Atoi(c.Query("page"))
+	keyWord := c.Query("keyWord")
 	if err1 != nil || err2 != nil || err3 != nil {
 		c.JSON(http.StatusOK, model.GetAllPostA{Success: false, Message: "参数非法"})
 		return
@@ -183,8 +186,15 @@ func GetAllPost(c *gin.Context) {
 		c.JSON(http.StatusOK, model.GetAllPostA{Success: false, Message: "用户没有查看帖子权限"})
 		return
 	}
-	// 得到所有帖子，及所有帖子的总数
-	posts := service.GetAllPosts(oid, postType)
+	// 得到所有帖子，并进行模糊查找
+	rawPosts := service.GetAllPosts(oid, postType)
+	var posts []model.PostT
+	for _, item := range rawPosts {
+		if fuzzy.Match(keyWord, item.Title) {
+			posts = append(posts, item)
+		}
+	}
+	// 获取帖子总页数
 	totalPage := len(posts) / 5
 	if len(posts)%5 != 0 {
 		totalPage += 1
