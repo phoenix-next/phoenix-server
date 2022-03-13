@@ -157,7 +157,7 @@ func UpdateUser(c *gin.Context) {
 	}
 	// 进行数据库操作并返回
 	global.DB.Save(&user)
-	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "成功更新个人资料"})
+	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: ""})
 }
 
 // GetUser
