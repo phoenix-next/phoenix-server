@@ -10,6 +10,8 @@ type GetOrganizationA struct {
 	Message string `json:"message"`
 	Name    string `json:"name"`
 	Profile string `json:"profile"`
+	IsValid bool   `json:"isValid"`
+	IsAdmin bool   `json:"isAdmin"`
 }
 
 type UpdateOrganizationQ struct {

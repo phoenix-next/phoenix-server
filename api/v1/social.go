@@ -21,23 +21,31 @@ import (
 // @Success      200      {object}  model.CommonA              "是否成功，返回信息"
 // @Router       /api/v1/organizations [post]
 func CreateOrganization(c *gin.Context) {
+	// 获取请求数据
 	data := utils.BindJsonData(c, &model.CreateOrganizationQ{}).(*model.CreateOrganizationQ)
+	user := utils.SolveUser(c)
+	// 有重名组织的情况
 	if _, notFound := service.GetOrganizationByName(data.Name); !notFound {
-		global.LOG.Warn("CreateOrganization: find same organization name")
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "已存在该名称的组织"})
 		return
 	}
-	user := utils.SolveUser(c)
-	org := model.Organization{Name: data.Name, Profile: data.Profile, CreatorName: user.Name, CreatorID: user.ID}
+	// 创建组织，保存组织元数据
+	org := model.Organization{
+		Name:        data.Name,
+		Profile:     data.Profile,
+		CreatorName: user.Name,
+		CreatorID:   user.ID}
 	global.DB.Create(&org)
+	// 维护用户 - 组织关系
 	global.DB.Create(&model.Invitation{
-		UserID:    org.CreatorID,
-		UserName:  org.CreatorName,
+		UserID:    user.ID,
+		UserName:  user.Name,
 		UserEmail: user.Email,
 		OrgID:     org.ID,
 		OrgName:   org.Name,
 		IsAdmin:   true,
 		IsValid:   true})
+	// 返回响应
 	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "创建组织成功"})
 }
 
@@ -49,7 +57,7 @@ func CreateOrganization(c *gin.Context) {
 // @Produce      json
 // @Param        x-token  header    string                     true  "token"
 // @Param        id       path      int                     true  "组织ID"
-// @Success      200      {object}  model.GetOrganizationA  "是否成功，返回信息，组织名称，组织简介"
+// @Success      200      {object}  model.GetOrganizationA  "是否成功，返回信息，组织名称，组织简介，当前用户是否在组织中，当前用户是否为管理员"
 // @Router       /api/v1/organizations/{id} [get]
 func GetOrganization(c *gin.Context) {
 	// 获取请求数据
@@ -58,18 +66,34 @@ func GetOrganization(c *gin.Context) {
 		c.JSON(http.StatusOK, model.GetOrganizationA{Success: false, Message: "组织ID不合法"})
 	}
 	// 组织存在性判定
-	data, notFound := service.GetOrganizationByID(id)
+	org, notFound := service.GetOrganizationByID(id)
 	if notFound {
 		c.JSON(http.StatusOK, model.GetOrganizationA{Success: false, Message: "找不到该组织"})
 		return
 	}
-	// 获取信息成功
+	// 获取当前用户与组织的关系
+	user := utils.SolveUser(c)
+	rel, notFound := service.GetInvitationByUserOrg(user.ID, org.ID)
+	// 当前用户不是组织中的成员
+	if notFound {
+		c.JSON(http.StatusOK, model.GetOrganizationA{
+			Success: true,
+			Message: "获取组织信息成功",
+			Name:    org.Name,
+			Profile: org.Profile,
+			IsValid: false,
+			IsAdmin: false})
+		return
+	}
+	// 当前用户是组织中的成员
 	c.JSON(http.StatusOK, model.GetOrganizationA{
 		Success: true,
-		Message: "创建组织成功",
-		Name:    data.Name,
-		Profile: data.Profile})
-	return
+		Message: "获取组织信息成功",
+		Name:    org.Name,
+		Profile: org.Profile,
+		IsValid: true,
+		IsAdmin: rel.IsAdmin})
+
 }
 
 // UpdateOrganization
