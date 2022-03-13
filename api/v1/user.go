@@ -98,16 +98,20 @@ func CreateCaptcha(c *gin.Context) {
 // @Success      200   {object}  model.CreateTokenA  "是否成功，返回信息，Token"
 // @Router       /api/v1/tokens [post]
 func CreateToken(c *gin.Context) {
+	// 获取请求中的数据
 	data := utils.BindJsonData(c, &model.CreateTokenQ{}).(*model.CreateTokenQ)
+	// 用于登录的邮箱未注册的情况
 	user, notFound := service.GetUserByEmail(data.Email)
 	if notFound {
 		c.JSON(http.StatusOK, model.CreateTokenA{Success: false, Message: "登录失败，邮箱不存在", Token: "", ID: 0})
 		return
 	}
+	// 密码错误的情况
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(data.Password)); err != nil {
 		c.JSON(http.StatusOK, model.CreateTokenA{Success: false, Message: "登录失败，密码错误", Token: "", ID: 0})
 		return
 	}
+	// 成功返回响应
 	token := utils.GenerateToken(user.ID)
 	c.JSON(http.StatusOK, model.CreateTokenA{Success: true, Message: "登录成功", Token: token, ID: user.ID})
 }
@@ -203,9 +207,12 @@ func GetUser(c *gin.Context) {
 // @Success      200      {object}  model.GetUserOrganizationA  "是否成功，返回信息，用户所属的组织列表"
 // @Router       /api/v1/users/organizations [get]
 func GetUserOrganization(c *gin.Context) {
+	// 获取请求中的数据
 	user := utils.SolveUser(c)
+	// 查询数据库
 	var relation []model.OrganizationT
 	global.DB.Model(&model.Invitation{}).Where("user_id = ? and is_valid = ?", user.ID, true).Find(&relation)
+	// 返回响应
 	c.JSON(http.StatusOK, model.GetUserOrganizationA{Success: true, Message: "", Organization: relation})
 }
 
@@ -254,9 +261,12 @@ func QuitOrganization(c *gin.Context) {
 // @Success      200      {object}  model.GetUserInvitationA  "是否成功，返回信息，组织信息列表"
 // @Router       /api/v1/users/invitations [get]
 func GetUserInvitation(c *gin.Context) {
+	// 获取请求中的数据
 	user := utils.SolveUser(c)
+	// 查询数据库
 	var invitations []model.OrganizationT
 	global.DB.Model(&model.Invitation{}).Where("user_id = ? AND is_valid = ?", user.ID, false).Find(&invitations)
+	// 返回响应
 	c.JSON(http.StatusOK, model.GetUserInvitationA{Success: true, Message: "", Organization: invitations})
 }
 

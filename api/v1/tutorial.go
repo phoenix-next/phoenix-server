@@ -66,26 +66,34 @@ func CreateTutorial(c *gin.Context) {
 // @Success      200      {object}  model.GetTutorialA  "组织ID，创建者ID，创建者名称，教程名称，教程简介，教程版本，教程下载路径"
 // @Router       /api/v1/tutorials/{id} [get]
 func GetTutorial(c *gin.Context) {
-	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
-	if tutorial, notFound := service.GetTutorialByID(id); notFound {
-		c.JSON(http.StatusOK, model.GetTutorialA{Success: false, Message: "找不到该教程的信息"})
-	} else {
-		if !service.JudgeReadPermission(tutorial.OrgID, tutorial.Readable, tutorial.CreatorID, c) {
-			c.JSON(http.StatusOK, model.GetTutorialA{Success: false, Message: "您没有可读权限"})
-			return
-		}
-
-		c.JSON(http.StatusOK, model.GetTutorialA{
-			Success:      true,
-			Message:      "",
-			OrgID:        tutorial.OrgID,
-			CreatorID:    tutorial.CreatorID,
-			CreatorName:  tutorial.Name,
-			Name:         tutorial.Name,
-			Profile:      tutorial.Profile,
-			Version:      tutorial.Version,
-			TutorialPath: "resource/tutorial/" + service.GetTutorialFileName(tutorial)})
+	// 获取请求中的数据
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusOK, model.GetTutorialA{Success: false, Message: "请求参数非法"})
+		return
 	}
+	// 找不到教程的情况
+	tutorial, notFound := service.GetTutorialByID(id)
+	if notFound {
+		c.JSON(http.StatusOK, model.GetTutorialA{Success: false, Message: "找不到该教程的信息"})
+		return
+	}
+	// 当前用户没有读权限的情况
+	if !service.JudgeReadPermission(tutorial.OrgID, tutorial.Readable, tutorial.CreatorID, c) {
+		c.JSON(http.StatusOK, model.GetTutorialA{Success: false, Message: "您没有可读权限"})
+		return
+	}
+	// 返回响应
+	c.JSON(http.StatusOK, model.GetTutorialA{
+		Success:      true,
+		Message:      "",
+		OrgID:        tutorial.OrgID,
+		CreatorID:    tutorial.CreatorID,
+		CreatorName:  tutorial.Name,
+		Name:         tutorial.Name,
+		Profile:      tutorial.Profile,
+		Version:      tutorial.Version,
+		TutorialPath: "resource/tutorial/" + service.GetTutorialFileName(tutorial)})
 }
 
 // UpdateTutorial
@@ -105,29 +113,32 @@ func UpdateTutorial(c *gin.Context) {
 	if err := c.ShouldBind(&data); err != nil {
 		global.LOG.Panic("UpdateTutorial: bind data error")
 	}
-	//user := utils.SolveUser(c)
-
-	if tutorial, notFound := service.GetTutorialByID(data.ID); notFound {
+	// 教程不存在的情况
+	tutorial, notFound := service.GetTutorialByID(data.ID)
+	if notFound {
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "找不到该教程的信息"})
-	} else {
-		if !service.JudgeWritePermission(tutorial.OrgID, tutorial.Writable, tutorial.CreatorID, c) {
-			c.JSON(http.StatusOK, model.GetTutorialA{Success: false, Message: "您无可写权限"})
-			return
-		}
-		tutorialOrigin := tutorial
-		// 判断可写权限
-		if err := service.UpdateTutorial(&tutorial, &data); err != nil {
-			global.LOG.Panic("UpdateTutorial: save tutorial error")
-		}
-		if err := c.SaveUploadedFile(data.File, filepath.Join(global.VP.GetString("tutorial_path"), service.GetTutorialFileName(tutorial))); err != nil {
-			// 保存文件失败，回滚数据库
-			_ = service.SaveTutorial(&tutorialOrigin)
-			global.LOG.Warn("save tutorial " + tutorialOrigin.Name + " file error")
-			c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "保存教程文件失败"})
-			return
-		}
-		c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "更新教程成功"})
+		return
 	}
+	// 当前用户没有写权限的情况
+	if !service.JudgeWritePermission(tutorial.OrgID, tutorial.Writable, tutorial.CreatorID, c) {
+		c.JSON(http.StatusOK, model.GetTutorialA{Success: false, Message: "您无可写权限"})
+		return
+	}
+	// 用户具有写权限，则更新数据库，并保存原教程以备回滚数据库之需
+	tutorialOrigin := tutorial
+	if err := service.UpdateTutorial(&tutorial, &data); err != nil {
+		global.LOG.Panic("UpdateTutorial: save tutorial error")
+	}
+	// 保存文件失败，回滚数据库
+	filePath := filepath.Join(global.VP.GetString("tutorial_path"), service.GetTutorialFileName(tutorial))
+	if err := c.SaveUploadedFile(data.File, filePath); err != nil {
+		_ = service.SaveTutorial(&tutorialOrigin)
+		global.LOG.Warn("save tutorial " + tutorialOrigin.Name + " file error")
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "保存教程文件失败"})
+		return
+	}
+	// 返回响应
+	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "更新成功"})
 }
 
 // DeleteTutorial
@@ -141,17 +152,24 @@ func UpdateTutorial(c *gin.Context) {
 // @Success      200      {object}  model.CommonA  "是否成功，返回信息"
 // @Router       /api/v1/tutorials/{id} [delete]
 func DeleteTutorial(c *gin.Context) {
-	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
-	if _, notFound := service.GetTutorialByID(id); notFound {
-		c.JSON(http.StatusOK, model.CommonA{
-			Success: false,
-			Message: "找不到该教程的信息"})
-	} else {
-		if err := service.DeleteTutorialByID(id); err != nil {
-			global.LOG.Panic("DeleteTutorial: delete tutorial error")
-		}
-		c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "删除教程成功"})
+	// 获取请求中的数据
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "请求参数非法"})
+		return
 	}
+	// 找不到教程的情况
+	_, notFound := service.GetTutorialByID(id)
+	if notFound {
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "找不到该教程的信息"})
+		return
+	}
+	// TODO: 用户权限判定
+	// 成功删除教程
+	if err = service.DeleteTutorialByID(id); err != nil {
+		global.LOG.Panic("DeleteTutorial: delete tutorial error")
+	}
+	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "删除教程成功"})
 }
 
 // GetTutorialVersion
@@ -165,14 +183,19 @@ func DeleteTutorial(c *gin.Context) {
 // @Success      200      {object}  model.GetTutorialVersionA  "是否成功，返回信息，教程版本"
 // @Router       /api/v1/tutorials/{id}/version [get]
 func GetTutorialVersion(c *gin.Context) {
-	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
-	if tutorial, notFound := service.GetTutorialByID(id); notFound {
-		c.JSON(http.StatusOK, model.GetTutorialVersionA{
-			Success: false,
-			Message: "找不到该教程的信息"})
-	} else {
-		c.JSON(http.StatusOK, model.GetProblemVersionA{Success: true, Message: "", Version: tutorial.Version})
+	// 获取请求中的数据
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusOK, model.GetTutorialVersionA{Success: false, Message: "请求参数非法"})
+		return
 	}
+	// 找不到教程的情况
+	tutorial, notFound := service.GetTutorialByID(id)
+	if notFound {
+		c.JSON(http.StatusOK, model.GetTutorialVersionA{Success: false, Message: "找不到该教程的信息"})
+	}
+	// 成功返回响应
+	c.JSON(http.StatusOK, model.GetProblemVersionA{Success: true, Message: "", Version: tutorial.Version})
 }
 
 // GetTutorialList

@@ -114,35 +114,43 @@ func GetProblem(c *gin.Context) {
 // @Success      200      {object}  model.CommonA         "是否成功，返回信息"
 // @Router       /api/v1/problems/{id} [put]
 func UpdateProblem(c *gin.Context) {
+	// 获取请求数据
 	var data model.UpdateProblemQ
-	path := filepath.Join(global.VP.GetString("root_path"), "resource", "problems")
 	err := c.ShouldBind(&data)
 	if err != nil {
 		global.LOG.Panic("UpdateProblem: bind data error")
 	}
-
-	if problem, notFound := service.GetProblemByID(data.ID); notFound {
+	// 题目不存在的情况
+	problem, notFound := service.GetProblemByID(data.ID)
+	if notFound {
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "找不到该题目的信息"})
-	} else {
-		if !service.JudgeWritePermission(problem.OrgID, problem.Writable, problem.Creator, c) {
-			c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "您对该题目无可写权限"})
-			return
-		}
-		problemOrigin := problem
-		err = service.UpdateProblem(&problem, &data)
-		if err != nil {
-			global.LOG.Panic("UpdateProblem: save problem error")
-		}
-		err1, err2, err3 := c.SaveUploadedFile(data.Description, filepath.Join(path, service.MakeProblemFileName(problem.ID, problem.Version, "description"))), c.SaveUploadedFile(data.Input, filepath.Join(path, service.MakeProblemFileName(problem.ID, problem.Version, "input"))), c.SaveUploadedFile(data.Output, filepath.Join(path, service.MakeProblemFileName(problem.ID, problem.Version, "output")))
-		if err1 != nil || err2 != nil || err3 != nil {
-			// 保存文件失败，回滚数据库
-			service.SaveProblem(&problemOrigin)
-			global.LOG.Warn("save problem " + problem.Name + " file error")
-			c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "保存题目文件失败"})
-			return
-		}
-		c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "更新题目成功"})
+		return
 	}
+	// 用户没有权限修改题目的情况
+	if !service.JudgeWritePermission(problem.OrgID, problem.Writable, problem.Creator, c) {
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "您对该题目无可写权限"})
+		return
+	}
+	// 更新题目，同时保存原来的题目以备回滚之需
+	problemOrigin := problem
+	err = service.UpdateProblem(&problem, &data)
+	if err != nil {
+		global.LOG.Panic("UpdateProblem: save problem error")
+	}
+	// 保存题目相关的文件
+	dir := global.VP.GetString("problem_path")
+	err1 := c.SaveUploadedFile(data.Description, filepath.Join(dir, service.MakeProblemFileName(problem.ID, problem.Version, "description")))
+	err2 := c.SaveUploadedFile(data.Input, filepath.Join(dir, service.MakeProblemFileName(problem.ID, problem.Version, "input")))
+	err3 := c.SaveUploadedFile(data.Output, filepath.Join(dir, service.MakeProblemFileName(problem.ID, problem.Version, "output")))
+	// 保存文件失败，回滚数据库
+	if err1 != nil || err2 != nil || err3 != nil {
+		service.SaveProblem(&problemOrigin)
+		global.LOG.Warn("save problem " + problem.Name + " file error")
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "保存题目文件失败"})
+		return
+	}
+	// 成功更新题目
+	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "更新题目成功"})
 }
 
 // DeleteProblem
