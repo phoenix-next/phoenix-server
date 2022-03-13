@@ -77,7 +77,7 @@ func GetTutorial(c *gin.Context) {
 
 		c.JSON(http.StatusOK, model.GetTutorialA{
 			Success:      true,
-			Message:      "查找教程成功",
+			Message:      "",
 			OrgID:        tutorial.OrgID,
 			CreatorID:    tutorial.CreatorID,
 			CreatorName:  tutorial.Name,
