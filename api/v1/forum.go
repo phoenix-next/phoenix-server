@@ -354,5 +354,5 @@ func GetComment(c *gin.Context) {
 	}
 	// 成功获取评论
 	comments := service.GetAllCommentByPostID(post.ID)
-	c.JSON(http.StatusOK, model.GetCommentA{Success: true, Message: "获取评论成功", Comments: comments})
+	c.JSON(http.StatusOK, model.GetCommentA{Success: true, Message: "", Comments: comments})
 }

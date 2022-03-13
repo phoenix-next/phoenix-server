@@ -294,7 +294,7 @@ func GetOrganizationMember(c *gin.Context) {
 	c.JSON(http.StatusOK, model.GetOrganizationMemberA{
 		Members: service.GetOrganizationMember(id),
 		Success: true,
-		Message: "获取组织成员成功"})
+		Message: ""})
 }
 
 // UpdateOrganizationAdmin

@@ -248,7 +248,7 @@ func GetContestList(c *gin.Context) {
 	// 返回
 	c.JSON(http.StatusOK, model.GetContestListA{
 		Success:     true,
-		Message:     "获取比赛列表成功",
+		Message:     "",
 		Total:       len(filteredContests),
 		ContestList: slicedContests})
 }
