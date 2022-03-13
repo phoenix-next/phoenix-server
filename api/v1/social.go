@@ -144,8 +144,8 @@ func UpdateOrganization(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        x-token  header    string         true  "token"
-// @Param        id       path      int            true  "组织ID"
-// @Success      200      {object}  model.CommonA                   "是否成功，返回信息"
+// @Param        id       path      int                              true  "组织ID"
+// @Success      200      {object}  model.CommonA                    "是否成功，返回信息"
 // @Router       /api/v1/organizations/{id} [delete]
 func DeleteOrganization(c *gin.Context) {
 	// 获取请求数据
@@ -179,7 +179,7 @@ func DeleteOrganization(c *gin.Context) {
 // @Tags         社交模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string         true  "token"
+// @Param        x-token  header    string                           true  "token"
 // @Param        id       path      int                      true  "组织ID"
 // @Param        data     body      model.CreateInvitationQ  true  "用户email"
 // @Success      200      {object}  model.CommonA            "是否成功，返回信息"
@@ -226,23 +226,25 @@ func CreateInvitation(c *gin.Context) {
 }
 
 // UpdateOrganizationMember
-// @Summary      同意加入组织
-// @Description  组织外的用户加入一个组织，该用户必须拥有组织管理员的邀请
+// @Summary      同意/拒绝加入组织
+// @Description  组织外的用户同意或拒绝加入一个组织，该用户必须拥有组织管理员的邀请
 // @Tags         社交模块
 // @Accept       json
 // @Produce      json
 // @Param        x-token  header    string         true  "token"
 // @Param        id       path      int            true  "组织ID"
-// @Success      200      {object}  model.CommonA  "是否成功，返回信息"
+// @Param        data     body      model.UpdateOrganizationMemberQ  true  "是否同意加入"
+// @Success      200      {object}  model.CommonA                   "是否成功，返回信息"
 // @Router       /api/v1/organizations/{id}/users [post]
 func UpdateOrganizationMember(c *gin.Context) {
 	// 获取请求数据
+	user := utils.SolveUser(c)
+	data := utils.BindJsonData(c, &model.UpdateOrganizationMemberQ{}).(*model.UpdateOrganizationMemberQ)
 	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "组织ID非法"})
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "请求参数非法"})
 		return
 	}
-	user := utils.SolveUser(c)
 	// 用户与组织的关系判定
 	found, err := service.IsUserInThisOrganization(user.ID, id)
 	if found {
@@ -254,10 +256,15 @@ func UpdateOrganizationMember(c *gin.Context) {
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "该组织不存在"})
 		return
 	}
-	// 更新数据库
+	// 用户拒绝加入组织
 	rel, _ := service.GetInValidInvitationByUserOrg(user.ID, id)
+	if !data.Accept {
+		c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "已拒绝组织邀请"})
+		return
+	}
+	// 用户同意加入组织
 	rel.IsValid = true
-	service.UpdateInvitation(rel)
+	global.DB.Save(rel)
 	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "成功进入该组织"})
 }
 
@@ -329,7 +336,7 @@ func UpdateOrganizationAdmin(c *gin.Context) {
 	}
 	// 成功返回
 	rel.IsAdmin = true
-	_ = service.UpdateInvitation(rel)
+	global.DB.Save(rel)
 	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "添加管理员成功"})
 
 }
@@ -378,7 +385,7 @@ func DeleteOrganizationAdmin(c *gin.Context) {
 	}
 	// 请求成功
 	rel.IsAdmin = false
-	_ = service.UpdateInvitation(rel)
+	global.DB.Save(rel)
 	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "取消管理员成功"})
 
 }

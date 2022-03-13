@@ -82,12 +82,6 @@ func GetInvitationByUserOrg(uid uint64, orgID uint64) (rel *model.Invitation, no
 	}
 }
 
-// UpdateInvitation 更新一个邀请的数据
-func UpdateInvitation(rel *model.Invitation) (err error) {
-	err = global.DB.Save(rel).Error
-	return err
-}
-
 // GetOrganizationMember 获取一个组织中所有的用户
 func GetOrganizationMember(oid uint64) (members []model.Member) {
 	var rel *[]model.Invitation

@@ -40,3 +40,7 @@ type GetOrganizationMemberA struct {
 type UpdateOrganizationAdminQ struct {
 	ID uint64 `json:"id"`
 }
+
+type UpdateOrganizationMemberQ struct {
+	Accept bool `json:"accept"`
+}
