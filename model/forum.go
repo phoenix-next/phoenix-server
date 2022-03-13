@@ -37,7 +37,7 @@ type UpdatePostQ struct {
 type GetPostA struct {
 	Success       bool      `json:"success"`
 	Message       string    `json:"message"`
-	OrgID         uint64    `json:"orgID"`
+	IsAdmin       bool      `json:"isAdmin"`
 	CreatorID     uint64    `json:"creatorID"`
 	CreatorName   string    `json:"creatorName"`
 	CreatorAvatar string    `json:"creatorAvatar"`

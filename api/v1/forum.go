@@ -126,7 +126,7 @@ func UpdatePost(c *gin.Context) {
 // @Produce      json
 // @Param        x-token  header    string          true  "token"
 // @Param        id       path      int             true  "帖子ID"
-// @Success      200      {object}  model.GetPostA  "组织ID，创建者ID，创建者名字，创建者头像路径，标题，内容，最后更新时间"
+// @Success      200      {object}  model.GetPostA  "当前用户是否是帖子所在组织的管理员，创建者ID，创建者名字，创建者头像路径，标题，内容，最后更新时间"
 // @Router       /api/v1/posts/{id} [get]
 func GetPost(c *gin.Context) {
 	// 帖子存在性判定
@@ -142,8 +142,15 @@ func GetPost(c *gin.Context) {
 		c.JSON(http.StatusOK, model.GetPostA{Success: false, Message: "用户没有查阅权限"})
 		return
 	}
-	// 成功获取信息
+	// 获取当前用户的权限信息
+	isAdmin := false
 	creator, _ := service.GetUserByID(post.CreatorID)
+	for _, admin := range service.GetAdminOrganization(user.ID) {
+		if admin.ID == user.ID {
+			isAdmin = true
+		}
+	}
+	// 返回响应
 	c.JSON(http.StatusOK, model.GetPostA{Success: true,
 		Message:       "",
 		CreatorID:     post.CreatorID,
@@ -152,7 +159,7 @@ func GetPost(c *gin.Context) {
 		Title:         post.Title,
 		Content:       post.Content,
 		UpdatedAt:     post.UpdatedAt,
-		OrgID:         post.OrgID})
+		IsAdmin:       isAdmin})
 }
 
 // GetAllPost
