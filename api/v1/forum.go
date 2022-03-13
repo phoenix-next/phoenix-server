@@ -126,7 +126,7 @@ func UpdatePost(c *gin.Context) {
 // @Produce      json
 // @Param        x-token  header    string          true  "token"
 // @Param        id       path      int             true  "帖子ID"
-// @Success      200      {object}  model.GetPostA  "创建者ID，创建者名字，创建者头像路径，标题，内容，最后更新时间"
+// @Success      200      {object}  model.GetPostA  "组织ID，创建者ID，创建者名字，创建者头像路径，标题，内容，最后更新时间"
 // @Router       /api/v1/posts/{id} [get]
 func GetPost(c *gin.Context) {
 	// 帖子存在性判定
@@ -151,7 +151,8 @@ func GetPost(c *gin.Context) {
 		CreatorAvatar: creator.Avatar,
 		Title:         post.Title,
 		Content:       post.Content,
-		UpdatedAt:     post.UpdatedAt})
+		UpdatedAt:     post.UpdatedAt,
+		OrgID:         post.OrgID})
 }
 
 // GetAllPost
