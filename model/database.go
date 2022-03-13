@@ -73,6 +73,7 @@ type User struct {
 type Captcha struct {
 	ID       uint64    `gorm:"primary_key; autoIncrement; not null;" json:"id"`
 	Email    string    `gorm:"size:32; not null; unique;" json:"email"`
+	Type     int       `gorm:"not null;" json:"type"` // 1为注册验证码，2为忘记密码验证码
 	Captcha  uint64    `gorm:"not null;" json:"captcha"`
 	SendTime time.Time `gorm:"autoCreateTime" json:"sendTime"`
 }

@@ -36,6 +36,7 @@ func InitRouter(r *gin.Engine) {
 		rawRouter.POST("/users", v1.CreateUser)
 		rawRouter.POST("/captcha", v1.CreateCaptcha)
 		rawRouter.POST("/tokens", v1.CreateToken)
+		rawRouter.POST("/password", v1.ResetPassword)
 	}
 	// 用户头像资源服务器
 	avatarRouter := rawRouter.Group("/resource")
@@ -60,7 +61,6 @@ func InitRouter(r *gin.Engine) {
 		userRouter.GET("/:id", v1.GetUser)
 		userRouter.GET("/organizations", v1.GetUserOrganization)
 		userRouter.GET("/invitations", v1.GetUserInvitation)
-		userRouter.POST("/forget", v1.ForgetPassword)
 		userRouter.DELETE("/organizations/:id", v1.QuitOrganization)
 	}
 	// 评测模块

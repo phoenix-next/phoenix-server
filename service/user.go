@@ -87,19 +87,6 @@ func CreateCaptcha(captcha *model.Captcha) (err error) {
 	return nil
 }
 
-// GetCaptchaByEmail 根据邮箱删得到验证码
-func GetCaptchaByEmail(name string) (captcha model.Captcha, notFound bool) {
-	err := global.DB.Where("email = ?", name).First(&captcha).Error
-	if err != nil && errors.Is(err, gorm.ErrRecordNotFound) {
-		return captcha, true
-	} else if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		global.LOG.Panic("GetCaptchaByEmail: search error")
-		return captcha, true
-	} else {
-		return captcha, false
-	}
-}
-
 // DeleteCaptchaByEmail 根据邮箱删除验证码
 func DeleteCaptchaByEmail(email string) (err error) {
 	if err = global.DB.Where("email = ?", email).Delete(model.Captcha{}).Error; err != nil {

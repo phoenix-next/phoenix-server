@@ -42,13 +42,28 @@ func SendRegisterEmail(email string, number int) {
 	// 邮件标题
 	subject := "欢迎注册PhoeniX学习平台"
 	// 邮件接收方
-	mailTo := []string{
-		email,
-	}
+	mailTo := []string{email}
 	// 邮件内容
 	body := `您好，欢迎注册PhoeniX学习平台！
 			 本平台旨在提高题目评测速度，提供更优质的知识共享与交流社区，帮助您更轻松地掌握新技能。
 			 您的注册验证码为：` + strconv.Itoa(number)
+	// 发送邮件
+	err := SendMail(mailTo, subject, body)
+	if err != nil {
+		global.LOG.Panic("SendRegisterEmail: send email error")
+	}
+}
+
+// SendResetEmail 发送忘记密码邮件
+func SendResetEmail(email string, number int) {
+	// 邮件标题
+	subject := "重置PhoeniX学习平台密码"
+	// 邮件接收方
+	mailTo := []string{email}
+	// 邮件内容
+	body := `您好，我们检测到您刚刚发出了重置密码的请求。
+			 您可使用验证码来重置密码，若该请求并非由您本人发出，请立即与平台管理员联系。
+			 您的重置密码验证码为：` + strconv.Itoa(number)
 	// 发送邮件
 	err := SendMail(mailTo, subject, body)
 	if err != nil {

@@ -22,6 +22,7 @@ type CreateUserQ struct {
 
 type CreateCaptchaQ struct {
 	Email string `json:"email"`
+	Type  int    `json:"type"`
 }
 
 type CreateTokenQ struct {
@@ -65,7 +66,7 @@ type UpdateUserQ struct {
 	Avatar      *multipart.FileHeader `form:"avatar" swaggerignore:"true"`
 }
 
-type ForgetPasswordQ struct {
+type ResetPasswordQ struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 	Captcha  string `json:"captcha"`

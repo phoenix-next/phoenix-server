@@ -24,50 +24,67 @@ import (
 // @Success      200   {object}  model.CommonA         "是否成功，返回信息"
 // @Router       /api/v1/users [post]
 func CreateUser(c *gin.Context) {
+	// 获取请求数据
 	data := utils.BindJsonData(c, &model.CreateUserQ{}).(*model.CreateUserQ)
+	// 用户的邮箱已经注册过的情况
 	if _, notFound := service.GetUserByEmail(data.Email); !notFound {
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "用户已存在"})
 		return
 	}
-	captcha, err := strconv.ParseUint(data.Captcha, 10, 64)
-	realCaptcha, notFound := service.GetCaptchaByEmail(data.Email)
-	if notFound {
+	// 验证码还未发送的情况
+	var realCaptcha model.Captcha
+	if global.DB.Where("email = ? AND type = ?", data.Email, 1).Find(&realCaptcha).Error != nil {
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "验证码未发送"})
 		return
 	}
+	// 验证码不正确的情况
+	captcha, err := strconv.ParseUint(data.Captcha, 10, 64)
 	if captcha != realCaptcha.Captcha || err != nil {
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "验证码错误"})
 		return
 	}
+	// 将密码进行哈希处理
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(data.Password), 12)
 	if err != nil {
 		global.LOG.Panic("CreateUser: hash password error")
 	}
+	// 成功创建用户
 	if err := service.CreateUser(&model.User{Name: data.Name, Password: string(hashedPassword), Email: data.Email}); err != nil {
 		global.LOG.Panic("CreateUser: create user error")
 	}
+	// 删除验证码，防止用户利用
+	global.DB.Delete(&realCaptcha)
+	// 返回响应
 	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "创建用户成功"})
 }
 
 // CreateCaptcha
 // @Summary      发送验证码
-// @Description  根据邮箱发送验证码，并更新数据库
+// @Description  根据邮箱发送验证码，类型1为注册验证码，类型2为忘记密码验证码
 // @Tags         登录模块
 // @Accept       json
 // @Produce      json
-// @Param        data  body      model.CreateCaptchaQ  true  "邮箱"
+// @Param        data  body      model.CreateCaptchaQ  true  "邮箱，验证码类型"
 // @Success      200   {object}  model.CommonA      "是否成功，返回信息"
 // @Router       /api/v1/captcha [post]
 func CreateCaptcha(c *gin.Context) {
+	// 获取请求数据
 	data := utils.BindJsonData(c, &model.CreateCaptchaQ{}).(*model.CreateCaptchaQ)
+	// 生成验证码
 	confirmNumber := rand.New(rand.NewSource(time.Now().UnixNano())).Int() % 1000000
-	if err := service.DeleteCaptchaByEmail(data.Email); err != nil {
-		global.LOG.Panic("CreateCaptcha: delete captcha error")
-	}
+	// 删除旧的验证码
+	global.DB.Where("type = ? AND email = ?", data.Type, data.Email).Delete(&model.Captcha{})
+	// 生成新的验证码
 	if err := service.CreateCaptcha(&model.Captcha{Email: data.Email, Captcha: uint64(confirmNumber)}); err != nil {
 		global.LOG.Panic("CreateCaptcha: create captcha error")
 	}
-	utils.SendRegisterEmail(data.Email, confirmNumber)
+	// 按照类型发送验证码
+	if data.Type == 1 {
+		utils.SendRegisterEmail(data.Email, confirmNumber)
+	} else {
+		utils.SendResetEmail(data.Email, confirmNumber)
+	}
+	// 返回响应
 	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "发送验证码成功"})
 }
 
@@ -103,7 +120,7 @@ func CreateToken(c *gin.Context) {
 // @Produce      json
 // @Param        x-token  header    string          true  "token"
 // @Param        data     body      model.UpdateUserQ  true  "用户名，密码，旧密码，用户简介，用户头像"
-// @Success      200      {object}  model.CommonA          "是否成功，返回信息"
+// @Success      200   {object}  model.CommonA         "是否成功，返回信息"
 // @Router       /api/v1/users [put]
 func UpdateUser(c *gin.Context) {
 	// 获取请求数据
@@ -233,7 +250,7 @@ func QuitOrganization(c *gin.Context) {
 // @Tags         用户模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string                 true  "token"
+// @Param        x-token  header    string                    true  "token"
 // @Success      200      {object}  model.GetUserInvitationA  "是否成功，返回信息，组织信息列表"
 // @Router       /api/v1/users/invitations [get]
 func GetUserInvitation(c *gin.Context) {
@@ -243,39 +260,45 @@ func GetUserInvitation(c *gin.Context) {
 	c.JSON(http.StatusOK, model.GetUserInvitationA{Success: true, Message: "获取用户未确认邀请成功", Organization: invitations})
 }
 
-// ForgetPassword
+// ResetPassword
 // @Summary      忘记密码
 // @Description  用户忘记密码，根据邮箱验证码重新设置密码
-// @Tags         用户模块
+// @Tags         登录模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string                    true  "token"
-// @Param        data     body      model.ForgetPasswordQ  true  "用户名，密码，旧密码，用户简介，用户头像"
+// @Param        data  body      model.ResetPasswordQ  true  "用户邮箱，新密码，验证码"
 // @Success      200      {object}  model.CommonA      "是否成功，返回信息"
-// @Router       /api/v1/users/forget [post]
-func ForgetPassword(c *gin.Context) {
-	user := utils.SolveUser(c)
-	data := utils.BindJsonData(c, &model.ForgetPasswordQ{}).(*model.ForgetPasswordQ)
-	if realCaptcha, notFound := service.GetCaptchaByEmail(data.Email); notFound {
+// @Router       /api/v1/password [post]
+func ResetPassword(c *gin.Context) {
+	// 获取请求中的数据
+	data := utils.BindJsonData(c, &model.ResetPasswordQ{}).(*model.ResetPasswordQ)
+	// 找不到验证码的情况
+	var realCaptcha model.Captcha
+	err := global.DB.Where("email = ? AND type = ?", data.Email, 2).Find(&realCaptcha).Error
+	if err != nil {
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "验证码未发送"})
 		return
-	} else {
-		captcha, err := strconv.ParseUint(data.Captcha, 10, 64)
-		if captcha != realCaptcha.Captcha || err != nil {
-			c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "验证码错误"})
-			return
-		}
-		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(data.Password), 12)
-		if err != nil {
-			global.LOG.Panic("ForgetPassword: hash password error")
-		}
-		user.Password = string(hashedPassword)
-		if err = global.DB.Save(user).Error; err != nil {
-			global.LOG.Panic("ForgetPassword: save password error")
-		}
-		// 删除验证码，防止用户二次利用验证码
-		service.DeleteCaptchaByEmail(data.Email)
-		c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "忘记密码成功"})
 	}
+	// 验证码错误的情况
+	captcha, err := strconv.ParseUint(data.Captcha, 10, 64)
+	if captcha != realCaptcha.Captcha || err != nil {
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "验证码错误"})
+		return
+	}
+	// 对新密码进行哈希处理
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(data.Password), 12)
+	if err != nil {
+		global.LOG.Panic("ResetPassword: hash password error")
+	}
+	// 重置用户的密码
+	user, _ := service.GetUserByEmail(data.Email)
+	user.Password = string(hashedPassword)
+	if err = global.DB.Save(user).Error; err != nil {
+		global.LOG.Panic("ResetPassword: save password error")
+	}
+	// 删除验证码，防止用户利用验证码
+	global.DB.Delete(&realCaptcha)
+	// 返回响应
+	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "忘记密码成功"})
 
 }
