@@ -54,3 +54,8 @@ type GetProblemListA struct {
 	Total       int       `json:"total"`
 	ProblemList []Problem `json:"problemList"`
 }
+
+type JudgeProblemQ struct {
+	ProblemID uint64 `form:"problemID"`
+	Result    int    `form:"result"`
+}

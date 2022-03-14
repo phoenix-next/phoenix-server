@@ -259,3 +259,41 @@ func GetProblemList(c *gin.Context) {
 		ProblemList: pagedProblems,
 		Total:       len(resProblems)})
 }
+
+// JudgeProblem
+// @Summary      评测题目
+// @Description  上传题目评测的结果
+// @Tags         评测模块
+// @Accept       multipart/form-data
+// @Produce      json
+// @Param        x-token  header    string                true  "token"
+// @Param        data     body      model.JudgeProblemQ  true  "题目ID，题目名称，题目难度，可读权限，可写权限，组织ID，输入文件，输出文件，题目描述"
+// @Success      200      {object}  model.CommonA         "是否成功，返回信息"
+// @Router       /api/v1/problems/{id}/judge [post]
+func JudgeProblem(c *gin.Context) {
+	// 获取请求数据
+	var data model.JudgeProblemQ
+	if err := c.ShouldBind(&data); err != nil {
+		global.LOG.Panic("JudgeProblem: bind data error")
+	}
+	// 题目的存在性判定
+	problem, notFound := service.GetProblemByID(data.ProblemID)
+	if notFound {
+		c.JSON(http.StatusOK, model.GetProblemA{Success: false, Message: "找不到该题目的信息"})
+		return
+	}
+	user := utils.SolveUser(c)
+	// 用户权限判定
+	if !service.JudgeReadPermission(problem.OrgID, problem.Readable, problem.Creator, c) {
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "您对该题目无可读权限"})
+		return
+	}
+	result := model.Result{Result: data.Result, UserID: user.ID, ProblemID: problem.ID}
+	if global.DB.Create(&result).Error != nil {
+		global.LOG.Warn("JudgeProblem: judge problem error")
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "评测题目失败"})
+		return
+	}
+
+	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "评测题目成功"})
+}

@@ -123,3 +123,12 @@ type ContestProblem struct {
 	ProblemName string `gorm:"not null;" json:"problemName"`
 	Difficulty  int    `gorm:"not null;" json:"difficulty"`
 }
+
+type Result struct {
+	ID        uint64 `gorm:"primary_key; autoIncrement;not null;" json:"id"`
+	UserID    uint64 `gorm:"not null;" json:"userID"`
+	ProblemID uint64 `gorm:"not null;" json:"problemID"`
+	// 0 AC , 1 WA , 2 TLE, 3 RE
+	Result      int       `gorm:"not null;" json:"result"`
+	CreatedTime time.Time `gorm:"autoCreateTime;" json:"createdTime"`
+}
