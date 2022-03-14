@@ -255,6 +255,7 @@ func GetProblemList(c *gin.Context) {
 			Total:       0})
 		return
 	}
+	user := utils.SolveUser(c)
 	// 对题目进行分页并返回
 	pagedProblems := service.GetProblemsByPage(resProblems, page, sorter)
 	for _, problem := range pagedProblems {
@@ -263,6 +264,7 @@ func GetProblemList(c *gin.Context) {
 		if err := json.Unmarshal(problemJson, &problemMap); err != nil {
 			global.LOG.Panic("GetProblemList: make problem map error")
 		}
+		problemMap["result"] = service.GetUserFinalJudge(user.ID, problem.ID)
 		problemList = append(problemList, problemMap)
 	}
 	c.JSON(http.StatusOK, model.GetProblemListA{
