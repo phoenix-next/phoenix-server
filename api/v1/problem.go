@@ -267,7 +267,7 @@ func GetProblemList(c *gin.Context) {
 // @Accept       multipart/form-data
 // @Produce      json
 // @Param        x-token  header    string                true  "token"
-// @Param        data     body      model.JudgeProblemQ  true  "题目ID，题目名称，题目难度，可读权限，可写权限，组织ID，输入文件，输出文件，题目描述"
+// @Param        data     body      model.JudgeProblemQ  true  "题目ID，评测结果"
 // @Success      200      {object}  model.CommonA         "是否成功，返回信息"
 // @Router       /api/v1/problems/{id}/judge [post]
 func JudgeProblem(c *gin.Context) {
