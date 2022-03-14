@@ -75,7 +75,8 @@ func CreateCaptcha(c *gin.Context) {
 	// 删除旧的验证码
 	global.DB.Where("type = ? AND email = ?", data.Type, data.Email).Delete(&model.Captcha{})
 	// 生成新的验证码
-	if err := service.CreateCaptcha(&model.Captcha{Email: data.Email, Captcha: uint64(confirmNumber)}); err != nil {
+	captcha := model.Captcha{Email: data.Email, Captcha: uint64(confirmNumber), Type: data.Type}
+	if err := service.CreateCaptcha(&captcha); err != nil {
 		global.LOG.Panic("CreateCaptcha: create captcha error")
 	}
 	// 按照类型发送验证码

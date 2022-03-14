@@ -66,7 +66,7 @@ func CreateProblem(c *gin.Context) {
 // @Produce      json
 // @Param        x-token  header    string             true  "token"
 // @Param        id       path      int            true  "题目ID"
-// @Success      200      {object}  model.GetProblemA  "题目名称，题目难度，组织ID，创建者ID，输入文件，输出文件，题目描述，评测结果"
+// @Success      200      {object}  model.GetProblemA  "题目名称，题目难度，输入文件，输出文件，题目描述，评测结果"
 // @Router       /api/v1/problems/{id} [get]
 func GetProblem(c *gin.Context) {
 	// 获取请求参数
@@ -88,16 +88,14 @@ func GetProblem(c *gin.Context) {
 	}
 	// 返回结果
 	c.JSON(http.StatusOK, model.GetProblemA{
-		Success:      true,
-		Message:      "",
-		Name:         problem.Name,
-		Difficulty:   problem.Difficulty,
-		Organization: problem.OrgID,
-		Creator:      problem.Creator,
-		Input:        service.GetProblemFileUrl(&problem, "input"),
-		Output:       service.GetProblemFileUrl(&problem, "output"),
-		Description:  service.GetProblemFileUrl(&problem, "description"),
-		Result:       service.GetUserFinalJudge(utils.SolveUser(c).ID, id),
+		Success:     true,
+		Message:     "",
+		Name:        problem.Name,
+		Difficulty:  problem.Difficulty,
+		Input:       service.GetProblemFileUrl(&problem, "input"),
+		Output:      service.GetProblemFileUrl(&problem, "output"),
+		Description: service.GetProblemFileUrl(&problem, "description"),
+		Result:      service.GetUserFinalJudge(utils.SolveUser(c).ID, id),
 	})
 
 }
