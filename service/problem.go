@@ -76,6 +76,22 @@ func GetProblemsByPage(problems []model.Problem, page int, sorter int) (problemL
 	return problems[(page-1)*size : int(math.Min(float64(page*size), float64(len(problems))))]
 }
 
+// GetUserFinalJudge 返回单个题目的评测结果，0 表示未做，1 表示通过，-1 表示评测过但是未通过
+func GetUserFinalJudge(uid uint64, pid uint64) (result int) {
+	results := QueryUserProblemResult(uid, pid)
+	if len(results) == 0 {
+		return 0
+	} else {
+		result = -1
+		for _, r := range results {
+			if r.Result == 0 {
+				result = 1
+			}
+		}
+		return result
+	}
+}
+
 // 数据库操作
 
 // GetProblemByID 根据问题 ID 查询某个问题
