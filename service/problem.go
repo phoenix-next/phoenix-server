@@ -64,9 +64,9 @@ func GetProblemsByPage(problems []model.Problem, page int, sorter int) (problemL
 		case 1, -1:
 			res = problems[i].ID > problems[j].ID
 		case 2, -2:
-			res = problems[i].Difficulty > problems[j].Difficulty
-		case 3, -3:
 			res = strings.Compare(problems[i].Name, problems[j].Name) < 0
+		case 3, -3:
+			res = problems[i].Difficulty > problems[j].Difficulty
 		}
 		if sorter < 0 {
 			res = !res
