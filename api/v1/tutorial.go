@@ -29,7 +29,8 @@ func CreateTutorial(c *gin.Context) {
 	// 获取请求数据
 	var data model.CreateTutorialQ
 	if err := c.ShouldBind(&data); err != nil {
-		global.LOG.Panic("CreateTutorial: bind data error")
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "请求参数非法"})
+		return
 	}
 	user := utils.SolveUser(c)
 	// 新建教程
@@ -104,14 +105,15 @@ func GetTutorial(c *gin.Context) {
 // @Produce      json
 // @Param        x-token  header    string                 true  "token"
 // @Param        id       path      int                 true  "教程ID"
-// @Param        data     body      model.UpdateTutorialQ  true  "教程名称，教程简介，可读权限，可写权限，教程文件"
+// @Param        data     body      model.UpdateTutorialQ  true  "教程名称，教程简介，教程文件"
 // @Success      200      {object}  model.CommonA          "是否成功，返回信息"
 // @Router       /api/v1/tutorials/{id} [put]
 func UpdateTutorial(c *gin.Context) {
 	// 获取数据
 	var data model.UpdateTutorialQ
 	if err := c.ShouldBind(&data); err != nil {
-		global.LOG.Panic("UpdateTutorial: bind data error")
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "请求参数非法"})
+		return
 	}
 	// 教程不存在的情况
 	tutorial, notFound := service.GetTutorialByID(data.ID)

@@ -27,15 +27,11 @@ type GetProblemA struct {
 }
 
 type UpdateProblemQ struct {
-	ID           uint64                `form:"id"`
-	Name         string                `form:"name"`
-	Difficulty   int                   `form:"difficulty"`
-	Readable     int                   `form:"readable"`
-	Writable     int                   `form:"writable"`
-	Organization uint64                `form:"organization"`
-	Input        *multipart.FileHeader `form:"input" swaggerignore:"true"`
-	Output       *multipart.FileHeader `form:"output" swaggerignore:"true"`
-	Description  *multipart.FileHeader `form:"description" swaggerignore:"true"`
+	Name        string                `form:"name"`
+	Difficulty  int                   `form:"difficulty"`
+	Input       *multipart.FileHeader `form:"input" swaggerignore:"true"`
+	Output      *multipart.FileHeader `form:"output" swaggerignore:"true"`
+	Description *multipart.FileHeader `form:"description" swaggerignore:"true"`
 }
 
 type GetProblemVersionA struct {

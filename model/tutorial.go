@@ -24,12 +24,10 @@ type GetTutorialA struct {
 }
 
 type UpdateTutorialQ struct {
-	ID       uint64                `form:"id"`
-	Name     string                `form:"name"`
-	Profile  string                `form:"profile"`
-	Readable int                   `form:"readable"`
-	Writable int                   `form:"writable"`
-	File     *multipart.FileHeader `form:"file" swaggerignore:"true"`
+	ID      uint64                `form:"id"`
+	Name    string                `form:"name"`
+	Profile string                `form:"profile"`
+	File    *multipart.FileHeader `form:"file" swaggerignore:"true"`
 }
 
 type GetTutorialVersionA struct {
