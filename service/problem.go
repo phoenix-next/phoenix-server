@@ -119,3 +119,9 @@ func QueryAllProblems() (problems []model.Problem) {
 	global.DB.Find(&problems)
 	return problems
 }
+
+// QueryUserProblemResult 查询用户对某问题的所有评测结果
+func QueryUserProblemResult(uid uint64, pid uint64) (results []model.Result) {
+	global.DB.Where("user_id = ? AND problem_id = ?", uid, pid).Find(&results)
+	return results
+}

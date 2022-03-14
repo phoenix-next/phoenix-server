@@ -16,18 +16,19 @@ type CreateProblemQ struct {
 }
 
 type GetProblemA struct {
-	Success      bool   `json:"success"`
-	Message      string `json:"message"`
-	ID           uint64 `json:"id"`
-	Name         string `json:"name"`
-	Difficulty   int    `json:"difficulty"`
-	Readable     int    `json:"readable"`
-	Writable     int    `json:"writable"`
-	Organization uint64 `json:"organization"`
-	Creator      uint64 `json:"creator"`
-	Input        string `json:"input"`
-	Output       string `json:"output"`
-	Description  string `json:"description"`
+	Success      bool     `json:"success"`
+	Message      string   `json:"message"`
+	ID           uint64   `json:"id"`
+	Name         string   `json:"name"`
+	Difficulty   int      `json:"difficulty"`
+	Readable     int      `json:"readable"`
+	Writable     int      `json:"writable"`
+	Organization uint64   `json:"organization"`
+	Creator      uint64   `json:"creator"`
+	Input        string   `json:"input"`
+	Output       string   `json:"output"`
+	Description  string   `json:"description"`
+	ResultList   []Result `json:"resultList"`
 }
 
 type UpdateProblemQ struct {
