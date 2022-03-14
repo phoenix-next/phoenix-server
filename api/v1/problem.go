@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/lithammer/fuzzysearch/fuzzy"
 	"github.com/phoenix-next/phoenix-server/global"
@@ -85,6 +86,7 @@ func GetProblem(c *gin.Context) {
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "您对该题目无可读权限"})
 		return
 	}
+
 	// 返回结果
 	c.JSON(http.StatusOK, model.GetProblemA{
 		Success:      true,
@@ -99,6 +101,7 @@ func GetProblem(c *gin.Context) {
 		Input:        service.GetProblemFileUrl(&problem, "input"),
 		Output:       service.GetProblemFileUrl(&problem, "output"),
 		Description:  service.GetProblemFileUrl(&problem, "description"),
+		Result:       service.GetUserFinalJudge(utils.SolveUser(c).ID, id),
 	})
 
 }
@@ -242,21 +245,30 @@ func GetProblemList(c *gin.Context) {
 			resProblems = append(resProblems, problem)
 		}
 	}
+	problemList := make([]map[string]interface{}, 0)
 	// 找不到题目的情况
 	if len(resProblems) == 0 {
 		c.JSON(http.StatusOK, model.GetProblemListA{
 			Success:     true,
 			Message:     "",
-			ProblemList: []model.Problem{},
+			ProblemList: problemList,
 			Total:       0})
 		return
 	}
 	// 对题目进行分页并返回
 	pagedProblems := service.GetProblemsByPage(resProblems, page, sorter)
+	for _, problem := range pagedProblems {
+		problemJson, _ := json.Marshal(&problem)
+		problemMap := make(map[string]interface{})
+		if err := json.Unmarshal(problemJson, &problemMap); err != nil {
+			global.LOG.Panic("GetProblemList: make problem map error")
+		}
+		problemList = append(problemList, problemMap)
+	}
 	c.JSON(http.StatusOK, model.GetProblemListA{
 		Success:     true,
 		Message:     "",
-		ProblemList: pagedProblems,
+		ProblemList: problemList,
 		Total:       len(resProblems)})
 }
 
@@ -300,7 +312,6 @@ func SaveProblemRecords(c *gin.Context) {
 		return
 	}
 	if err := c.SaveUploadedFile(data.Code, filepath.Join(global.VP.GetString("code_path"), service.GetCodeFileName(result))); err != nil {
-		panic(err)
 		//发生错误，回滚数据库
 		_ = global.DB.Where("id = ?", result.ID).Delete(model.Result{}).Error
 		global.LOG.Panic("SaveProblemRecords: save judge code error")

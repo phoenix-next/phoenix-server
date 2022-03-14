@@ -16,19 +16,20 @@ type CreateProblemQ struct {
 }
 
 type GetProblemA struct {
-	Success      bool     `json:"success"`
-	Message      string   `json:"message"`
-	ID           uint64   `json:"id"`
-	Name         string   `json:"name"`
-	Difficulty   int      `json:"difficulty"`
-	Readable     int      `json:"readable"`
-	Writable     int      `json:"writable"`
-	Organization uint64   `json:"organization"`
-	Creator      uint64   `json:"creator"`
-	Input        string   `json:"input"`
-	Output       string   `json:"output"`
-	Description  string   `json:"description"`
-	ResultList   []Result `json:"resultList"`
+	Success      bool   `json:"success"`
+	Message      string `json:"message"`
+	ID           uint64 `json:"id"`
+	Name         string `json:"name"`
+	Difficulty   int    `json:"difficulty"`
+	Readable     int    `json:"readable"`
+	Writable     int    `json:"writable"`
+	Organization uint64 `json:"organization"`
+	Creator      uint64 `json:"creator"`
+	Input        string `json:"input"`
+	Output       string `json:"output"`
+	Description  string `json:"description"`
+	Result       int    `json:"result"`
+	//Result 0 表示未做，1 表示通过，-1 表示评测过但是未通过
 }
 
 type UpdateProblemQ struct {
@@ -50,10 +51,10 @@ type GetProblemVersionA struct {
 }
 
 type GetProblemListA struct {
-	Success     bool      `json:"success"`
-	Message     string    `json:"message"`
-	Total       int       `json:"total"`
-	ProblemList []Problem `json:"problemList"`
+	Success     bool                     `json:"success"`
+	Message     string                   `json:"message"`
+	Total       int                      `json:"total"`
+	ProblemList []map[string]interface{} `json:"problemList"`
 }
 
 type JudgeProblemQ struct {
