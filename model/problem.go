@@ -57,7 +57,6 @@ type GetProblemListA struct {
 }
 
 type JudgeProblemQ struct {
-	ProblemID uint64                `form:"problemID"`
-	Result    int                   `form:"result"`
-	Code      *multipart.FileHeader `form:"code" swaggerignore:"true"`
+	Result int                   `form:"result"`
+	Code   *multipart.FileHeader `form:"code" swaggerignore:"true"`
 }

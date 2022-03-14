@@ -97,7 +97,7 @@ func GetCodeFileName(result model.Result) string {
 	problem, _ := GetProblemByID(result.ProblemID)
 	user, _ := GetUserByID(result.UserID)
 	time := result.CreatedTime
-	return problem.Name + "_" + user.Name + "_" + string(time.Year()) + string(time.Month()) + string(time.Day()) + string(time.Hour()) + string(time.Minute()) + string(time.Second())
+	return problem.Name + "_" + user.Name + "_" + strconv.Itoa(time.Year()) + strconv.Itoa(int(time.Month())) + strconv.Itoa(time.Day()) + strconv.Itoa(time.Hour()) + strconv.Itoa(time.Minute()) + strconv.Itoa(time.Second())
 }
 
 // 数据库操作

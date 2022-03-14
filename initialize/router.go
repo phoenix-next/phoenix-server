@@ -53,6 +53,7 @@ func InitRouter(r *gin.Engine) {
 	{
 		resourceRouter.StaticFS("/problem", http.Dir(global.VP.GetString("problem_path")))
 		resourceRouter.StaticFS("/tutorial", http.Dir(global.VP.GetString("tutorial_path")))
+		resourceRouter.StaticFS("/code", http.Dir(global.VP.GetString("code_path")))
 	}
 	// 用户模块
 	userRouter := basicRouter.Group("/users")
@@ -72,7 +73,7 @@ func InitRouter(r *gin.Engine) {
 		problemRouter.GET("/:id", v1.GetProblem)
 		problemRouter.PUT("/:id", v1.UpdateProblem)
 		problemRouter.GET("/:id/version", v1.GetProblemVersion)
-		problemRouter.POST("/:id/resorts", v1.SaveProblemRecords)
+		problemRouter.POST("/:id/records", v1.SaveProblemRecords)
 	}
 	// 组织模块
 	teamRouter := basicRouter.Group("/organizations")

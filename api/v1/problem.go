@@ -276,8 +276,13 @@ func SaveProblemRecords(c *gin.Context) {
 	if err := c.ShouldBind(&data); err != nil {
 		global.LOG.Panic("SaveProblemRecords: bind data error")
 	}
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusOK, model.GetProblemVersionA{Success: false, Message: "题目ID不为整数"})
+		return
+	}
 	// 题目的存在性判定
-	problem, notFound := service.GetProblemByID(data.ProblemID)
+	problem, notFound := service.GetProblemByID(id)
 	if notFound {
 		c.JSON(http.StatusOK, model.GetProblemA{Success: false, Message: "找不到该题目的信息"})
 		return
@@ -289,12 +294,13 @@ func SaveProblemRecords(c *gin.Context) {
 		return
 	}
 	result := model.Result{Result: data.Result, UserID: user.ID, ProblemID: problem.ID}
-	if global.DB.Create(&result).Error != nil {
+	if err = global.DB.Create(&result).Error; err != nil {
 		global.LOG.Warn("SaveProblemRecords: judge problem error")
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "评测题目失败"})
 		return
 	}
 	if err := c.SaveUploadedFile(data.Code, filepath.Join(global.VP.GetString("code_path"), service.GetCodeFileName(result))); err != nil {
+		panic(err)
 		//发生错误，回滚数据库
 		_ = global.DB.Where("id = ?", result.ID).Delete(model.Result{}).Error
 		global.LOG.Panic("SaveProblemRecords: save judge code error")
