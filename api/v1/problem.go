@@ -260,7 +260,7 @@ func GetProblemList(c *gin.Context) {
 		Total:       len(resProblems)})
 }
 
-// JudgeProblem
+// SaveProblemRecords
 // @Summary      评测题目
 // @Description  上传题目评测的结果
 // @Tags         评测模块
@@ -269,12 +269,12 @@ func GetProblemList(c *gin.Context) {
 // @Param        x-token  header    string                true  "token"
 // @Param        data     body      model.JudgeProblemQ  true  "题目ID，评测结果"
 // @Success      200      {object}  model.CommonA         "是否成功，返回信息"
-// @Router       /api/v1/problems/{id}/judge [post]
-func JudgeProblem(c *gin.Context) {
+// @Router       /api/v1/problems/{id}/records [post]
+func SaveProblemRecords(c *gin.Context) {
 	// 获取请求数据
 	var data model.JudgeProblemQ
 	if err := c.ShouldBind(&data); err != nil {
-		global.LOG.Panic("JudgeProblem: bind data error")
+		global.LOG.Panic("SaveProblemRecords: bind data error")
 	}
 	// 题目的存在性判定
 	problem, notFound := service.GetProblemByID(data.ProblemID)
@@ -290,7 +290,7 @@ func JudgeProblem(c *gin.Context) {
 	}
 	result := model.Result{Result: data.Result, UserID: user.ID, ProblemID: problem.ID}
 	if global.DB.Create(&result).Error != nil {
-		global.LOG.Warn("JudgeProblem: judge problem error")
+		global.LOG.Warn("SaveProblemRecords: judge problem error")
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "评测题目失败"})
 		return
 	}
