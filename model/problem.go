@@ -52,16 +52,16 @@ type GetProblemListA struct {
 	Success     bool       `json:"success"`
 	Message     string     `json:"message"`
 	Total       int        `json:"total"`
-	ProblemList []ProblemT `json:"problemList"`
+	ProblemList []ProblemT `json:"problemList"` // 当前用户该题的评测结果，0 表示未做，1 表示通过，-1 表示评测过但是未通过
 }
 
 type UploadProblemRecordQ struct {
-	Result int                   `form:"result"`
+	Result int                   `form:"result"` // 0 AC , 1 WA , 2 TLE, 3 RE
 	Code   *multipart.FileHeader `form:"code" swaggerignore:"true"`
 }
 
 type GetProblemRecordA struct {
 	Success    bool      `json:"success"`
 	Message    string    `json:"message"`
-	ResultList []ResultT `json:"resultList"`
+	ResultList []ResultT `json:"resultList"` // 0 AC , 1 WA , 2 TLE, 3 RE
 }

@@ -60,7 +60,7 @@ func CreateProblem(c *gin.Context) {
 
 // GetProblem
 // @Summary      下载题目
-// @Description  下载一个题目的信息
+// @Description  下载一个题目的信息(0 未做，1 通过，-1 未通过)
 // @Tags         评测模块
 // @Accept       json
 // @Produce      json
@@ -213,7 +213,7 @@ func GetProblemVersion(c *gin.Context) {
 
 // GetProblemList
 // @Summary      获取题目列表
-// @Description  获取用户所能查看的题目列表
+// @Description  获取用户所能查看的题目列表(0 未做，1 通过，-1 未通过)
 // @Tags         评测模块
 // @Accept       json
 // @Produce      json
@@ -273,7 +273,7 @@ func GetProblemList(c *gin.Context) {
 
 // UploadProblemRecord
 // @Summary      上传评测结果
-// @Description  上传一个题目的评测结果，用户必须有该题目的读权限
+// @Description  上传一个题目的评测结果，用户必须有该题目的读权限(0 AC, 1 WA, 2 TLE, 3 RE)
 // @Tags         评测模块
 // @Accept       multipart/form-data
 // @Produce      json
@@ -324,7 +324,7 @@ func UploadProblemRecord(c *gin.Context) {
 
 // GetProblemRecord
 // @Summary      获取评测结果
-// @Description  获取一个题目的评测结果，用户必须有该题目的读权限
+// @Description  获取一个题目的评测结果，用户必须有该题目的读权限(0 AC, 1 WA, 2 TLE, 3 RE)
 // @Tags         评测模块
 // @Accept       json
 // @Produce      json
