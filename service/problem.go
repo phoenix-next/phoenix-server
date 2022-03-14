@@ -77,27 +77,25 @@ func GetProblemsByPage(problems []model.Problem, page int, sorter int) (problemL
 }
 
 // GetUserFinalJudge 返回单个题目的评测结果，0 表示未做，1 表示通过，-1 表示评测过但是未通过
-func GetUserFinalJudge(uid uint64, pid uint64) (result int) {
+func GetUserFinalJudge(uid uint64, pid uint64) int {
 	results := QueryUserProblemResult(uid, pid)
 	if len(results) == 0 {
 		return 0
-	} else {
-		result = -1
-		for _, r := range results {
-			if r.Result == 0 {
-				result = 1
-			}
-		}
-		return result
 	}
+	for _, r := range results {
+		if r.Result == 0 {
+			return 1
+		}
+	}
+	return -1
 }
 
 // GetCodeFileName 根据记录获取保存的Code文件名称
 func GetCodeFileName(result model.Result) string {
 	problem, _ := GetProblemByID(result.ProblemID)
 	user, _ := GetUserByID(result.UserID)
-	time := result.CreatedTime
-	return problem.Name + "_" + user.Name + "_" + strconv.Itoa(time.Year()) + strconv.Itoa(int(time.Month())) + strconv.Itoa(time.Day()) + strconv.Itoa(time.Hour()) + strconv.Itoa(time.Minute()) + strconv.Itoa(time.Second())
+	// 关于时间格式化，可参考https://www.jianshu.com/p/c7f7fbb16932
+	return problem.Name + "_" + user.Name + "_" + result.CreatedTime.Format("20060102150405")
 }
 
 // 数据库操作

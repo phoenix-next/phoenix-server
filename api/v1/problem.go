@@ -286,7 +286,7 @@ func UploadProblemRecord(c *gin.Context) {
 	}
 	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusOK, model.GetProblemVersionA{Success: false, Message: "题目ID不为整数"})
+		c.JSON(http.StatusOK, model.GetProblemVersionA{Success: false, Message: "请求参数非法"})
 		return
 	}
 	// 题目的存在性判定
@@ -295,24 +295,27 @@ func UploadProblemRecord(c *gin.Context) {
 		c.JSON(http.StatusOK, model.GetProblemA{Success: false, Message: "找不到该题目的信息"})
 		return
 	}
-	user := utils.SolveUser(c)
 	// 用户权限判定
+	user := utils.SolveUser(c)
 	if !service.JudgeReadPermission(problem.OrgID, problem.Readable, problem.Creator, c) {
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "您对该题目无可读权限"})
 		return
 	}
+	// 保存评测结果的元数据
 	result := model.Result{Result: data.Result, UserID: user.ID, ProblemID: problem.ID}
 	if err = global.DB.Create(&result).Error; err != nil {
 		global.LOG.Warn("UploadProblemRecord: judge problem error")
-		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "评测题目失败"})
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "上传评测结果失败"})
 		return
 	}
-	if err := c.SaveUploadedFile(data.Code, filepath.Join(global.VP.GetString("code_path"), service.GetCodeFileName(result))); err != nil {
-		//发生错误，回滚数据库
-		_ = global.DB.Where("id = ?", result.ID).Delete(model.Result{}).Error
+	//发生错误，回滚数据库
+	filePath := filepath.Join(global.VP.GetString("code_path"), service.GetCodeFileName(result))
+	if err = c.SaveUploadedFile(data.Code, filePath); err != nil {
+		global.DB.Delete(&result)
 		global.LOG.Panic("UploadProblemRecord: save judge code error")
 	}
-	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "评测题目成功"})
+	// 返回响应
+	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: ""})
 }
 
 // GetProblemRecord

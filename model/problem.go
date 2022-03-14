@@ -57,4 +57,6 @@ type UploadProblemRecordQ struct {
 }
 
 type GetProblemRecordA struct {
+	Success bool   `json:"success"`
+	Message string `json:"message"`
 }

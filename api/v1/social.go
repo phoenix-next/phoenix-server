@@ -63,7 +63,7 @@ func GetOrganization(c *gin.Context) {
 	// 获取请求数据
 	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusOK, model.GetOrganizationA{Success: false, Message: "组织ID不合法"})
+		c.JSON(http.StatusOK, model.GetOrganizationA{Success: false, Message: "请求参数非法"})
 	}
 	// 组织存在性判定
 	org, notFound := service.GetOrganizationByID(id)
@@ -112,7 +112,7 @@ func UpdateOrganization(c *gin.Context) {
 	data := utils.BindJsonData(c, &model.CreateOrganizationQ{}).(*model.CreateOrganizationQ)
 	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "组织ID非法"})
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "请求参数非法"})
 		return
 	}
 	// 组织的存在性判定
@@ -143,7 +143,7 @@ func UpdateOrganization(c *gin.Context) {
 // @Tags         社交模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string                           true  "token"
+// @Param        x-token  header    string         true  "token"
 // @Param        id       path      int                              true  "组织ID"
 // @Success      200      {object}  model.CommonA                   "是否成功，返回信息"
 // @Router       /api/v1/organizations/{id} [delete]
@@ -179,7 +179,7 @@ func DeleteOrganization(c *gin.Context) {
 // @Tags         社交模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string         true  "token"
+// @Param        x-token  header    string                           true  "token"
 // @Param        id       path      int                      true  "组织ID"
 // @Param        data     body      model.CreateInvitationQ  true  "用户email"
 // @Success      200      {object}  model.CommonA            "是否成功，返回信息"
@@ -283,7 +283,7 @@ func GetOrganizationMember(c *gin.Context) {
 	// 获取请求数据
 	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "组织ID非法"})
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "请求参数非法"})
 		return
 	}
 	// 找不到组织的情况
@@ -313,7 +313,7 @@ func UpdateOrganizationAdmin(c *gin.Context) {
 	// 获取请求参数
 	oid, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "组织ID非法"})
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "请求参数非法"})
 		return
 	}
 	user := utils.SolveUser(c)

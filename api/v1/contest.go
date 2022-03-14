@@ -49,10 +49,8 @@ func CreateContest(c *gin.Context) {
 				}
 				// 维护关系
 				global.DB.Create(&model.ContestProblem{
-					ContestID:   contest.ID,
-					ProblemID:   problem.ID,
-					ProblemName: problem.Name,
-					Difficulty:  problem.Difficulty})
+					ContestID: contest.ID,
+					ProblemID: problem.ID})
 			}
 			// 返回结果
 			c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "创建比赛成功"})
@@ -78,7 +76,7 @@ func GetContest(c *gin.Context) {
 	user := utils.SolveUser(c)
 	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusOK, model.GetContestA{Success: false, Message: "比赛ID不合法"})
+		c.JSON(http.StatusOK, model.GetContestA{Success: false, Message: "请求参数非法"})
 		return
 	}
 	// 比赛的存在性判定
@@ -94,10 +92,11 @@ func GetContest(c *gin.Context) {
 	var resProblems []model.ProblemT
 	for _, problem := range problems {
 		result := service.GetUserFinalJudge(user.ID, problem.ProblemID)
+		tmp, _ := service.GetProblemByID(problem.ProblemID)
 		resProblems = append(resProblems, model.ProblemT{
 			ProblemID:   problem.ProblemID,
-			ProblemName: problem.ProblemName,
-			Difficulty:  problem.Difficulty,
+			ProblemName: tmp.Name,
+			Difficulty:  tmp.Difficulty,
 			Result:      result,
 		})
 	}
@@ -127,7 +126,7 @@ func UpdateContest(c *gin.Context) {
 	data := utils.BindJsonData(c, &model.UpdateContestQ{}).(*model.UpdateContestQ)
 	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "比赛ID不合法"})
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "请求参数非法"})
 		return
 	}
 	// 比赛的存在性判定
@@ -151,10 +150,8 @@ func UpdateContest(c *gin.Context) {
 		}
 		// 维护关系
 		global.DB.Create(&model.ContestProblem{
-			ContestID:   contest.ID,
-			ProblemID:   problem.ID,
-			ProblemName: problem.Name,
-			Difficulty:  problem.Difficulty})
+			ContestID: contest.ID,
+			ProblemID: problem.ID})
 	}
 	// 返回响应
 	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "已修改比赛信息"})
@@ -174,7 +171,7 @@ func DeleteContest(c *gin.Context) {
 	// 获取请求数据
 	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "比赛ID不合法"})
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "请求参数非法"})
 		return
 	}
 	// 比赛的存在性判定
@@ -279,7 +276,7 @@ func GetOrganizationProblem(c *gin.Context) {
 	// 获取请求数据
 	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusOK, model.GetOrganizationProblemA{Success: false, Message: "组织ID不合法"})
+		c.JSON(http.StatusOK, model.GetOrganizationProblemA{Success: false, Message: "请求参数非法"})
 		return
 	}
 	// 组织的存在性判定
