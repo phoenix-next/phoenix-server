@@ -144,7 +144,7 @@ func UpdateProblem(c *gin.Context) {
 	err3 := c.SaveUploadedFile(data.Output, filepath.Join(dir, service.MakeProblemFileName(problem.ID, problem.Version, "output")))
 	// 保存文件失败，回滚数据库
 	if err1 != nil || err2 != nil || err3 != nil {
-		service.SaveProblem(&problemOrigin)
+		_ = service.SaveProblem(&problemOrigin)
 		global.LOG.Warn("save problem " + problem.Name + " file error")
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "保存题目文件失败"})
 		return
@@ -207,7 +207,7 @@ func GetProblemVersion(c *gin.Context) {
 		c.JSON(http.StatusOK, model.GetProblemVersionA{Success: false, Message: "找不到该题目的信息"})
 		return
 	}
-	c.JSON(http.StatusOK, model.GetProblemVersionA{Success: true, Message: "", Version: problem.Version})
+	c.JSON(http.StatusOK, model.GetProblemVersionA{Success: true, Version: problem.Version})
 
 }
 
@@ -319,7 +319,7 @@ func UploadProblemRecord(c *gin.Context) {
 		global.LOG.Panic("UploadProblemRecord: save judge code error")
 	}
 	// 返回响应
-	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: ""})
+	c.JSON(http.StatusOK, model.CommonA{Success: true})
 }
 
 // GetProblemRecord
@@ -330,8 +330,28 @@ func UploadProblemRecord(c *gin.Context) {
 // @Produce      json
 // @Param        x-token  header    string                true  "token"
 // @Param        id       path      int                       true  "题目ID"
-// @Success      200      {object}  model.GetProblemRecordA  "是否成功，返回信息"
+// @Success      200      {object}  model.GetProblemRecordA  "是否成功，返回信息，评测记录列表"
 // @Router       /api/v1/problems/{id}/records [get]
 func GetProblemRecord(c *gin.Context) {
-
+	// 获取请求数据
+	user := utils.SolveUser(c)
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusOK, model.GetProblemRecordA{Success: false, Message: "请求参数非法"})
+		return
+	}
+	// 获取评测记录
+	var results []model.Result
+	global.DB.Where("user_id = ? AND problem_id = ?", user.ID, id).Find(&results)
+	// 给评测记录添加路径字段，以供用户下载
+	var finalResults []model.ResultT
+	for _, result := range results {
+		finalResults = append(finalResults, model.ResultT{
+			ID:          result.ID,
+			Result:      result.Result,
+			CreatedTime: result.CreatedTime,
+			Path:        "resource/code/" + service.GetCodeFileName(result)})
+	}
+	// 返回响应
+	c.JSON(http.StatusOK, model.GetProblemRecordA{Success: true, ResultList: finalResults})
 }

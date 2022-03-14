@@ -209,7 +209,6 @@ func GetAllPost(c *gin.Context) {
 	if totalPage == 0 {
 		c.JSON(http.StatusOK, model.GetAllPostA{
 			Success: true,
-			Message: "",
 			Total:   0,
 			Posts:   []model.PostT{}})
 		return
@@ -240,7 +239,6 @@ func GetAllPost(c *gin.Context) {
 	// 返回响应
 	c.JSON(http.StatusOK, model.GetAllPostA{
 		Success: true,
-		Message: "",
 		Total:   len(posts),
 		Posts:   finalPosts})
 }
@@ -382,5 +380,5 @@ func GetComment(c *gin.Context) {
 	}
 	// 成功获取评论
 	comments := service.GetAllCommentByPostID(post.ID)
-	c.JSON(http.StatusOK, model.GetCommentA{Success: true, Message: "", Comments: comments})
+	c.JSON(http.StatusOK, model.GetCommentA{Success: true, Comments: comments})
 }

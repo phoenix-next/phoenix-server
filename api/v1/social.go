@@ -78,7 +78,6 @@ func GetOrganization(c *gin.Context) {
 	if notFound {
 		c.JSON(http.StatusOK, model.GetOrganizationA{
 			Success: true,
-			Message: "",
 			Name:    org.Name,
 			Profile: org.Profile,
 			IsValid: false,
@@ -88,7 +87,6 @@ func GetOrganization(c *gin.Context) {
 	// 当前用户是组织中的成员
 	c.JSON(http.StatusOK, model.GetOrganizationA{
 		Success: true,
-		Message: "",
 		Name:    org.Name,
 		Profile: org.Profile,
 		IsValid: true,
@@ -143,7 +141,7 @@ func UpdateOrganization(c *gin.Context) {
 // @Tags         社交模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string                           true  "token"
+// @Param        x-token  header    string         true  "token"
 // @Param        id       path      int                              true  "组织ID"
 // @Success      200      {object}  model.CommonA                   "是否成功，返回信息"
 // @Router       /api/v1/organizations/{id} [delete]
@@ -179,7 +177,7 @@ func DeleteOrganization(c *gin.Context) {
 // @Tags         社交模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string         true  "token"
+// @Param        x-token  header    string                           true  "token"
 // @Param        id       path      int                      true  "组织ID"
 // @Param        data     body      model.CreateInvitationQ  true  "用户email"
 // @Success      200      {object}  model.CommonA            "是否成功，返回信息"
@@ -294,8 +292,7 @@ func GetOrganizationMember(c *gin.Context) {
 	// 成功返回
 	c.JSON(http.StatusOK, model.GetOrganizationMemberA{
 		Members: service.GetOrganizationMember(id),
-		Success: true,
-		Message: ""})
+		Success: true})
 }
 
 // UpdateOrganizationAdmin

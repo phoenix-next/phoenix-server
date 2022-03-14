@@ -293,7 +293,7 @@ func GetOrganizationProblem(c *gin.Context) {
 			var problems []model.Problem
 			global.DB.Where("org_id = ? AND (readable = ? OR readable = ?)", id, 2, 1).Find(&problems)
 			// 返回响应
-			c.JSON(http.StatusOK, model.GetOrganizationProblemA{Success: true, Message: "", ProblemList: problems})
+			c.JSON(http.StatusOK, model.GetOrganizationProblemA{Success: true, ProblemList: problems})
 			return
 		}
 	}

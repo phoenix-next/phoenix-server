@@ -92,10 +92,10 @@ func GetUserFinalJudge(uid uint64, pid uint64) int {
 
 // GetCodeFileName 根据记录获取保存的Code文件名称
 func GetCodeFileName(result model.Result) string {
-	problem, _ := GetProblemByID(result.ProblemID)
-	user, _ := GetUserByID(result.UserID)
 	// 关于时间格式化，可参考https://www.jianshu.com/p/c7f7fbb16932
-	return problem.Name + "_" + user.Name + "_" + result.CreatedTime.Format("20060102150405")
+	return strconv.FormatUint(result.ProblemID, 10) + "_" +
+		strconv.FormatUint(result.UserID, 10) + "_" +
+		result.CreatedTime.Format("20060102150405")
 }
 
 // 数据库操作

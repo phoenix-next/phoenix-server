@@ -191,7 +191,6 @@ func GetUser(c *gin.Context) {
 	// 返回响应
 	c.JSON(http.StatusOK, model.GetUserA{
 		Success: true,
-		Message: "",
 		Name:    user.Name,
 		Email:   user.Email,
 		Avatar:  user.Avatar,
@@ -214,7 +213,7 @@ func GetUserOrganization(c *gin.Context) {
 	var relation []model.OrganizationT
 	global.DB.Model(&model.Invitation{}).Where("user_id = ? and is_valid = ?", user.ID, true).Find(&relation)
 	// 返回响应
-	c.JSON(http.StatusOK, model.GetUserOrganizationA{Success: true, Message: "", Organization: relation})
+	c.JSON(http.StatusOK, model.GetUserOrganizationA{Success: true, Organization: relation})
 }
 
 // QuitOrganization
@@ -268,7 +267,7 @@ func GetUserInvitation(c *gin.Context) {
 	var invitations []model.OrganizationT
 	global.DB.Model(&model.Invitation{}).Where("user_id = ? AND is_valid = ?", user.ID, false).Find(&invitations)
 	// 返回响应
-	c.JSON(http.StatusOK, model.GetUserInvitationA{Success: true, Message: "", Organization: invitations})
+	c.JSON(http.StatusOK, model.GetUserInvitationA{Success: true, Organization: invitations})
 }
 
 // ResetPassword

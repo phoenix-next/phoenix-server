@@ -2,7 +2,15 @@ package model
 
 import (
 	"mime/multipart"
+	"time"
 )
+
+type ResultT struct {
+	ID          uint64    `json:"id"`
+	Result      int       `json:"result"` // 0 AC , 1 WA , 2 TLE, 3 RE
+	Path        string    `json:"path"`
+	CreatedTime time.Time `json:"createdTime"`
+}
 
 type CreateProblemQ struct {
 	OrgID       uint64                `form:"organization"`
@@ -53,6 +61,7 @@ type UploadProblemRecordQ struct {
 }
 
 type GetProblemRecordA struct {
-	Success bool   `json:"success"`
-	Message string `json:"message"`
+	Success    bool      `json:"success"`
+	Message    string    `json:"message"`
+	ResultList []ResultT `json:"resultList"`
 }
