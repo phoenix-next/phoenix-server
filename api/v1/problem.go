@@ -106,9 +106,9 @@ func GetProblem(c *gin.Context) {
 // @Tags         评测模块
 // @Accept       multipart/form-data
 // @Produce      json
-// @Param        x-token  header    string                true  "token"
+// @Param        x-token  header    string                      true  "token"
 // @Param        data     body      model.UpdateProblemQ  true  "题目ID，题目名称，题目难度，可读权限，可写权限，组织ID，输入文件，输出文件，题目描述"
-// @Success      200      {object}  model.CommonA         "是否成功，返回信息"
+// @Success      200      {object}  model.CommonA               "是否成功，返回信息"
 // @Router       /api/v1/problems/{id} [put]
 func UpdateProblem(c *gin.Context) {
 	// 获取请求数据
@@ -156,7 +156,7 @@ func UpdateProblem(c *gin.Context) {
 // @Tags         评测模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string                true  "token"
+// @Param        x-token  header    string                   true  "token"
 // @Param        id       path      int                true  "题目ID"
 // @Success      200      {object}  model.CommonA         "是否成功，返回信息"
 // @Router       /api/v1/problems/{id} [delete]
@@ -188,7 +188,7 @@ func DeleteProblem(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        x-token  header    string                    true  "token"
-// @Param        id       path      int                       true  "题目ID"
+// @Param        id       path      int                         true  "题目ID"
 // @Success      200      {object}  model.GetProblemVersionA  "是否成功，返回信息，题目版本"
 // @Router       /api/v1/problems/{id}/version [get]
 func GetProblemVersion(c *gin.Context) {
@@ -275,7 +275,7 @@ func GetProblemList(c *gin.Context) {
 // @Accept       multipart/form-data
 // @Produce      json
 // @Param        x-token  header    string                true  "token"
-// @Param        id       path      int                       true  "题目ID"
+// @Param        id       path      int                      true  "题目ID"
 // @Param        data     body      model.UploadProblemRecordQ  true  "评测结果，代码文件"
 // @Success      200      {object}  model.CommonA         "是否成功，返回信息"
 // @Router       /api/v1/problems/{id}/records [post]
@@ -324,7 +324,7 @@ func UploadProblemRecord(c *gin.Context) {
 // @Produce      json
 // @Param        x-token  header    string                true  "token"
 // @Param        id       path      int                       true  "题目ID"
-// @Success      200      {object}  model.GetProblemRecordA         "是否成功，返回信息"
+// @Success      200      {object}  model.GetProblemRecordA  "是否成功，返回信息"
 // @Router       /api/v1/problems/{id}/records [get]
 func GetProblemRecord(c *gin.Context) {
 
