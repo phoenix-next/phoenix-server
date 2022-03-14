@@ -92,6 +92,14 @@ func GetUserFinalJudge(uid uint64, pid uint64) (result int) {
 	}
 }
 
+// GetCodeFileName 根据记录获取保存的Code文件名称
+func GetCodeFileName(result model.Result) string {
+	problem, _ := GetProblemByID(result.ProblemID)
+	user, _ := GetUserByID(result.UserID)
+	time := result.CreatedTime
+	return problem.Name + "_" + user.Name + "_" + string(time.Year()) + string(time.Month()) + string(time.Day()) + string(time.Hour()) + string(time.Minute()) + string(time.Second())
+}
+
 // 数据库操作
 
 // GetProblemByID 根据问题 ID 查询某个问题

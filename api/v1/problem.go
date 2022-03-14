@@ -294,6 +294,10 @@ func SaveProblemRecords(c *gin.Context) {
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "评测题目失败"})
 		return
 	}
-
+	if err := c.SaveUploadedFile(data.Code, filepath.Join(global.VP.GetString("code_path"), service.GetCodeFileName(result))); err != nil {
+		//发生错误，回滚数据库
+		_ = global.DB.Where("id = ?", result.ID).Delete(model.Result{}).Error
+		global.LOG.Panic("SaveProblemRecords: save judge code error")
+	}
 	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "评测题目成功"})
 }
