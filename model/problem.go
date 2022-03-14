@@ -55,3 +55,6 @@ type UploadProblemRecordQ struct {
 	Result int                   `form:"result"`
 	Code   *multipart.FileHeader `form:"code" swaggerignore:"true"`
 }
+
+type GetProblemRecordA struct {
+}
