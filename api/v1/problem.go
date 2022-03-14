@@ -1,7 +1,6 @@
 package v1
 
 import (
-	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/lithammer/fuzzysearch/fuzzy"
 	"github.com/phoenix-next/phoenix-server/global"
@@ -19,7 +18,7 @@ import (
 // @Tags         评测模块
 // @Accept       multipart/form-data
 // @Produce      json
-// @Param        x-token  header    string         true  "token"
+// @Param        x-token  header    string                      true  "token"
 // @Param        data     body      model.CreateProblemQ  true  "题目名称，题目难度，可读权限，可写权限，组织ID，输入文件，输出文件，题目描述"
 // @Success      200      {object}  model.CommonA  "是否成功，返回信息"
 // @Router       /api/v1/problems [post]
@@ -106,7 +105,7 @@ func GetProblem(c *gin.Context) {
 // @Tags         评测模块
 // @Accept       multipart/form-data
 // @Produce      json
-// @Param        x-token  header    string                      true  "token"
+// @Param        x-token  header    string                   true  "token"
 // @Param        data     body      model.UpdateProblemQ  true  "题目ID，题目名称，题目难度，可读权限，可写权限，组织ID，输入文件，输出文件，题目描述"
 // @Success      200      {object}  model.CommonA               "是否成功，返回信息"
 // @Router       /api/v1/problems/{id} [put]
@@ -156,7 +155,7 @@ func UpdateProblem(c *gin.Context) {
 // @Tags         评测模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string                   true  "token"
+// @Param        x-token  header    string         true  "token"
 // @Param        id       path      int                true  "题目ID"
 // @Success      200      {object}  model.CommonA         "是否成功，返回信息"
 // @Router       /api/v1/problems/{id} [delete]
@@ -188,7 +187,7 @@ func DeleteProblem(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        x-token  header    string                    true  "token"
-// @Param        id       path      int                         true  "题目ID"
+// @Param        id       path      int                      true  "题目ID"
 // @Success      200      {object}  model.GetProblemVersionA  "是否成功，返回信息，题目版本"
 // @Router       /api/v1/problems/{id}/version [get]
 func GetProblemVersion(c *gin.Context) {
@@ -222,6 +221,7 @@ func GetProblemVersion(c *gin.Context) {
 // @Router       /api/v1/problems [get]
 func GetProblemList(c *gin.Context) {
 	// 获取请求数据
+	user := utils.SolveUser(c)
 	page, err1 := strconv.Atoi(c.Query("page"))
 	sorter, err2 := strconv.Atoi(c.Query("sorter"))
 	keyWord := c.Query("keyWord")
@@ -239,32 +239,31 @@ func GetProblemList(c *gin.Context) {
 			resProblems = append(resProblems, problem)
 		}
 	}
-	problemList := make([]map[string]interface{}, 0)
 	// 找不到题目的情况
 	if len(resProblems) == 0 {
 		c.JSON(http.StatusOK, model.GetProblemListA{
 			Success:     true,
 			Message:     "",
-			ProblemList: problemList,
+			ProblemList: []model.ProblemT{},
 			Total:       0})
 		return
 	}
-	user := utils.SolveUser(c)
-	// 对题目进行分页并返回
+	// 对题目进行分页
 	pagedProblems := service.GetProblemsByPage(resProblems, page, sorter)
+	// 获取用户的评测结果
+	var finalProblems []model.ProblemT
 	for _, problem := range pagedProblems {
-		problemJson, _ := json.Marshal(&problem)
-		problemMap := make(map[string]interface{})
-		if err := json.Unmarshal(problemJson, &problemMap); err != nil {
-			global.LOG.Panic("GetProblemList: make problem map error")
-		}
-		problemMap["result"] = service.GetUserFinalJudge(user.ID, problem.ID)
-		problemList = append(problemList, problemMap)
+		finalProblems = append(finalProblems, model.ProblemT{
+			ProblemID:   problem.ID,
+			ProblemName: problem.Name,
+			Difficulty:  problem.Difficulty,
+			Result:      service.GetUserFinalJudge(user.ID, problem.ID)})
 	}
+	// 返回响应
 	c.JSON(http.StatusOK, model.GetProblemListA{
 		Success:     true,
 		Message:     "",
-		ProblemList: problemList,
+		ProblemList: finalProblems,
 		Total:       len(resProblems)})
 }
 
@@ -275,7 +274,7 @@ func GetProblemList(c *gin.Context) {
 // @Accept       multipart/form-data
 // @Produce      json
 // @Param        x-token  header    string                true  "token"
-// @Param        id       path      int                      true  "题目ID"
+// @Param        id       path      int                         true  "题目ID"
 // @Param        data     body      model.UploadProblemRecordQ  true  "评测结果，代码文件"
 // @Success      200      {object}  model.CommonA         "是否成功，返回信息"
 // @Router       /api/v1/problems/{id}/records [post]

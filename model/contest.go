@@ -12,6 +12,7 @@ type ProblemT struct {
 	ProblemID   uint64 `json:"problemID"`
 	ProblemName string `json:"problemName"`
 	Difficulty  int    `json:"difficulty"`
+	Result      int    `json:"result"`
 }
 
 type CreateContestQ struct {

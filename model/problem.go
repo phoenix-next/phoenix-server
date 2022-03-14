@@ -45,10 +45,10 @@ type GetProblemVersionA struct {
 }
 
 type GetProblemListA struct {
-	Success     bool                     `json:"success"`
-	Message     string                   `json:"message"`
-	Total       int                      `json:"total"`
-	ProblemList []map[string]interface{} `json:"problemList"`
+	Success     bool       `json:"success"`
+	Message     string     `json:"message"`
+	Total       int        `json:"total"`
+	ProblemList []ProblemT `json:"problemList"`
 }
 
 type UploadProblemRecordQ struct {

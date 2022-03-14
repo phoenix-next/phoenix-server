@@ -75,6 +75,7 @@ func CreateContest(c *gin.Context) {
 // @Router       /api/v1/contests/{id} [get]
 func GetContest(c *gin.Context) {
 	// 获取请求数据
+	user := utils.SolveUser(c)
 	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusOK, model.GetContestA{Success: false, Message: "比赛ID不合法"})
@@ -86,9 +87,20 @@ func GetContest(c *gin.Context) {
 		c.JSON(http.StatusOK, model.GetContestA{Success: false, Message: "比赛不存在"})
 		return
 	}
-	// 获取所有题目
-	var problems []model.ProblemT
-	global.DB.Model(&model.ContestProblem{}).Where("contest_id = ?", contest.ID).Find(&problems)
+	// 获取比赛的所有题目
+	var problems []model.ContestProblem
+	global.DB.Where("contest_id = ?", contest.ID).Find(&problems)
+	// 获取是否通过的信息
+	var resProblems []model.ProblemT
+	for _, problem := range problems {
+		result := service.GetUserFinalJudge(user.ID, problem.ProblemID)
+		resProblems = append(resProblems, model.ProblemT{
+			ProblemID:   problem.ProblemID,
+			ProblemName: problem.ProblemName,
+			Difficulty:  problem.Difficulty,
+			Result:      result,
+		})
+	}
 	// 返回结果
 	c.JSON(http.StatusOK, model.GetContestA{
 		Success:   true,
@@ -97,7 +109,7 @@ func GetContest(c *gin.Context) {
 		Profile:   contest.Profile,
 		StartTime: contest.StartTime,
 		EndTime:   contest.EndTime,
-		Problem:   problems})
+		Problem:   resProblems})
 }
 
 // UpdateContest
