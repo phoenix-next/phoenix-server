@@ -66,7 +66,7 @@ func CreateProblem(c *gin.Context) {
 // @Produce      json
 // @Param        x-token  header    string             true  "token"
 // @Param        id       path      int            true  "题目ID"
-// @Success      200      {object}  model.GetProblemA  "题目ID，题目名称，题目难度，可读权限，可写权限，组织ID，输入文件，输出文件，题目描述"
+// @Success      200      {object}  model.GetProblemA  "题目名称，题目难度，组织ID，创建者ID，输入文件，输出文件，题目描述，评测结果"
 // @Router       /api/v1/problems/{id} [get]
 func GetProblem(c *gin.Context) {
 	// 获取请求参数
@@ -86,16 +86,12 @@ func GetProblem(c *gin.Context) {
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "您对该题目无可读权限"})
 		return
 	}
-
 	// 返回结果
 	c.JSON(http.StatusOK, model.GetProblemA{
 		Success:      true,
 		Message:      "",
-		ID:           problem.ID,
 		Name:         problem.Name,
 		Difficulty:   problem.Difficulty,
-		Readable:     problem.Readable,
-		Writable:     problem.Writable,
 		Organization: problem.OrgID,
 		Creator:      problem.Creator,
 		Input:        service.GetProblemFileUrl(&problem, "input"),
@@ -272,21 +268,22 @@ func GetProblemList(c *gin.Context) {
 		Total:       len(resProblems)})
 }
 
-// SaveProblemRecords
-// @Summary      评测题目
-// @Description  上传题目评测的结果
+// UploadProblemRecord
+// @Summary      上传评测结果
+// @Description  上传一个题目的评测结果，用户必须有该题目的读权限
 // @Tags         评测模块
 // @Accept       multipart/form-data
 // @Produce      json
 // @Param        x-token  header    string                true  "token"
-// @Param        data     body      model.JudgeProblemQ  true  "题目ID，评测结果"
+// @Param        id       path      int                       true  "题目ID"
+// @Param        data     body      model.UploadProblemRecordQ  true  "评测结果，代码文件"
 // @Success      200      {object}  model.CommonA         "是否成功，返回信息"
 // @Router       /api/v1/problems/{id}/records [post]
-func SaveProblemRecords(c *gin.Context) {
+func UploadProblemRecord(c *gin.Context) {
 	// 获取请求数据
-	var data model.JudgeProblemQ
+	var data model.UploadProblemRecordQ
 	if err := c.ShouldBind(&data); err != nil {
-		global.LOG.Panic("SaveProblemRecords: bind data error")
+		global.LOG.Panic("UploadProblemRecord: bind data error")
 	}
 	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
@@ -307,14 +304,28 @@ func SaveProblemRecords(c *gin.Context) {
 	}
 	result := model.Result{Result: data.Result, UserID: user.ID, ProblemID: problem.ID}
 	if err = global.DB.Create(&result).Error; err != nil {
-		global.LOG.Warn("SaveProblemRecords: judge problem error")
+		global.LOG.Warn("UploadProblemRecord: judge problem error")
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "评测题目失败"})
 		return
 	}
 	if err := c.SaveUploadedFile(data.Code, filepath.Join(global.VP.GetString("code_path"), service.GetCodeFileName(result))); err != nil {
 		//发生错误，回滚数据库
 		_ = global.DB.Where("id = ?", result.ID).Delete(model.Result{}).Error
-		global.LOG.Panic("SaveProblemRecords: save judge code error")
+		global.LOG.Panic("UploadProblemRecord: save judge code error")
 	}
 	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "评测题目成功"})
+}
+
+// GetProblemRecord
+// @Summary      获取评测结果
+// @Description  获取一个题目的评测结果，用户必须有该题目的读权限
+// @Tags         评测模块
+// @Accept       json
+// @Produce      json
+// @Param        x-token  header    string                true  "token"
+// @Param        id       path      int                       true  "题目ID"
+// @Success      200      {object}  model.GetProblemRecordA         "是否成功，返回信息"
+// @Router       /api/v1/problems/{id}/records [get]
+func GetProblemRecord(c *gin.Context) {
+
 }

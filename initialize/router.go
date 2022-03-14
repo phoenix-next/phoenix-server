@@ -73,7 +73,8 @@ func InitRouter(r *gin.Engine) {
 		problemRouter.GET("/:id", v1.GetProblem)
 		problemRouter.PUT("/:id", v1.UpdateProblem)
 		problemRouter.GET("/:id/version", v1.GetProblemVersion)
-		problemRouter.POST("/:id/records", v1.SaveProblemRecords)
+		problemRouter.POST("/:id/records", v1.UploadProblemRecord)
+		problemRouter.GET("/:id/records", v1.GetProblemRecord)
 	}
 	// 组织模块
 	teamRouter := basicRouter.Group("/organizations")
