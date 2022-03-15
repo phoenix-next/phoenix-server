@@ -6,6 +6,7 @@ type OrganizationT struct {
 	OrgID   uint64 `json:"orgID"`
 	OrgName string `json:"orgName"`
 	IsAdmin bool   `json:"isAdmin"` // 用户在该组织中是否为管理员
+	Avatar  string `json:"avatar"`
 }
 
 type CommonA struct {

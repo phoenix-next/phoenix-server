@@ -212,6 +212,11 @@ func GetUserOrganization(c *gin.Context) {
 	// 查询数据库
 	var relation []model.OrganizationT
 	global.DB.Model(&model.Invitation{}).Where("user_id = ? and is_valid = ?", user.ID, true).Find(&relation)
+	// 关系中存入组织头像
+	for _, rel := range relation {
+		org, _ := service.GetOrganizationByID(rel.OrgID)
+		rel.Avatar = org.Avatar
+	}
 	// 返回响应
 	c.JSON(http.StatusOK, model.GetUserOrganizationA{Success: true, Organization: relation})
 }
@@ -266,6 +271,11 @@ func GetUserInvitation(c *gin.Context) {
 	// 查询数据库
 	var invitations []model.OrganizationT
 	global.DB.Model(&model.Invitation{}).Where("user_id = ? AND is_valid = ?", user.ID, false).Find(&invitations)
+	// 关系中存入组织头像
+	for _, rel := range invitations {
+		org, _ := service.GetOrganizationByID(rel.OrgID)
+		rel.Avatar = org.Avatar
+	}
 	// 返回响应
 	c.JSON(http.StatusOK, model.GetUserInvitationA{Success: true, Organization: invitations})
 }
