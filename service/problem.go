@@ -15,19 +15,14 @@ import (
 
 // Helper
 
-// MakeProblemFileName 保存题目文件名称
-func MakeProblemFileName(problemId uint64, version int, suffix string) string {
-	return strconv.Itoa(int(problemId)) + "_" + strconv.Itoa(version) + "_" + suffix
-}
-
-// GetProblemFileName 获取访问问题资源的文件名
-func GetProblemFileName(problem *model.Problem, kind string) string {
-	return strconv.Itoa(int(problem.ID)) + "_" + strconv.Itoa(problem.Version) + "_" + kind
+// GetProblemFileFolder 获取保存某题目的文件夹
+func GetProblemFileFolder(problemID uint64, version int) string {
+	return strconv.Itoa(int(problemID)) + "_" + strconv.Itoa(version)
 }
 
 // GetProblemFileUrl 获取访问问题资源的Url
 func GetProblemFileUrl(problem *model.Problem, kind string) string {
-	return "resource/problem/" + GetProblemFileName(problem, kind)
+	return "resource/problem/" + GetProblemFileFolder(problem.ID, problem.Version) + "/" + kind
 }
 
 // GetReadableProblems 获取所有可访问问题

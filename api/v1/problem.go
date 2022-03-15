@@ -8,6 +8,7 @@ import (
 	"github.com/phoenix-next/phoenix-server/service"
 	"github.com/phoenix-next/phoenix-server/utils"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strconv"
 )
@@ -24,7 +25,6 @@ import (
 // @Router       /api/v1/problems [post]
 func CreateProblem(c *gin.Context) {
 	// 获取题目保存路径，获取用户
-	path := global.VP.GetString("problem_path")
 	user := utils.SolveUser(c)
 	// 获取请求数据
 	var data model.CreateProblemQ
@@ -47,11 +47,14 @@ func CreateProblem(c *gin.Context) {
 		return
 	}
 	// 保存题目相关的文件
-	err1 := c.SaveUploadedFile(data.Description, filepath.Join(path, service.MakeProblemFileName(problem.ID, 1, "description")))
-	err2 := c.SaveUploadedFile(data.Input, filepath.Join(path, service.MakeProblemFileName(problem.ID, 1, "input")))
-	err3 := c.SaveUploadedFile(data.Output, filepath.Join(path, service.MakeProblemFileName(problem.ID, 1, "output")))
-	if err1 != nil || err2 != nil || err3 != nil {
-		//发生错误，回滚数据库
+	folder := service.GetProblemFileFolder(problem.ID, problem.Version)
+	path := filepath.Join(global.VP.GetString("problem_path"), folder)
+	err1 := os.MkdirAll(path, 0777)
+	err2 := c.SaveUploadedFile(data.Description, filepath.Join(path, "description"))
+	err3 := c.SaveUploadedFile(data.Input, filepath.Join(path, "input"))
+	err4 := c.SaveUploadedFile(data.Output, filepath.Join(path, "output"))
+	//发生错误，回滚数据库
+	if err1 != nil || err2 != nil || err3 != nil || err4 != nil {
 		_ = service.DeleteProblemByID(problem.ID)
 		global.LOG.Panic("CreateProblem: save problem error")
 	}
@@ -138,12 +141,14 @@ func UpdateProblem(c *gin.Context) {
 		global.LOG.Panic("UpdateProblem: save problem error")
 	}
 	// 保存题目相关的文件
-	dir := global.VP.GetString("problem_path")
-	err1 = c.SaveUploadedFile(data.Description, filepath.Join(dir, service.MakeProblemFileName(problem.ID, problem.Version, "description")))
-	err2 = c.SaveUploadedFile(data.Input, filepath.Join(dir, service.MakeProblemFileName(problem.ID, problem.Version, "input")))
-	err3 := c.SaveUploadedFile(data.Output, filepath.Join(dir, service.MakeProblemFileName(problem.ID, problem.Version, "output")))
+	folder := service.GetProblemFileFolder(problem.ID, problem.Version)
+	path := filepath.Join(global.VP.GetString("problem_path"), folder)
+	err1 = os.MkdirAll(path, 0777)
+	err2 = c.SaveUploadedFile(data.Description, filepath.Join(path, "description"))
+	err3 := c.SaveUploadedFile(data.Input, filepath.Join(path, "input"))
+	err4 := c.SaveUploadedFile(data.Output, filepath.Join(path, "output"))
 	// 保存文件失败，回滚数据库
-	if err1 != nil || err2 != nil || err3 != nil {
+	if err1 != nil || err2 != nil || err3 != nil || err4 != nil {
 		_ = service.SaveProblem(&problemOrigin)
 		global.LOG.Warn("save problem " + problem.Name + " file error")
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "保存题目文件失败"})
