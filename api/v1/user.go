@@ -156,9 +156,9 @@ func UpdateUser(c *gin.Context) {
 	}
 	// 更新用户头像
 	if avatar, err := c.FormFile("avatar"); err == nil && avatar != nil {
-		filename := strconv.FormatUint(user.ID, 10) + "_avatar_" + avatar.Filename
-		c.SaveUploadedFile(avatar, filepath.Join(global.VP.GetString("user_path"), filename))
-		user.Avatar = "resource/user/" + filename
+		filename := "user_" + strconv.FormatUint(user.ID, 10) + "_avatar_" + avatar.Filename
+		c.SaveUploadedFile(avatar, filepath.Join(global.VP.GetString("avatars_path"), filename))
+		user.Avatar = "resource/avatars_/" + filename
 	}
 	// 进行数据库操作并返回
 	global.DB.Save(&user)
