@@ -230,10 +230,8 @@ func GetContestList(c *gin.Context) {
 		}
 	}
 	// 得到比赛的总页数
-	totalPage := len(filteredContests) / 5
-	if len(filteredContests)%5 != 0 {
-		totalPage += 1
-	}
+	totalPage := (len(filteredContests)-1)/5 + 1
+
 	// 查不到比赛的情况
 	if totalPage == 0 {
 		c.JSON(http.StatusOK, model.GetContestListA{
@@ -280,8 +278,7 @@ func GetOrganizationProblem(c *gin.Context) {
 		return
 	}
 	// 组织的存在性判定
-	_, notFound := service.GetOrganizationByID(id)
-	if notFound {
+	if _, notFound := service.GetOrganizationByID(id); notFound {
 		c.JSON(http.StatusOK, model.GetOrganizationProblemA{Success: false, Message: "该组织不存在"})
 		return
 	}
