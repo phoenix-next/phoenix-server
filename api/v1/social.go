@@ -7,6 +7,7 @@ import (
 	"github.com/phoenix-next/phoenix-server/service"
 	"github.com/phoenix-next/phoenix-server/utils"
 	"net/http"
+	"path/filepath"
 	"strconv"
 )
 
@@ -127,6 +128,12 @@ func UpdateOrganization(c *gin.Context) {
 	// 成功更新信息
 	org.Name = data.Name
 	org.Profile = data.Profile
+	user := utils.SolveUser(c)
+	if avatar, err := c.FormFile("avatar"); err == nil && avatar != nil {
+		filename := "org_" + strconv.FormatUint(user.ID, 10) + "_avatar_" + avatar.Filename
+		c.SaveUploadedFile(avatar, filepath.Join(global.VP.GetString("avatars_path"), filename))
+		org.Avatar = "resource/avatars/" + filename
+	}
 	global.DB.Save(&org)
 	// 维护成员 - 组织关系
 	global.DB.Model(&model.Invitation{}).Where("org_id = ?", org.ID).Update("org_name", org.Name)
