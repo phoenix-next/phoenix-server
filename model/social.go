@@ -11,6 +11,7 @@ type GetOrganizationA struct {
 	Success bool   `json:"success"`
 	Message string `json:"message"`
 	Name    string `json:"name"`
+	Avatar  string `json:"avatar"`
 	Profile string `json:"profile"`
 	IsValid bool   `json:"isValid"`
 	IsAdmin bool   `json:"isAdmin"`
