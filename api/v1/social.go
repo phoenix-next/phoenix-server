@@ -32,10 +32,9 @@ func CreateOrganization(c *gin.Context) {
 	}
 	// 创建组织，保存组织元数据
 	org := model.Organization{
-		Name:        data.Name,
-		Profile:     data.Profile,
-		CreatorName: user.Name,
-		CreatorID:   user.ID}
+		Name:      data.Name,
+		Profile:   data.Profile,
+		CreatorID: user.ID}
 	global.DB.Create(&org)
 	// 维护用户 - 组织关系
 	global.DB.Create(&model.Invitation{

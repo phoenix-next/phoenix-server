@@ -12,7 +12,7 @@ import (
 
 // GetTutorialFileName 获取教程对应的文件名称
 func GetTutorialFileName(tutorial model.Tutorial) string {
-	return strconv.Itoa(int(tutorial.ID)) + "_" + strconv.Itoa(int(tutorial.Version))
+	return strconv.Itoa(int(tutorial.ID)) + "_" + strconv.Itoa(tutorial.Version)
 }
 
 // SaveTutorial 根据信息保存教程

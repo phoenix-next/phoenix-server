@@ -35,14 +35,13 @@ func CreateTutorial(c *gin.Context) {
 	user := utils.SolveUser(c)
 	// 新建教程
 	tutorial := model.Tutorial{
-		Name:        data.Name,
-		OrgID:       data.OrgID,
-		CreatorID:   user.ID,
-		CreatorName: user.Name,
-		Profile:     data.Profile,
-		Version:     1,
-		Readable:    data.Readable,
-		Writable:    data.Writable}
+		Name:      data.Name,
+		OrgID:     data.OrgID,
+		CreatorID: user.ID,
+		Profile:   data.Profile,
+		Version:   1,
+		Readable:  data.Readable,
+		Writable:  data.Writable}
 	if err := service.SaveTutorial(&tutorial); err != nil {
 		global.LOG.Warn("CreateTutorial;: create tutorial error")
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "创建教程失败"})

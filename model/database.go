@@ -81,7 +81,6 @@ type Organization struct {
 	Profile     string    `gorm:"size:255;" json:"profile"`
 	Avatar      string    `json:"avatar"`
 	CreatorID   uint64    `gorm:"not null;" json:"creatorID"` // 创建者ID
-	CreatorName string    `gorm:"size:32;not null;" json:"creatorName"`
 	CreatedTime time.Time `gorm:"autoCreateTime;" json:"createdTime"`
 }
 
@@ -89,15 +88,14 @@ type Organization struct {
 
 // Tutorial 教程
 type Tutorial struct {
-	ID          uint64 `gorm:"primary_key;autoIncrement; not null;" json:"id"`
-	OrgID       uint64 `json:"orgID"`
-	CreatorID   uint64 `gorm:"not null" json:"creatorID"`
-	CreatorName string `gorm:"not null" json:"creatorName"`
-	Name        string `gorm:"size:32; not null;" json:"name"`
-	Profile     string `gorm:"not null;" json:"profile"`
-	Version     int    `gorm:"not null;" json:"version"`
-	Readable    int    `gorm:"not null" json:"readable"`
-	Writable    int    `gorm:"not null" json:"writable"`
+	ID        uint64 `gorm:"primary_key;autoIncrement; not null;" json:"id"`
+	OrgID     uint64 `json:"orgID"`
+	CreatorID uint64 `gorm:"not null" json:"creatorID"`
+	Name      string `gorm:"size:32; not null;" json:"name"`
+	Profile   string `gorm:"not null;" json:"profile"`
+	Version   int    `gorm:"not null;" json:"version"`
+	Readable  int    `gorm:"not null" json:"readable"`
+	Writable  int    `gorm:"not null" json:"writable"`
 }
 
 // 关系表
