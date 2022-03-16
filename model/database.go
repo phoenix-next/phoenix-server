@@ -125,5 +125,6 @@ type Result struct {
 	UserID      uint64    `gorm:"not null;" json:"userID"`
 	ProblemID   uint64    `gorm:"not null;" json:"problemID"`
 	Result      int       `gorm:"not null;" json:"result"` // 0 AC , 1 WA , 2 TLE, 3 RE
+	Language    string    `gorm:"not null;" json:"language"`
 	CreatedTime time.Time `gorm:"autoCreateTime;" json:"createdTime"`
 }

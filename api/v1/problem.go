@@ -308,7 +308,11 @@ func UploadProblemRecord(c *gin.Context) {
 		return
 	}
 	// 保存评测结果的元数据
-	result := model.Result{Result: data.Result, UserID: user.ID, ProblemID: problem.ID}
+	result := model.Result{
+		Result:    data.Result,
+		UserID:    user.ID,
+		ProblemID: problem.ID,
+		Language:  data.Language}
 	if err = global.DB.Create(&result).Error; err != nil {
 		global.LOG.Warn("UploadProblemRecord: judge problem error")
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "上传评测结果失败"})
@@ -352,6 +356,7 @@ func GetProblemRecord(c *gin.Context) {
 			ID:          result.ID,
 			Result:      result.Result,
 			CreatedTime: result.CreatedTime,
+			Language:    result.Language,
 			Path:        "resource/code/" + service.GetCodeFileName(result)})
 	}
 	// 返回响应

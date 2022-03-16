@@ -8,6 +8,7 @@ import (
 type ResultT struct {
 	ID          uint64    `json:"id"`
 	Result      int       `json:"result"` // 0 AC , 1 WA , 2 TLE, 3 RE
+	Language    string    `json:"language"`
 	Path        string    `json:"path"`
 	CreatedTime time.Time `json:"createdTime"`
 }
@@ -56,8 +57,9 @@ type GetProblemListA struct {
 }
 
 type UploadProblemRecordQ struct {
-	Result int                   `form:"result"` // 0 AC , 1 WA , 2 TLE, 3 RE
-	Code   *multipart.FileHeader `form:"code" swaggerignore:"true"`
+	Result   int                   `form:"result"` // 0 AC , 1 WA , 2 TLE, 3 RE
+	Language string                `form:"language"`
+	Code     *multipart.FileHeader `form:"code" swaggerignore:"true"`
 }
 
 type GetProblemRecordA struct {
