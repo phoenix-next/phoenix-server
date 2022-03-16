@@ -355,7 +355,7 @@ func GetProblemRecord(c *gin.Context) {
 		finalResults = append(finalResults, model.ResultT{
 			ID:          result.ID,
 			Result:      result.Result,
-			CreatedTime: result.CreatedTime.Format("01-02 15:04:05"),
+			CreatedTime: result.CreatedTime.Format("2006-01-02 15:04:05"),
 			Language:    result.Language,
 			Path:        "resource/code/" + service.GetCodeFileName(result)})
 	}
