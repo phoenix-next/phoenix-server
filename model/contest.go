@@ -30,8 +30,8 @@ type GetContestA struct {
 	Message   string     `json:"message"`
 	Name      string     `json:"name"`
 	Profile   string     `json:"profile"`
-	StartTime time.Time  `json:"startTime"`
-	EndTime   time.Time  `json:"endTime"`
+	StartTime string     `json:"startTime"`
+	EndTime   string     `json:"endTime"`
 	Problem   []ProblemT `json:"problem"`
 }
 

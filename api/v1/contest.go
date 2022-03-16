@@ -104,8 +104,8 @@ func GetContest(c *gin.Context) {
 		Success:   true,
 		Name:      contest.Name,
 		Profile:   contest.Profile,
-		StartTime: contest.StartTime,
-		EndTime:   contest.EndTime,
+		StartTime: contest.StartTime.Format("2006-01-02 15:04:05"),
+		EndTime:   contest.EndTime.Format("2006-01-02 15:04:05"),
 		Problem:   resProblems})
 }
 

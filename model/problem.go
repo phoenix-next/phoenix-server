@@ -2,15 +2,14 @@ package model
 
 import (
 	"mime/multipart"
-	"time"
 )
 
 type ResultT struct {
-	ID          uint64    `json:"id"`
-	Result      int       `json:"result"` // 0 AC , 1 WA , 2 TLE, 3 RE
-	Language    string    `json:"language"`
-	Path        string    `json:"path"`
-	CreatedTime time.Time `json:"createdTime"`
+	ID          uint64 `json:"id"`
+	Result      int    `json:"result"` // 0 AC , 1 WA , 2 TLE, 3 RE
+	Language    string `json:"language"`
+	Path        string `json:"path"`
+	CreatedTime string `json:"createdTime"`
 }
 
 type CreateProblemQ struct {
