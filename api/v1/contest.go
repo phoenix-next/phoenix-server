@@ -227,16 +227,16 @@ func GetContestList(c *gin.Context) {
 			filteredContests = append(filteredContests, contest)
 		}
 	}
-	// 得到比赛的总页数
-	totalPage := (len(filteredContests)-1)/5 + 1
 	// 查不到比赛的情况
-	if totalPage == 0 {
+	if len(filteredContests) == 0 {
 		c.JSON(http.StatusOK, model.GetContestListA{
 			Success:     true,
 			Total:       0,
 			ContestList: make([]model.ContestT, 0)})
 		return
 	}
+	// 得到比赛的总页数
+	totalPage := (len(filteredContests)-1)/5 + 1
 	// 页数不合法的情况
 	if page <= 0 || page > totalPage {
 		c.JSON(http.StatusOK, model.GetContestListA{Success: false, Message: "页数非法"})
