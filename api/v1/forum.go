@@ -156,7 +156,7 @@ func GetPost(c *gin.Context) {
 		CreatorAvatar: creator.Avatar,
 		Title:         post.Title,
 		Content:       post.Content,
-		UpdatedAt:     post.UpdatedAt.Format("01-02 15-04"),
+		UpdatedAt:     post.UpdatedAt.Format("01-02 15:04"),
 		IsAdmin:       isAdmin})
 }
 
@@ -225,7 +225,7 @@ func GetAllPost(c *gin.Context) {
 		finalPosts = append(finalPosts, model.PostT{
 			ID:            item.ID,
 			CreatorID:     item.CreatorID,
-			UpdatedAt:     item.UpdatedAt.Format("01-02 15-04"),
+			UpdatedAt:     item.UpdatedAt.Format("01-02 15:04"),
 			Title:         item.Title,
 			CreatorAvatar: creator.Avatar,
 			CreatorName:   creator.Name})
@@ -375,7 +375,7 @@ func GetComment(c *gin.Context) {
 		comments = append(comments, model.CommentT{
 			ID:            comment.ID,
 			CreatorID:     comment.CreatorID,
-			UpdatedAt:     comment.UpdatedAt.Format("01-02 15-04"),
+			UpdatedAt:     comment.UpdatedAt.Format("01-02 15:04"),
 			CreatorName:   tmp.Name,
 			ToID:          comment.CreatorID,
 			Content:       comment.Content,
