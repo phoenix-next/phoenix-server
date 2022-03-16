@@ -26,8 +26,7 @@ func CreatePost(c *gin.Context) {
 	data := utils.BindJsonData(c, &model.CreatePostQ{}).(*model.CreatePostQ)
 	user := utils.SolveUser(c)
 	// 用户权限判定
-	ok, err := service.IsUserInThisOrganization(user.ID, data.OrgID)
-	if !ok || err != nil {
+	if ok, err := service.IsUserInThisOrganization(user.ID, data.OrgID); !ok || err != nil {
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "用户没有权限在此发帖"})
 		return
 	}
@@ -137,8 +136,7 @@ func GetPost(c *gin.Context) {
 	}
 	// 用户权限判定
 	user := utils.SolveUser(c)
-	ok, _ = service.IsUserInThisOrganization(user.ID, post.OrgID)
-	if !ok {
+	if ok, _ = service.IsUserInThisOrganization(user.ID, post.OrgID); !ok {
 		c.JSON(http.StatusOK, model.GetPostA{Success: false, Message: "用户没有查阅权限"})
 		return
 	}
@@ -187,8 +185,7 @@ func GetAllPost(c *gin.Context) {
 	}
 	// 判断用户权限
 	user := utils.SolveUser(c)
-	ok, err := service.IsUserInThisOrganization(user.ID, oid)
-	if !ok || err != nil {
+	if ok, err := service.IsUserInThisOrganization(user.ID, oid); !ok || err != nil {
 		c.JSON(http.StatusOK, model.GetAllPostA{Success: false, Message: "用户没有查看帖子权限"})
 		return
 	}
@@ -201,10 +198,8 @@ func GetAllPost(c *gin.Context) {
 		}
 	}
 	// 获取帖子总页数
-	totalPage := len(posts) / 5
-	if len(posts)%5 != 0 {
-		totalPage += 1
-	}
+	totalPage := (len(posts)-1)/5 + 1
+
 	// 没有帖子的情况
 	if totalPage == 0 {
 		c.JSON(http.StatusOK, model.GetAllPostA{
@@ -263,8 +258,7 @@ func CreateComment(c *gin.Context) {
 	}
 	// 用户权限判定
 	user := utils.SolveUser(c)
-	ok, err := service.IsUserInThisOrganization(user.ID, post.OrgID)
-	if !ok || err != nil {
+	if ok, err := service.IsUserInThisOrganization(user.ID, post.OrgID); !ok || err != nil {
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "用户没有权限进行该操作"})
 		return
 	}
@@ -373,8 +367,7 @@ func GetComment(c *gin.Context) {
 	}
 	// 用户权限判定
 	user := utils.SolveUser(c)
-	ok, err := service.IsUserInThisOrganization(user.ID, post.OrgID)
-	if !ok || err != nil {
+	if ok, err := service.IsUserInThisOrganization(user.ID, post.OrgID); !ok || err != nil {
 		c.JSON(http.StatusOK, model.GetCommentA{Success: false, Message: "用户没有权限获取该帖子评论"})
 		return
 	}

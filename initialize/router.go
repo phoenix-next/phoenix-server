@@ -38,10 +38,10 @@ func InitRouter(r *gin.Engine) {
 		rawRouter.POST("/tokens", v1.CreateToken)
 		rawRouter.POST("/password", v1.ResetPassword)
 	}
-	// 用户头像资源服务器
+	// 用户/组织头像资源服务器
 	avatarRouter := rawRouter.Group("/resource")
 	{
-		avatarRouter.StaticFS("/user", http.Dir(global.VP.GetString("user_path")))
+		avatarRouter.StaticFS("/avatars", http.Dir(global.VP.GetString("avatars_path")))
 	}
 
 	// 除了登录模块和头像资源之外，都需要身份认证

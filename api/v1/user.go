@@ -156,9 +156,9 @@ func UpdateUser(c *gin.Context) {
 	}
 	// 更新用户头像
 	if avatar, err := c.FormFile("avatar"); err == nil && avatar != nil {
-		filename := strconv.FormatUint(user.ID, 10) + "_avatar_" + avatar.Filename
-		c.SaveUploadedFile(avatar, filepath.Join(global.VP.GetString("user_path"), filename))
-		user.Avatar = "resource/user/" + filename
+		filename := "user_" + strconv.FormatUint(user.ID, 10) + "_avatar_" + avatar.Filename
+		c.SaveUploadedFile(avatar, filepath.Join(global.VP.GetString("avatars_path"), filename))
+		user.Avatar = "resource/avatars/" + filename
 	}
 	// 进行数据库操作并返回
 	global.DB.Save(&user)
@@ -212,6 +212,11 @@ func GetUserOrganization(c *gin.Context) {
 	// 查询数据库
 	var relation []model.OrganizationT
 	global.DB.Model(&model.Invitation{}).Where("user_id = ? and is_valid = ?", user.ID, true).Find(&relation)
+	// 关系中存入组织头像
+	for _, rel := range relation {
+		org, _ := service.GetOrganizationByID(rel.OrgID)
+		rel.Avatar = org.Avatar
+	}
 	// 返回响应
 	c.JSON(http.StatusOK, model.GetUserOrganizationA{Success: true, Organization: relation})
 }
@@ -266,6 +271,11 @@ func GetUserInvitation(c *gin.Context) {
 	// 查询数据库
 	var invitations []model.OrganizationT
 	global.DB.Model(&model.Invitation{}).Where("user_id = ? AND is_valid = ?", user.ID, false).Find(&invitations)
+	// 关系中存入组织头像
+	for _, rel := range invitations {
+		org, _ := service.GetOrganizationByID(rel.OrgID)
+		rel.Avatar = org.Avatar
+	}
 	// 返回响应
 	c.JSON(http.StatusOK, model.GetUserInvitationA{Success: true, Organization: invitations})
 }

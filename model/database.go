@@ -81,6 +81,7 @@ type Organization struct {
 	ID          uint64    `gorm:"primary_key; autoIncrement;not null;" json:"id"`
 	Name        string    `gorm:"size:32; not null; unique" json:"name"`
 	Profile     string    `gorm:"size:255;" json:"profile"`
+	Avatar      string    `json:"avatar"`
 	CreatorID   uint64    `gorm:"not null;" json:"creatorID"` // 创建者ID
 	CreatorName string    `gorm:"size:32;not null;" json:"creatorName"`
 	CreatedTime time.Time `gorm:"autoCreateTime;" json:"createdTime"`
