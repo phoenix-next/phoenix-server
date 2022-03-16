@@ -90,6 +90,7 @@ func GetOrganization(c *gin.Context) {
 	c.JSON(http.StatusOK, model.GetOrganizationA{
 		Success: true,
 		Name:    org.Name,
+		Avatar:  org.Avatar,
 		Profile: org.Profile,
 		IsValid: true,
 		IsAdmin: rel.IsAdmin})
