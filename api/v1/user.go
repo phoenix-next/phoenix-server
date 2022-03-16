@@ -1,6 +1,8 @@
 package v1
 
 import (
+	"crypto/md5"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/phoenix-next/phoenix-server/global"
 	"github.com/phoenix-next/phoenix-server/model"
@@ -157,8 +159,8 @@ func UpdateUser(c *gin.Context) {
 	// 更新用户头像
 	if avatar, err := c.FormFile("avatar"); err == nil && avatar != nil {
 		filename := "user_" + strconv.FormatUint(user.ID, 10) + "_avatar_" + avatar.Filename
-		c.SaveUploadedFile(avatar, filepath.Join(global.VP.GetString("avatar_path"), filename))
-		user.Avatar = "resource/avatar/" + filename
+		_ = c.SaveUploadedFile(avatar, filepath.Join(global.VP.GetString("image_path"), filename))
+		user.Avatar = "resource/image/" + filename
 	}
 	// 进行数据库操作并返回
 	global.DB.Save(&user)
@@ -330,5 +332,30 @@ func ResetPassword(c *gin.Context) {
 	global.DB.Delete(&realCaptcha)
 	// 返回响应
 	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "已重置密码"})
+}
 
+// UploadImage
+// @Summary      上传图片
+// @Description  用户上传一张图片，用于展示在题目或教程中
+// @Tags         用户模块
+// @Accept       multipart/form-data
+// @Produce      json
+// @Param        data  body      model.UploadImageQ  true  "图片文件"
+// @Success      200   {object}  model.UploadImageA  "是否成功，返回信息，生成的图片路径"
+// @Router       /api/v1/resource/image [post]
+func UploadImage(c *gin.Context) {
+	// 获取请求数据
+	user := utils.SolveUser(c)
+	image, err := c.FormFile("image")
+	// 上传失败的情况
+	if err != nil || image == nil {
+		c.JSON(http.StatusOK, model.UploadImageA{Success: false, Message: "上传图片失败"})
+		return
+	}
+	// md5 哈希
+	checksum := md5.Sum([]byte(time.Now().Format("20060102150405") + strconv.FormatUint(user.ID, 10) + "_" + image.Filename))
+	filename := fmt.Sprintf("%x", checksum) + filepath.Ext(image.Filename)
+	_ = c.SaveUploadedFile(image, filepath.Join(global.VP.GetString("image_path"), filename))
+	// 返回文件路径
+	c.JSON(http.StatusOK, model.UploadImageA{Success: true, Message: "上传成功", ImagePath: "resource/image/" + filename})
 }

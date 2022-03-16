@@ -38,10 +38,10 @@ func InitRouter(r *gin.Engine) {
 		rawRouter.POST("/tokens", v1.CreateToken)
 		rawRouter.POST("/password", v1.ResetPassword)
 	}
-	// 用户/组织头像资源服务器
-	avatarRouter := rawRouter.Group("/resource")
+	// 图片资源服务器
+	imageRouter := rawRouter.Group("/resource")
 	{
-		avatarRouter.StaticFS("/avatar", http.Dir(global.VP.GetString("avatar_path")))
+		imageRouter.Static("/image", global.VP.GetString("image_path"))
 	}
 
 	// 除了登录模块和头像资源之外，都需要身份认证
@@ -51,9 +51,10 @@ func InitRouter(r *gin.Engine) {
 	// 静态资源服务器
 	resourceRouter := basicRouter.Group("/resource")
 	{
-		resourceRouter.StaticFS("/problem", http.Dir(global.VP.GetString("problem_path")))
-		resourceRouter.StaticFS("/tutorial", http.Dir(global.VP.GetString("tutorial_path")))
-		resourceRouter.StaticFS("/code", http.Dir(global.VP.GetString("code_path")))
+		resourceRouter.Static("/problem", global.VP.GetString("problem_path"))
+		resourceRouter.Static("/tutorial", global.VP.GetString("tutorial_path"))
+		resourceRouter.Static("/code", global.VP.GetString("code_path"))
+		resourceRouter.POST("/image", v1.UploadImage)
 	}
 	// 用户模块
 	userRouter := basicRouter.Group("/users")

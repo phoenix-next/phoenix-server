@@ -141,8 +141,8 @@ func UpdateOrganization(c *gin.Context) {
 	// 更新组织头像
 	if avatar, err := c.FormFile("avatar"); err == nil && avatar != nil {
 		filename := "org_" + strconv.FormatUint(org.ID, 10) + "_avatar_" + avatar.Filename
-		c.SaveUploadedFile(avatar, filepath.Join(global.VP.GetString("avatar_path"), filename))
-		org.Avatar = "resource/avatar/" + filename
+		c.SaveUploadedFile(avatar, filepath.Join(global.VP.GetString("image_path"), filename))
+		org.Avatar = "resource/image/" + filename
 	}
 	global.DB.Save(&org)
 	// 返回结果
@@ -156,7 +156,7 @@ func UpdateOrganization(c *gin.Context) {
 // @Tags         社交模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string                           true  "token"
+// @Param        x-token  header    string         true  "token"
 // @Param        id       path      int                              true  "组织ID"
 // @Success      200      {object}  model.CommonA                   "是否成功，返回信息"
 // @Router       /api/v1/organizations/{id} [delete]
@@ -192,7 +192,7 @@ func DeleteOrganization(c *gin.Context) {
 // @Tags         社交模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string         true  "token"
+// @Param        x-token  header    string                           true  "token"
 // @Param        id       path      int                      true  "组织ID"
 // @Param        data     body      model.CreateInvitationQ  true  "用户email"
 // @Success      200      {object}  model.CommonA            "是否成功，返回信息"

@@ -72,3 +72,13 @@ type ResetPasswordQ struct {
 	Password string `json:"password"`
 	Captcha  string `json:"captcha"`
 }
+
+type UploadImageQ struct {
+	Image *multipart.FileHeader `form:"image" swaggerignore:"true"`
+}
+
+type UploadImageA struct {
+	Success   bool   `json:"success"`
+	Message   string `json:"message"`
+	ImagePath string `json:"imagePath"`
+}
