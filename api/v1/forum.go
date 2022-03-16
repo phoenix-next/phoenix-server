@@ -149,8 +149,8 @@ func GetPost(c *gin.Context) {
 		}
 	}
 	// 返回响应
-	c.JSON(http.StatusOK, model.GetPostA{Success: true,
-		Message:       "",
+	c.JSON(http.StatusOK, model.GetPostA{
+		Success:       true,
 		CreatorID:     post.CreatorID,
 		CreatorName:   creator.Name,
 		CreatorAvatar: creator.Avatar,
@@ -199,13 +199,12 @@ func GetAllPost(c *gin.Context) {
 	}
 	// 获取帖子总页数
 	totalPage := (len(posts)-1)/5 + 1
-
 	// 没有帖子的情况
 	if totalPage == 0 {
 		c.JSON(http.StatusOK, model.GetAllPostA{
 			Success: true,
 			Total:   0,
-			Posts:   []model.PostT{}})
+			Posts:   make([]model.PostT, 0)})
 		return
 	}
 	// 页数不合法的情况

@@ -87,7 +87,6 @@ func GetTutorial(c *gin.Context) {
 	// 返回响应
 	c.JSON(http.StatusOK, model.GetTutorialA{
 		Success:      true,
-		Message:      "",
 		OrgID:        tutorial.OrgID,
 		CreatorID:    tutorial.CreatorID,
 		CreatorName:  tutorial.Name,
@@ -230,9 +229,8 @@ func GetTutorialList(c *gin.Context) {
 	if len(fuzzyTutorials) == 0 {
 		c.JSON(http.StatusOK, model.GetTutorialListA{
 			Success:      true,
-			Message:      "",
 			Total:        0,
-			TutorialList: []model.Tutorial{}})
+			TutorialList: make([]model.Tutorial, 0)})
 		return
 	}
 	// 对教程进行排序与分页

@@ -233,9 +233,8 @@ func GetContestList(c *gin.Context) {
 	if totalPage == 0 {
 		c.JSON(http.StatusOK, model.GetContestListA{
 			Success:     true,
-			Message:     "",
 			Total:       0,
-			ContestList: []model.ContestT{}})
+			ContestList: make([]model.ContestT, 0)})
 		return
 	}
 	// 页数不合法的情况
@@ -252,7 +251,6 @@ func GetContestList(c *gin.Context) {
 	// 返回
 	c.JSON(http.StatusOK, model.GetContestListA{
 		Success:     true,
-		Message:     "",
 		Total:       len(filteredContests),
 		ContestList: slicedContests})
 }

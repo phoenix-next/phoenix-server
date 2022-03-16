@@ -92,7 +92,6 @@ func GetProblem(c *gin.Context) {
 	// 返回结果
 	c.JSON(http.StatusOK, model.GetProblemA{
 		Success:     true,
-		Message:     "",
 		Name:        problem.Name,
 		Difficulty:  problem.Difficulty,
 		Input:       service.GetProblemFileUrl(&problem, "input"),
@@ -252,8 +251,7 @@ func GetProblemList(c *gin.Context) {
 	if len(resProblems) == 0 {
 		c.JSON(http.StatusOK, model.GetProblemListA{
 			Success:     true,
-			Message:     "",
-			ProblemList: []model.ProblemT{},
+			ProblemList: make([]model.ProblemT, 0),
 			Total:       0})
 		return
 	}
@@ -271,7 +269,6 @@ func GetProblemList(c *gin.Context) {
 	// 返回响应
 	c.JSON(http.StatusOK, model.GetProblemListA{
 		Success:     true,
-		Message:     "",
 		ProblemList: finalProblems,
 		Total:       len(resProblems)})
 }
