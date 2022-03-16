@@ -217,7 +217,7 @@ func CreateInvitation(c *gin.Context) {
 		return
 	}
 	// 无需重复创建邀请
-	var invitation []model.Invitation
+	invitation := make([]model.Invitation, 0)
 	global.DB.Model(&model.Invitation{}).Where("user_id = ? AND org_id = ?", user.ID, org.ID).Find(&invitation)
 	if len(invitation) > 0 {
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "已经邀请过该用户"})

@@ -191,7 +191,7 @@ func GetAllPost(c *gin.Context) {
 	}
 	// 得到所有帖子，并进行模糊查找
 	rawPosts := service.GetAllPosts(oid, postType)
-	var posts []model.Post
+	posts := make([]model.Post, 0)
 	for _, item := range rawPosts {
 		if fuzzy.Match(keyWord, item.Title) {
 			posts = append(posts, item)
@@ -219,7 +219,7 @@ func GetAllPost(c *gin.Context) {
 	}
 	filteredPosts := posts[start:end]
 	// 获取帖子创建者的名称和头像
-	var finalPosts []model.PostT
+	finalPosts := make([]model.PostT, 0)
 	for _, item := range filteredPosts {
 		creator, _ := service.GetUserByID(item.CreatorID)
 		finalPosts = append(finalPosts, model.PostT{

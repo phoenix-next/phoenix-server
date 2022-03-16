@@ -212,10 +212,10 @@ func GetUserOrganization(c *gin.Context) {
 	// 获取请求中的数据
 	user := utils.SolveUser(c)
 	// 查询数据库
-	var relations []model.Invitation
+	relations := make([]model.Invitation, 0)
 	global.DB.Where("user_id = ? and is_valid = ?", user.ID, true).Find(&relations)
 	// 关系中存入组织头像
-	var finalRelations []model.OrganizationT
+	finalRelations := make([]model.OrganizationT, 0)
 	for _, rel := range relations {
 		org, _ := service.GetOrganizationByID(rel.OrgID)
 		finalRelations = append(finalRelations, model.OrganizationT{
@@ -276,10 +276,10 @@ func GetUserInvitation(c *gin.Context) {
 	// 获取请求中的数据
 	user := utils.SolveUser(c)
 	// 查询数据库
-	var invitations []model.Invitation
+	invitations := make([]model.Invitation, 0)
 	global.DB.Where("user_id = ? AND is_valid = ?", user.ID, false).Find(&invitations)
 	// 关系中存入组织头像
-	var finalInvitations []model.OrganizationT
+	finalInvitations := make([]model.OrganizationT, 0)
 	for _, rel := range invitations {
 		org, _ := service.GetOrganizationByID(rel.OrgID)
 		finalInvitations = append(finalInvitations, model.OrganizationT{

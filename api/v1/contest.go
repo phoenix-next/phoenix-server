@@ -85,10 +85,10 @@ func GetContest(c *gin.Context) {
 		return
 	}
 	// 获取比赛的所有题目
-	var problems []model.ContestProblem
+	problems := make([]model.ContestProblem, 0)
 	global.DB.Where("contest_id = ?", contest.ID).Find(&problems)
 	// 获取是否通过的信息
-	var resProblems []model.ProblemT
+	resProblems := make([]model.ProblemT, 0)
 	for _, problem := range problems {
 		result := service.GetUserFinalJudge(user.ID, problem.ProblemID)
 		tmp, _ := service.GetProblemByID(problem.ProblemID)
@@ -221,7 +221,7 @@ func GetContestList(c *gin.Context) {
 	// 获取可读的比赛,并进行排序
 	contests := service.GetReadableContest(user.ID, sorter)
 	// 对比赛标题进行模糊查找
-	var filteredContests []model.ContestT
+	filteredContests := make([]model.ContestT, 0)
 	for _, contest := range contests {
 		if fuzzy.Match(keyWord, contest.Name) {
 			filteredContests = append(filteredContests, contest)
@@ -282,7 +282,7 @@ func GetOrganizationProblem(c *gin.Context) {
 	for _, admin := range service.GetOrganizationAdmin(id) {
 		if user.ID == admin.UserID {
 			// 获取组织中的题目
-			var problems []model.Problem
+			problems := make([]model.Problem, 0)
 			global.DB.Where("org_id = ? AND (readable = ? OR readable = ?)", id, 2, 1).Find(&problems)
 			// 返回响应
 			c.JSON(http.StatusOK, model.GetOrganizationProblemA{Success: true, ProblemList: problems})

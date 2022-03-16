@@ -241,7 +241,7 @@ func GetProblemList(c *gin.Context) {
 	// 获取可读的题目
 	problems := service.GetReadableProblems(c)
 	// 对题目标题进行模糊查找
-	var resProblems []model.Problem
+	resProblems := make([]model.Problem, 0)
 	for _, problem := range problems {
 		if fuzzy.Match(keyWord, problem.Name) {
 			resProblems = append(resProblems, problem)
@@ -258,7 +258,7 @@ func GetProblemList(c *gin.Context) {
 	// 对题目进行分页
 	pagedProblems := service.GetProblemsByPage(resProblems, page, sorter)
 	// 获取用户的评测结果
-	var finalProblems []model.ProblemT
+	finalProblems := make([]model.ProblemT, 0)
 	for _, problem := range pagedProblems {
 		finalProblems = append(finalProblems, model.ProblemT{
 			ProblemID:   problem.ID,
@@ -343,10 +343,10 @@ func GetProblemRecord(c *gin.Context) {
 		return
 	}
 	// 获取评测记录
-	var results []model.Result
+	results := make([]model.Result, 0)
 	global.DB.Where("user_id = ? AND problem_id = ?", user.ID, id).Find(&results)
 	// 给评测记录添加路径字段，以供用户下载
-	var finalResults []model.ResultT
+	finalResults := make([]model.ResultT, 0)
 	for _, result := range results {
 		finalResults = append(finalResults, model.ResultT{
 			ID:          result.ID,

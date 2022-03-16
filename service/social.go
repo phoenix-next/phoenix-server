@@ -84,9 +84,9 @@ func GetInvitationByUserOrg(uid uint64, orgID uint64) (rel *model.Invitation, no
 
 // GetOrganizationMember 获取一个组织中所有的用户
 func GetOrganizationMember(oid uint64) (members []model.Member) {
-	var rel *[]model.Invitation
+	rel := make([]model.Invitation, 0)
 	global.DB.Where("org_id = ? AND is_valid = ?", oid, true).Find(&rel)
-	for _, member := range *rel {
+	for _, member := range rel {
 		members = append(members, model.Member{
 			ID:      member.UserID,
 			Name:    member.UserName,
