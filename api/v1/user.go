@@ -157,8 +157,8 @@ func UpdateUser(c *gin.Context) {
 	// 更新用户头像
 	if avatar, err := c.FormFile("avatar"); err == nil && avatar != nil {
 		filename := "user_" + strconv.FormatUint(user.ID, 10) + "_avatar_" + avatar.Filename
-		c.SaveUploadedFile(avatar, filepath.Join(global.VP.GetString("avatars_path"), filename))
-		user.Avatar = "resource/avatars/" + filename
+		c.SaveUploadedFile(avatar, filepath.Join(global.VP.GetString("avatar_path"), filename))
+		user.Avatar = "resource/avatar/" + filename
 	}
 	// 进行数据库操作并返回
 	global.DB.Save(&user)
@@ -210,15 +210,20 @@ func GetUserOrganization(c *gin.Context) {
 	// 获取请求中的数据
 	user := utils.SolveUser(c)
 	// 查询数据库
-	var relation []model.OrganizationT
-	global.DB.Model(&model.Invitation{}).Where("user_id = ? and is_valid = ?", user.ID, true).Find(&relation)
+	var relations []model.Invitation
+	global.DB.Where("user_id = ? and is_valid = ?", user.ID, true).Find(&relations)
 	// 关系中存入组织头像
-	for _, rel := range relation {
+	var finalRelations []model.OrganizationT
+	for _, rel := range relations {
 		org, _ := service.GetOrganizationByID(rel.OrgID)
-		rel.Avatar = org.Avatar
+		finalRelations = append(finalRelations, model.OrganizationT{
+			IsAdmin: rel.IsAdmin,
+			OrgID:   rel.OrgID,
+			Avatar:  org.Avatar,
+			OrgName: org.Name})
 	}
 	// 返回响应
-	c.JSON(http.StatusOK, model.GetUserOrganizationA{Success: true, Organization: relation})
+	c.JSON(http.StatusOK, model.GetUserOrganizationA{Success: true, Organization: finalRelations})
 }
 
 // QuitOrganization
@@ -269,15 +274,20 @@ func GetUserInvitation(c *gin.Context) {
 	// 获取请求中的数据
 	user := utils.SolveUser(c)
 	// 查询数据库
-	var invitations []model.OrganizationT
-	global.DB.Model(&model.Invitation{}).Where("user_id = ? AND is_valid = ?", user.ID, false).Find(&invitations)
+	var invitations []model.Invitation
+	global.DB.Where("user_id = ? AND is_valid = ?", user.ID, false).Find(&invitations)
 	// 关系中存入组织头像
+	var finalInvitations []model.OrganizationT
 	for _, rel := range invitations {
 		org, _ := service.GetOrganizationByID(rel.OrgID)
-		rel.Avatar = org.Avatar
+		finalInvitations = append(finalInvitations, model.OrganizationT{
+			IsAdmin: rel.IsAdmin,
+			OrgID:   rel.OrgID,
+			Avatar:  org.Avatar,
+			OrgName: org.Name})
 	}
 	// 返回响应
-	c.JSON(http.StatusOK, model.GetUserInvitationA{Success: true, Organization: invitations})
+	c.JSON(http.StatusOK, model.GetUserInvitationA{Success: true, Organization: finalInvitations})
 }
 
 // ResetPassword

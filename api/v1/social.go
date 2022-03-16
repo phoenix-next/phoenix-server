@@ -100,16 +100,15 @@ func GetOrganization(c *gin.Context) {
 // @Summary      更新一个组织的信息
 // @Description  更新一个组织的信息，用户必须是管理员
 // @Tags         社交模块
-// @Accept       json
+// @Accept       multipart/form-data
 // @Produce      json
 // @Param        x-token  header    string                     true  "token"
 // @Param        id       path      int                        true  "组织ID"
-// @Param        data     body      model.UpdateOrganizationQ  true  "组织的名称，组织简介"
+// @Param        data     body      model.UpdateOrganizationQ  true  "组织的名称，组织简介，组织头像"
 // @Success      200      {object}  model.CommonA              "是否成功，返回信息"
 // @Router       /api/v1/organizations/{id} [put]
 func UpdateOrganization(c *gin.Context) {
 	// 获取请求数据
-	data := utils.BindJsonData(c, &model.CreateOrganizationQ{}).(*model.CreateOrganizationQ)
 	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "请求参数非法"})
@@ -121,25 +120,32 @@ func UpdateOrganization(c *gin.Context) {
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "该组织不存在"})
 		return
 	}
-	// 组织重名的情况
-	if _, notFound = service.GetOrganizationByName(data.Name); !notFound && data.Name != org.Name {
-		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "已存在该名称的组织"})
-		return
+	// TODO 用户权限判定
+	// 更新组织名称
+	if name, found := c.GetPostForm("name"); found {
+		// 组织重名的情况
+		if _, notFound = service.GetOrganizationByName(name); !notFound && name != org.Name {
+			c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "已存在该名称的组织"})
+			return
+		}
+		// 成功更新
+		org.Name = name
+		// 维护成员 - 组织关系
+		global.DB.Model(&model.Invitation{}).Where("org_id = ?", org.ID).Update("org_name", org.Name)
 	}
-	// 成功更新信息
-	org.Name = data.Name
-	org.Profile = data.Profile
-	user := utils.SolveUser(c)
+	// 更新组织简介
+	if profile, found := c.GetPostForm("profile"); found {
+		org.Profile = profile
+	}
+	// 更新组织头像
 	if avatar, err := c.FormFile("avatar"); err == nil && avatar != nil {
-		filename := "org_" + strconv.FormatUint(user.ID, 10) + "_avatar_" + avatar.Filename
-		c.SaveUploadedFile(avatar, filepath.Join(global.VP.GetString("avatars_path"), filename))
-		org.Avatar = "resource/avatars/" + filename
+		filename := "org_" + strconv.FormatUint(org.ID, 10) + "_avatar_" + avatar.Filename
+		c.SaveUploadedFile(avatar, filepath.Join(global.VP.GetString("avatar_path"), filename))
+		org.Avatar = "resource/avatar/" + filename
 	}
 	global.DB.Save(&org)
-	// 维护成员 - 组织关系
-	global.DB.Model(&model.Invitation{}).Where("org_id = ?", org.ID).Update("org_name", org.Name)
 	// 返回结果
-	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "更新组织信息成功"})
+	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "更新成功"})
 
 }
 
@@ -149,7 +155,7 @@ func UpdateOrganization(c *gin.Context) {
 // @Tags         社交模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string         true  "token"
+// @Param        x-token  header    string                           true  "token"
 // @Param        id       path      int                              true  "组织ID"
 // @Success      200      {object}  model.CommonA                   "是否成功，返回信息"
 // @Router       /api/v1/organizations/{id} [delete]
@@ -185,7 +191,7 @@ func DeleteOrganization(c *gin.Context) {
 // @Tags         社交模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string                           true  "token"
+// @Param        x-token  header    string         true  "token"
 // @Param        id       path      int                      true  "组织ID"
 // @Param        data     body      model.CreateInvitationQ  true  "用户email"
 // @Success      200      {object}  model.CommonA            "是否成功，返回信息"

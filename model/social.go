@@ -18,8 +18,8 @@ type GetOrganizationA struct {
 }
 
 type UpdateOrganizationQ struct {
-	Name    string                `json:"name"`
-	Profile string                `json:"profile"`
+	Name    string                `form:"name"`
+	Profile string                `form:"profile"`
 	Avatar  *multipart.FileHeader `form:"avatar" swaggerignore:"true"`
 }
 

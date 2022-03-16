@@ -16,14 +16,14 @@ func InitViper() *viper.Viper {
 	rootPath = filepath.Dir(rootPath)
 	// 获取配置文件、题目、教程、用户头像保存路径
 	path := filepath.Join(rootPath, "phoenix-config.yml")
-	tutorialPath := filepath.Join(rootPath, "resource", "tutorials")
-	problemPath := filepath.Join(rootPath, "resource", "problems")
-	avatarsPath := filepath.Join(rootPath, "resource", "avatars")
-	codePath := filepath.Join(rootPath, "resource", "codes")
+	tutorialPath := filepath.Join(rootPath, "resource", "tutorial")
+	problemPath := filepath.Join(rootPath, "resource", "problem")
+	avatarPath := filepath.Join(rootPath, "resource", "avatar")
+	codePath := filepath.Join(rootPath, "resource", "code")
 	// 创建资源文件夹
 	err1 := os.MkdirAll(tutorialPath, os.ModePerm)
 	err2 := os.MkdirAll(problemPath, os.ModePerm)
-	err3 := os.MkdirAll(avatarsPath, os.ModePerm)
+	err3 := os.MkdirAll(avatarPath, os.ModePerm)
 	err4 := os.MkdirAll(codePath, os.ModePerm)
 	if err1 != nil || err2 != nil || err3 != nil || err4 != nil {
 		panic("初始化失败：初始化文件夹失败")
@@ -38,9 +38,9 @@ func InitViper() *viper.Viper {
 	}
 	// 设置常用路径
 	v.Set("root_path", rootPath)
-	v.Set("problem_path", filepath.Join(rootPath, "resource", "problems"))
-	v.Set("tutorial_path", filepath.Join(rootPath, "resource", "tutorials"))
-	v.Set("avatars_path", filepath.Join(rootPath, "resource", "avatars"))
-	v.Set("code_path", filepath.Join(rootPath, "resource", "codes"))
+	v.Set("problem_path", tutorialPath)
+	v.Set("tutorial_path", problemPath)
+	v.Set("avatar_path", avatarPath)
+	v.Set("code_path", codePath)
 	return v
 }
