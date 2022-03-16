@@ -1,24 +1,22 @@
 package model
 
-import "time"
-
 type PostT struct {
-	ID            uint64    `json:"id"`
-	CreatorID     uint64    `json:"creatorID"`
-	CreatorName   string    `json:"creatorName"`
-	CreatorAvatar string    `json:"creatorAvatar"`
-	Title         string    `json:"title"`
-	UpdatedAt     time.Time `json:"updatedAt"`
+	ID            uint64 `json:"id"`
+	CreatorID     uint64 `json:"creatorID"`
+	CreatorName   string `json:"creatorName"`
+	CreatorAvatar string `json:"creatorAvatar"`
+	Title         string `json:"title"`
+	UpdatedAt     string `json:"updatedAt"`
 }
 
 type CommentT struct {
-	ID            uint64    `json:"id"`
-	ToID          uint64    `json:"toID"`      // 被评论的评论ID，可为空
-	CreatorID     uint64    `json:"creatorID"` // 评论者ID
-	CreatorName   string    `json:"creatorName"`
-	CreatorAvatar string    `json:"creatorAvatar"`
-	Content       string    `json:"content"`
-	UpdatedAt     time.Time `json:"updatedAt"`
+	ID            uint64 `json:"id"`
+	ToID          uint64 `json:"toID"`      // 被评论的评论ID，可为空
+	CreatorID     uint64 `json:"creatorID"` // 评论者ID
+	CreatorName   string `json:"creatorName"`
+	CreatorAvatar string `json:"creatorAvatar"`
+	Content       string `json:"content"`
+	UpdatedAt     string `json:"updatedAt"`
 }
 
 type CreatePostQ struct {
@@ -35,15 +33,15 @@ type UpdatePostQ struct {
 }
 
 type GetPostA struct {
-	Success       bool      `json:"success"`
-	Message       string    `json:"message"`
-	IsAdmin       bool      `json:"isAdmin"`
-	CreatorID     uint64    `json:"creatorID"`
-	CreatorName   string    `json:"creatorName"`
-	CreatorAvatar string    `json:"creatorAvatar"`
-	Title         string    `json:"title"`
-	Content       string    `json:"content"`
-	UpdatedAt     time.Time `json:"updatedAt"`
+	Success       bool   `json:"success"`
+	Message       string `json:"message"`
+	IsAdmin       bool   `json:"isAdmin"`
+	CreatorID     uint64 `json:"creatorID"`
+	CreatorName   string `json:"creatorName"`
+	CreatorAvatar string `json:"creatorAvatar"`
+	Title         string `json:"title"`
+	Content       string `json:"content"`
+	UpdatedAt     string `json:"updatedAt"`
 }
 
 type GetAllPostA struct {

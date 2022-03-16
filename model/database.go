@@ -17,15 +17,13 @@ type Post struct {
 
 // Comment 评论
 type Comment struct {
-	ID            uint64    `gorm:"primary_key; autoIncrement; not null;" json:"id"`
-	OrgID         uint64    `gorm:"not null;" json:"orgID"`
-	ToID          uint64    `json:"toID"`                       // 被评论的评论ID，可为空
-	PostID        uint64    `json:"postID"`                     // 帖子的ID，即该评论位于哪个帖子下
-	CreatorID     uint64    `gorm:"not null;" json:"creatorID"` // 评论者ID
-	CreatorName   string    `gorm:"not null;" json:"creatorName"`
-	CreatorAvatar string    `json:"creatorAvatar"`
-	Content       string    `gorm:"not null;" json:"content"`
-	UpdatedAt     time.Time `gorm:"autoUpdateTime; not null;" json:"updatedAt"`
+	ID        uint64    `gorm:"primary_key; autoIncrement; not null;" json:"id"`
+	OrgID     uint64    `gorm:"not null;" json:"orgID"`
+	ToID      uint64    `json:"toID"`                       // 被评论的评论ID，可为空
+	PostID    uint64    `json:"postID"`                     // 帖子的ID，即该评论位于哪个帖子下
+	CreatorID uint64    `gorm:"not null;" json:"creatorID"` // 评论者ID
+	Content   string    `gorm:"not null;" json:"content"`
+	UpdatedAt time.Time `gorm:"autoUpdateTime; not null;" json:"updatedAt"`
 }
 
 // 评测模块

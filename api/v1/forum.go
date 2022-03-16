@@ -156,7 +156,7 @@ func GetPost(c *gin.Context) {
 		CreatorAvatar: creator.Avatar,
 		Title:         post.Title,
 		Content:       post.Content,
-		UpdatedAt:     post.UpdatedAt,
+		UpdatedAt:     post.UpdatedAt.Format("@ 01-02 15-04"),
 		IsAdmin:       isAdmin})
 }
 
@@ -225,7 +225,7 @@ func GetAllPost(c *gin.Context) {
 		finalPosts = append(finalPosts, model.PostT{
 			ID:            item.ID,
 			CreatorID:     item.CreatorID,
-			UpdatedAt:     item.UpdatedAt,
+			UpdatedAt:     item.UpdatedAt.Format("@ 01-02 15-04"),
 			Title:         item.Title,
 			CreatorAvatar: creator.Avatar,
 			CreatorName:   creator.Name})
@@ -264,13 +264,11 @@ func CreateComment(c *gin.Context) {
 	// 成功创建评论
 	data := utils.BindJsonData(c, &model.CreateCommentQ{}).(*model.CreateCommentQ)
 	global.DB.Create(&model.Comment{
-		OrgID:         post.OrgID,
-		Content:       data.Content,
-		ToID:          data.ToID,
-		PostID:        post.ID,
-		CreatorID:     user.ID,
-		CreatorName:   user.Name,
-		CreatorAvatar: user.Avatar})
+		OrgID:     post.OrgID,
+		Content:   data.Content,
+		ToID:      data.ToID,
+		PostID:    post.ID,
+		CreatorID: user.ID})
 	c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "评论成功"})
 }
 
@@ -289,7 +287,7 @@ func UpdateComment(c *gin.Context) {
 	// 评论的存在性判定
 	comment, ok := service.GetCommentFromParam(c)
 	if !ok {
-		c.JSON(http.StatusOK, model.GetPostA{Success: false, Message: "评论不存在"})
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "评论不存在"})
 		return
 	}
 	// 用户权限判定
@@ -297,18 +295,18 @@ func UpdateComment(c *gin.Context) {
 	data := utils.BindJsonData(c, &model.UpdateCommentQ{}).(*model.UpdateCommentQ)
 	if user.ID == comment.CreatorID {
 		global.DB.Model(&comment).Updates(model.Comment{Content: data.Content})
-		c.JSON(http.StatusOK, model.GetPostA{Success: true, Message: "评论更新成功"})
+		c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "评论更新成功"})
 		return
 	}
 	for _, admin := range service.GetOrganizationAdmin(comment.OrgID) {
 		if admin.UserID == user.ID {
 			global.DB.Model(&comment).Updates(model.Comment{Content: data.Content})
-			c.JSON(http.StatusOK, model.GetPostA{Success: true, Message: "评论更新成功"})
+			c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "评论更新成功"})
 			return
 		}
 	}
 	// 更新评论失败
-	c.JSON(http.StatusOK, model.GetPostA{Success: false, Message: "没有权限更新评论"})
+	c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "没有权限更新评论"})
 }
 
 // DeleteComment
@@ -371,6 +369,17 @@ func GetComment(c *gin.Context) {
 		return
 	}
 	// 成功获取评论
-	comments := service.GetAllCommentByPostID(post.ID)
+	comments := make([]model.CommentT, 0)
+	for _, comment := range service.GetAllCommentByPostID(post.ID) {
+		tmp, _ := service.GetUserByID(comment.CreatorID)
+		comments = append(comments, model.CommentT{
+			ID:            comment.ID,
+			CreatorID:     comment.CreatorID,
+			UpdatedAt:     comment.UpdatedAt.Format("@ 01-02 15-04"),
+			CreatorName:   tmp.Name,
+			ToID:          comment.CreatorID,
+			Content:       comment.Content,
+			CreatorAvatar: tmp.Avatar})
+	}
 	c.JSON(http.StatusOK, model.GetCommentA{Success: true, Comments: comments})
 }

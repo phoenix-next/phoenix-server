@@ -64,7 +64,7 @@ func GetCommentByID(id uint64) (comment model.Comment, notFound bool) {
 }
 
 // GetAllCommentByPostID 获取一个帖子下的所有评论
-func GetAllCommentByPostID(postID uint64) (comments []model.CommentT) {
-	global.DB.Model(&model.Comment{}).Where("post_id = ?", postID).Find(&comments)
+func GetAllCommentByPostID(postID uint64) (comments []model.Comment) {
+	global.DB.Where("post_id = ?", postID).Find(&comments)
 	return
 }
