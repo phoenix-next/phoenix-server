@@ -41,16 +41,15 @@ func CreateContest(c *gin.Context) {
 			global.DB.Create(&contest)
 			// 维护比赛 - 题目关系
 			for _, problemID := range data.ProblemIDs {
-				// 获得对应ID的题目
-				problem, notFound := service.GetProblemByID(problemID)
-				if notFound {
+				// 有题目不存在的情况
+				if _, notFound := service.GetProblemByID(problemID); notFound {
 					c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "题目列表中有题目不存在"})
 					return
 				}
 				// 维护关系
 				global.DB.Create(&model.ContestProblem{
 					ContestID: contest.ID,
-					ProblemID: problem.ID})
+					ProblemID: problemID})
 			}
 			// 返回结果
 			c.JSON(http.StatusOK, model.CommonA{Success: true, Message: "创建比赛成功"})
@@ -103,7 +102,6 @@ func GetContest(c *gin.Context) {
 	// 返回结果
 	c.JSON(http.StatusOK, model.GetContestA{
 		Success:   true,
-		Message:   "",
 		Name:      contest.Name,
 		Profile:   contest.Profile,
 		StartTime: contest.StartTime,
@@ -231,7 +229,6 @@ func GetContestList(c *gin.Context) {
 	}
 	// 得到比赛的总页数
 	totalPage := (len(filteredContests)-1)/5 + 1
-
 	// 查不到比赛的情况
 	if totalPage == 0 {
 		c.JSON(http.StatusOK, model.GetContestListA{
