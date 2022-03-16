@@ -229,7 +229,7 @@ func GetTutorialList(c *gin.Context) {
 		c.JSON(http.StatusOK, model.GetTutorialListA{
 			Success:      true,
 			Total:        0,
-			TutorialList: make([]model.Tutorial, 0)})
+			TutorialList: make([]model.TutorialT, 0)})
 		return
 	}
 	// 对教程进行排序与分页
@@ -247,6 +247,16 @@ func GetTutorialList(c *gin.Context) {
 		return
 	})
 	tutorials := fuzzyTutorials[(page-1)*size : int(math.Min(float64(page*size), float64(len(fuzzyTutorials))))]
+	// 获取创建者名称
+	finalTutorials := make([]model.TutorialT, 0)
+	for _, tutorial := range tutorials {
+		tmp, _ := service.GetUserByID(tutorial.CreatorID)
+		finalTutorials = append(finalTutorials, model.TutorialT{
+			ID:          tutorial.ID,
+			Profile:     tutorial.Profile,
+			Name:        tutorial.Name,
+			CreatorName: tmp.Name})
+	}
 	// 返回响应
-	c.JSON(http.StatusOK, model.GetTutorialListA{Success: true, TutorialList: tutorials, Total: len(tutorials)})
+	c.JSON(http.StatusOK, model.GetTutorialListA{Success: true, TutorialList: finalTutorials, Total: len(tutorials)})
 }

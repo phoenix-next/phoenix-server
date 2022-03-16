@@ -2,6 +2,13 @@ package model
 
 import "mime/multipart"
 
+type TutorialT struct {
+	ID          uint64 `json:"id"`
+	CreatorName string `json:"creatorName"`
+	Name        string `json:"name"`
+	Profile     string `json:"profile"`
+}
+
 type CreateTutorialQ struct {
 	OrgID    uint64                `form:"orgID"`
 	Name     string                `form:"name"`
@@ -37,8 +44,8 @@ type GetTutorialVersionA struct {
 }
 
 type GetTutorialListA struct {
-	Success      bool       `json:"success"`
-	Message      string     `json:"message"`
-	Total        int        `json:"total"`
-	TutorialList []Tutorial `json:"tutorialList"`
+	Success      bool        `json:"success"`
+	Message      string      `json:"message"`
+	Total        int         `json:"total"`
+	TutorialList []TutorialT `json:"tutorialList"`
 }
