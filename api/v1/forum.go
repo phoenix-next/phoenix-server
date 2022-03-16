@@ -197,16 +197,16 @@ func GetAllPost(c *gin.Context) {
 			posts = append(posts, item)
 		}
 	}
-	// 获取帖子总页数
-	totalPage := (len(posts)-1)/5 + 1
 	// 没有帖子的情况
-	if totalPage == 0 {
+	if len(posts) == 0 {
 		c.JSON(http.StatusOK, model.GetAllPostA{
 			Success: true,
 			Total:   0,
 			Posts:   make([]model.PostT, 0)})
 		return
 	}
+	// 获取帖子总页数
+	totalPage := (len(posts)-1)/5 + 1
 	// 页数不合法的情况
 	if page <= 0 || page > totalPage {
 		c.JSON(http.StatusOK, model.GetAllPostA{Success: false, Message: "页数非法"})
