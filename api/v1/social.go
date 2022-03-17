@@ -121,7 +121,15 @@ func UpdateOrganization(c *gin.Context) {
 		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "该组织不存在"})
 		return
 	}
-	// TODO 用户权限判定
+	// 用户权限判定
+	user := utils.SolveUser(c)
+	if invitation, notFound := service.GetInvitationByUserOrg(user.ID, id); notFound {
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "您不存在该组织中，无权修改组织信息"})
+		return
+	} else if invitation.IsAdmin == false {
+		c.JSON(http.StatusOK, model.CommonA{Success: false, Message: "您不是该组织管理员，无权修改组织信息"})
+		return
+	}
 	// 更新组织名称
 	if name, found := c.GetPostForm("name"); found {
 		// 组织重名的情况
