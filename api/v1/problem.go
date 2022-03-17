@@ -111,10 +111,13 @@ func GetProblem(c *gin.Context) {
 // @Tags         评测模块
 // @Accept       multipart/form-data
 // @Produce      json
-// @Param        x-token  header    string                   true  "token"
-// @Param        id       path      int                   true  "题目ID"
-// @Param        data     body      model.UpdateProblemQ  true  "题目名称，题目难度，输入文件，输出文件，题目描述"
-// @Success      200      {object}  model.CommonA               "是否成功，返回信息"
+// @Param        x-token      header    string                true  "token"
+// @Param        id           path      int                   true  "题目ID"
+// @Param        input        formData  file                  true  "输入文件"
+// @Param        output       formData  file                  true  "输出文件"
+// @Param        description  formData  file                  true  "题目描述"
+// @Param        data         body      model.UpdateProblemQ  true  "题目名称，题目难度"
+// @Success      200          {object}  model.CommonA         "是否成功，返回信息"
 // @Router       /api/v1/problems/{id} [put]
 func UpdateProblem(c *gin.Context) {
 	// 获取请求数据
@@ -284,8 +287,9 @@ func GetProblemList(c *gin.Context) {
 // @Produce      json
 // @Param        x-token  header    string                      true  "token"
 // @Param        id       path      int                         true  "题目ID"
-// @Param        data     body      model.UploadProblemRecordQ  true  "评测结果，代码文件"
-// @Success      200      {object}  model.CommonA         "是否成功，返回信息"
+// @Param        code     formData  file                        true  "代码文件"
+// @Param        data     body      model.UploadProblemRecordQ  true  "评测结果"
+// @Success      200      {object}  model.CommonA               "是否成功，返回信息"
 // @Router       /api/v1/problems/{id}/records [post]
 func UploadProblemRecord(c *gin.Context) {
 	// 获取请求数据
@@ -337,7 +341,7 @@ func UploadProblemRecord(c *gin.Context) {
 // @Tags         评测模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string                true  "token"
+// @Param        x-token  header    string                   true  "token"
 // @Param        id       path      int                       true  "题目ID"
 // @Success      200      {object}  model.GetProblemRecordA  "是否成功，返回信息，评测记录列表"
 // @Router       /api/v1/problems/{id}/records [get]
