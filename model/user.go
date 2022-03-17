@@ -1,7 +1,5 @@
 package model
 
-import "mime/multipart"
-
 type OrganizationT struct {
 	OrgID   uint64 `json:"orgID"`
 	OrgName string `json:"orgName"`
@@ -70,10 +68,6 @@ type ResetPasswordQ struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 	Captcha  string `json:"captcha"`
-}
-
-type UploadImageQ struct {
-	Image *multipart.FileHeader `form:"image" swaggerignore:"true"`
 }
 
 type UploadImageA struct {

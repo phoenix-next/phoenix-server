@@ -341,8 +341,8 @@ func ResetPassword(c *gin.Context) {
 // @Tags         用户模块
 // @Accept       multipart/form-data
 // @Produce      json
-// @Param        data  body      model.UploadImageQ  true  "图片文件"
-// @Success      200   {object}  model.UploadImageA  "是否成功，返回信息，生成的图片路径"
+// @Param        image  formData  file                true  "图片文件"
+// @Success      200    {object}  model.UploadImageA  "是否成功，返回信息，生成的图片路径"
 // @Router       /api/v1/resource/image [post]
 func UploadImage(c *gin.Context) {
 	// 获取请求数据
