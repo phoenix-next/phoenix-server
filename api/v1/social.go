@@ -55,7 +55,7 @@ func CreateOrganization(c *gin.Context) {
 // @Tags         社交模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string                     true  "token"
+// @Param        x-token  header    string                     true   "token"
 // @Param        id       path      int                     true  "组织ID"
 // @Success      200      {object}  model.GetOrganizationA  "是否成功，返回信息，组织名称，组织简介，当前用户是否在组织中，当前用户是否为管理员"
 // @Router       /api/v1/organizations/{id} [get]
@@ -103,8 +103,9 @@ func GetOrganization(c *gin.Context) {
 // @Accept       multipart/form-data
 // @Produce      json
 // @Param        x-token  header    string                     true  "token"
-// @Param        id       path      int                        true  "组织ID"
-// @Param        data     body      model.UpdateOrganizationQ  true  "组织的名称，组织简介，组织头像"
+// @Param        id       path      int                        true   "组织ID"
+// @Param        avatar   formData  file                       false  "组织头像"
+// @Param        data     body      model.UpdateOrganizationQ  false  "组织的名称，组织简介"
 // @Success      200      {object}  model.CommonA              "是否成功，返回信息"
 // @Router       /api/v1/organizations/{id} [put]
 func UpdateOrganization(c *gin.Context) {
@@ -155,7 +156,7 @@ func UpdateOrganization(c *gin.Context) {
 // @Tags         社交模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string         true  "token"
+// @Param        x-token  header    string                           true  "token"
 // @Param        id       path      int                              true  "组织ID"
 // @Success      200      {object}  model.CommonA                   "是否成功，返回信息"
 // @Router       /api/v1/organizations/{id} [delete]
@@ -191,7 +192,7 @@ func DeleteOrganization(c *gin.Context) {
 // @Tags         社交模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string                           true  "token"
+// @Param        x-token  header    string         true  "token"
 // @Param        id       path      int                      true  "组织ID"
 // @Param        data     body      model.CreateInvitationQ  true  "用户email"
 // @Success      200      {object}  model.CommonA            "是否成功，返回信息"

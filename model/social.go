@@ -1,7 +1,5 @@
 package model
 
-import "mime/multipart"
-
 type CreateOrganizationQ struct {
 	Name    string `json:"name"`
 	Profile string `json:"profile"`
@@ -18,9 +16,8 @@ type GetOrganizationA struct {
 }
 
 type UpdateOrganizationQ struct {
-	Name    string                `form:"name"`
-	Profile string                `form:"profile"`
-	Avatar  *multipart.FileHeader `form:"avatar" swaggerignore:"true"`
+	Name    string `form:"name"`
+	Profile string `form:"profile"`
 }
 
 type CreateInvitationQ struct {

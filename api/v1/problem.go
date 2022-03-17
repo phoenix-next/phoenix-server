@@ -19,9 +19,12 @@ import (
 // @Tags         评测模块
 // @Accept       multipart/form-data
 // @Produce      json
-// @Param        x-token  header    string                      true  "token"
-// @Param        data     body      model.CreateProblemQ  true  "题目名称，题目难度，可读权限，可写权限，组织ID，输入文件，输出文件，题目描述"
-// @Success      200      {object}  model.CommonA  "是否成功，返回信息"
+// @Param        x-token      header    string                true  "token"
+// @Param        input        formData  file                  true  "输入文件"
+// @Param        output       formData  file                  true  "输出文件"
+// @Param        description  formData  file                  true  "题目描述"
+// @Param        data         body      model.CreateProblemQ  true  "题目名称，题目难度，可读权限，可写权限，组织ID"
+// @Success      200          {object}  model.CommonA         "是否成功，返回信息"
 // @Router       /api/v1/problems [post]
 func CreateProblem(c *gin.Context) {
 	// 获取题目保存路径，获取用户
@@ -108,10 +111,10 @@ func GetProblem(c *gin.Context) {
 // @Tags         评测模块
 // @Accept       multipart/form-data
 // @Produce      json
-// @Param        x-token  header    string                   true  "token"
+// @Param        x-token  header    string                      true  "token"
 // @Param        id       path      int                   true  "题目ID"
 // @Param        data     body      model.UpdateProblemQ  true  "题目名称，题目难度，输入文件，输出文件，题目描述"
-// @Success      200      {object}  model.CommonA               "是否成功，返回信息"
+// @Success      200      {object}  model.CommonA  "是否成功，返回信息"
 // @Router       /api/v1/problems/{id} [put]
 func UpdateProblem(c *gin.Context) {
 	// 获取请求数据
@@ -165,7 +168,7 @@ func UpdateProblem(c *gin.Context) {
 // @Produce      json
 // @Param        x-token  header    string         true  "token"
 // @Param        id       path      int                true  "题目ID"
-// @Success      200      {object}  model.CommonA         "是否成功，返回信息"
+// @Success      200      {object}  model.CommonA               "是否成功，返回信息"
 // @Router       /api/v1/problems/{id} [delete]
 func DeleteProblem(c *gin.Context) {
 	// 获取请求参数
@@ -279,7 +282,7 @@ func GetProblemList(c *gin.Context) {
 // @Tags         评测模块
 // @Accept       multipart/form-data
 // @Produce      json
-// @Param        x-token  header    string                true  "token"
+// @Param        x-token  header    string                   true  "token"
 // @Param        id       path      int                         true  "题目ID"
 // @Param        data     body      model.UploadProblemRecordQ  true  "评测结果，代码文件"
 // @Success      200      {object}  model.CommonA         "是否成功，返回信息"

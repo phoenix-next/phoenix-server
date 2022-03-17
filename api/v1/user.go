@@ -125,8 +125,9 @@ func CreateToken(c *gin.Context) {
 // @Tags         用户模块
 // @Accept       multipart/form-data
 // @Produce      json
-// @Param        x-token  header    string          true  "token"
-// @Param        data     body      model.UpdateUserQ  true  "用户名，密码，旧密码，用户简介，用户头像"
+// @Param        x-token  header    string             true   "token"
+// @Param        avatar   formData  file               false  "用户头像"
+// @Param        data     body      model.UpdateUserQ  false  "用户名，密码，旧密码，用户简介"
 // @Success      200   {object}  model.CommonA         "是否成功，返回信息"
 // @Router       /api/v1/users [put]
 func UpdateUser(c *gin.Context) {
@@ -173,7 +174,7 @@ func UpdateUser(c *gin.Context) {
 // @Tags         用户模块
 // @Accept       json
 // @Produce      json
-// @Param        x-token  header    string             true  "token"
+// @Param        x-token  header    string          true  "token"
 // @Param        id       path      int             true  "用户ID"
 // @Success      200      {object}  model.GetUserA  "是否成功，返回信息，用户名，用户邮箱，用户头像，用户简介"
 // @Router       /api/v1/users/{id} [get]
