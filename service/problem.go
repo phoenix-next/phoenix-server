@@ -132,7 +132,7 @@ func SaveProblem(problem *model.Problem) (err error) {
 // QueryAllProblems 查询所有问题
 func QueryAllProblems() (problems []model.Problem) {
 	problems = make([]model.Problem, 0)
-	global.DB.Find(&problems)
+	global.DB.Order("created_time desc").Find(&problems)
 	return problems
 }
 

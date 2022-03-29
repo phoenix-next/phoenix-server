@@ -51,7 +51,7 @@ func GetPostByID(id uint64) (post model.Post, notFound bool) {
 
 // GetAllPosts 已知组织ID和帖子板块，获取所有帖子
 func GetAllPosts(oid uint64, postType int) (posts []model.Post) {
-	global.DB.Where("org_id = ? AND type = ?", oid, postType).Find(&posts)
+	global.DB.Where("org_id = ? AND type = ?", oid, postType).Order("updated_at desc").Find(&posts)
 	return
 }
 
@@ -65,6 +65,6 @@ func GetCommentByID(id uint64) (comment model.Comment, notFound bool) {
 
 // GetAllCommentByPostID 获取一个帖子下的所有评论
 func GetAllCommentByPostID(postID uint64) (comments []model.Comment) {
-	global.DB.Where("post_id = ?", postID).Find(&comments)
+	global.DB.Where("post_id = ?", postID).Order("updated_at desc").Find(&comments)
 	return
 }
