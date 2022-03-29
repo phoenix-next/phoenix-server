@@ -193,7 +193,7 @@ func GetAllPost(c *gin.Context) {
 	rawPosts := service.GetAllPosts(oid, postType)
 	posts := make([]model.Post, 0)
 	for _, item := range rawPosts {
-		if fuzzy.Match(keyWord, item.Title) {
+		if fuzzy.MatchFold(keyWord, item.Title) {
 			posts = append(posts, item)
 		}
 	}

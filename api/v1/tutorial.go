@@ -222,7 +222,7 @@ func GetTutorialList(c *gin.Context) {
 	// 教程名称搜索关键字，模糊查找
 	fuzzyTutorials := make([]model.Tutorial, 0)
 	for _, tutorial := range allTutorials {
-		if fuzzy.Match(keyWord, tutorial.Name) {
+		if fuzzy.MatchFold(keyWord, tutorial.Name) {
 			fuzzyTutorials = append(fuzzyTutorials, tutorial)
 		}
 	}

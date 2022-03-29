@@ -223,7 +223,7 @@ func GetContestList(c *gin.Context) {
 	// 对比赛标题进行模糊查找
 	filteredContests := make([]model.ContestT, 0)
 	for _, contest := range contests {
-		if fuzzy.Match(keyWord, contest.Name) {
+		if fuzzy.MatchFold(keyWord, contest.Name) {
 			filteredContests = append(filteredContests, contest)
 		}
 	}
