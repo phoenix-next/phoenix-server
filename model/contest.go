@@ -53,3 +53,25 @@ type GetOrganizationProblemA struct {
 	Message     string    `json:"message"`
 	ProblemList []Problem `json:"problemList"`
 }
+
+type ProblemPenalty struct {
+	ProblemName string `json:"problemName"`
+	TryCount    int    `json:"tryCount"`
+	// WA AC TLE RA 几种状态
+	Status     int `json:"status"`
+	PenaltySum int `json:"penaltySum"`
+}
+
+type RankT struct {
+	Rank      int              `json:"rank"`
+	Name      string           `json:"name"`
+	PassCount int              `json:"passCount"`
+	Penalty   int              `json:"penalty"`
+	Problems  []ProblemPenalty `json:"problems"`
+}
+
+type GetRankingListA struct {
+	Success bool    `json:"success"`
+	Message string  `json:"message"`
+	Rank    []RankT `json:"rank"`
+}
