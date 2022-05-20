@@ -2,6 +2,7 @@ package v1
 
 import (
 	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/lithammer/fuzzysearch/fuzzy"
 	"github.com/phoenix-next/phoenix-server/global"
@@ -10,7 +11,9 @@ import (
 	"github.com/phoenix-next/phoenix-server/utils"
 	"gorm.io/gorm"
 	"net/http"
+	"sort"
 	"strconv"
+	"time"
 )
 
 // CreateContest
@@ -291,4 +294,121 @@ func GetOrganizationProblem(c *gin.Context) {
 	}
 	// 用户没有权限操作
 	c.JSON(http.StatusOK, model.GetOrganizationProblemA{Success: false, Message: "用户没有管理员权限"})
+}
+
+// GetRankingList
+// @Summary      获取比赛的排行榜
+// @Description  获取已经开始了的比赛的排行榜
+// @Tags         比赛模块
+// @Accept       json
+// @Produce      json
+// @Param        x-token  header    string                true  "token"
+// @Param        id       path      int                            true  "比赛ID"
+// @Success      200      {object}  model.GetRankingListA   "是否成功，返回信息，题目列表"
+// @Router       /api/v1/contests/{id}/ranking [get]
+func GetRankingList(c *gin.Context) {
+	// 获取请求数据
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusOK, model.GetRankingListA{Success: false, Message: "请求参数非法"})
+		return
+	}
+	// 比赛的存在性判定
+	var contest model.Contest
+	if err := global.DB.First(&contest, id).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+		c.JSON(http.StatusOK, model.GetRankingListA{Success: false, Message: "比赛不存在"})
+		return
+	}
+	// 比赛是否已经开始判定
+	if contest.StartTime.After(time.Now()) {
+		c.JSON(http.StatusOK, model.GetRankingListA{Success: false, Message: "比赛尚未开始"})
+		return
+	}
+	// 获取比赛的所有题目
+	problems := make([]model.ContestProblem, 0)
+	global.DB.Where("contest_id = ?", contest.ID).Order("problem_id asc").Find(&problems)
+	// 获取比赛中所有题目的ID
+	problemIDs := make([]uint64, 0)
+	for _, problem := range problems {
+		problemIDs = append(problemIDs, problem.ProblemID)
+	}
+	// 获取参加比赛的所有人员, 并按照user_id进行排序
+	results := make([]model.Result, 0)
+	//global.DB.Where("problem_id in (?) AND created_time > ?", problemIDs, contest.StartTime).Order("user_id, problem_id, created_time asc").Find(&results)
+	global.DB.Where("problem_id in (?) ", problemIDs).Order("user_id, problem_id, created_time asc").Find(&results)
+
+	// 获取参加比赛的全部用户
+	users := make([]model.User, 0)
+	userMap := make(map[uint64]int)
+	for _, result := range results {
+		userMap[result.UserID] = 1
+	}
+	// could faster
+	for key := range userMap {
+		user, _ := service.GetUserByID(key)
+		users = append(users, user)
+	}
+	// 计算排行榜,且尽量减少重复计算
+	ranks := make([]model.RankT, 0)
+	tempProblemsPenalty := make([]model.ProblemPenalty, 0)
+
+	MapProblemIDTOIndex := make(map[uint64]int)
+	for i, problem := range problems {
+		item := model.ProblemPenalty{ProblemID: problem.ProblemID, PenaltySum: 0, TryCount: 0, Status: -1}
+		MapProblemIDTOIndex[problem.ProblemID] = i
+		tempProblemsPenalty = append(tempProblemsPenalty, item)
+	}
+	j, resultCount := 0, len(results)
+	for _, user := range users {
+		var item model.RankT
+		item.Name = user.Name
+		item.UserID = user.ID
+		item.Rank = 1
+		tempProblems := tempProblemsPenalty
+
+		for j < resultCount {
+			ppItem := tempProblems[MapProblemIDTOIndex[results[j].ProblemID]]
+			ppItem.TryCount++
+			ppItem.UserID = user.ID
+
+			// 当之前评测结果不是AC
+			if ppItem.Status != 0 {
+				ppItem.Status = results[j].Result
+				ppItem.PenaltySum += results[j].CreatedTime.Minute() - contest.StartTime.Minute()
+			}
+			if results[j].Result == 0 {
+				ppItem.Status = 0
+			}
+			tempProblems[MapProblemIDTOIndex[results[j].ProblemID]] = ppItem
+			if j+1 < resultCount && results[j+1].UserID != user.ID {
+				break
+			}
+			j++
+		}
+		for _, p := range tempProblems {
+			item.Penalty += p.PenaltySum
+			if p.Status == 0 {
+				item.PassCount += 1
+			}
+		}
+
+		item.Problems = tempProblems
+		ranks = append(ranks, item)
+	}
+
+	sort.Slice(ranks, func(i, j int) (res bool) {
+		if ranks[i].PassCount == ranks[j].PassCount {
+			return ranks[i].PassCount == ranks[j].PassCount
+		}
+		return ranks[i].Penalty < ranks[j].Penalty
+	})
+	for i := 1; i < len(ranks); i++ {
+		if ranks[i].Penalty == ranks[i-1].Penalty && ranks[i].PassCount == ranks[i-1].PassCount {
+			ranks[i].Rank = ranks[i-1].Rank
+		} else {
+			ranks[i].Rank = i + 1
+		}
+	}
+	fmt.Println(ranks)
+	c.JSON(http.StatusOK, model.GetRankingListA{Success: true, Message: "获取排行榜成功", Rank: ranks})
 }

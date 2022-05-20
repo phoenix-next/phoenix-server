@@ -55,9 +55,10 @@ type GetOrganizationProblemA struct {
 }
 
 type ProblemPenalty struct {
-	ProblemName string `json:"problemName"`
-	TryCount    int    `json:"tryCount"`
-	// WA AC TLE RA 几种状态
+	ProblemID uint64 `json:"problemID"`
+	UserID    uint64 `json:"userID"`
+	TryCount  int    `json:"tryCount"`
+	// 0 AC , 1 WA , 2 TLE, 3 RE, -1 未做
 	Status     int `json:"status"`
 	PenaltySum int `json:"penaltySum"`
 }
@@ -65,6 +66,7 @@ type ProblemPenalty struct {
 type RankT struct {
 	Rank      int              `json:"rank"`
 	Name      string           `json:"name"`
+	UserID    uint64           `json:"userID"`
 	PassCount int              `json:"passCount"`
 	Penalty   int              `json:"penalty"`
 	Problems  []ProblemPenalty `json:"problems"`
