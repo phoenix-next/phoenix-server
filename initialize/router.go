@@ -20,7 +20,7 @@ func InitRouter(r *gin.Engine) {
 	config := cors.DefaultConfig()
 	config.AllowAllOrigins = true
 	config.AllowHeaders = append(config.AllowHeaders, "x-token")
-	r.Use(cors.New(config))
+	r.Use(cors.New(config), gin.Logger(), gin.Recovery())
 	// 是否开启api文档页面
 	if global.VP.GetBool("server.docs") {
 		r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
@@ -123,6 +123,7 @@ func InitRouter(r *gin.Engine) {
 		contestRouter.GET("/:id", v1.GetContest)
 		contestRouter.DELETE("/:id", v1.DeleteContest)
 		contestRouter.PUT("/:id", v1.UpdateContest)
+		contestRouter.GET("/:id/ranking", v1.GetRankingList)
 	}
 }
 
