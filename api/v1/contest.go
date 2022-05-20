@@ -334,8 +334,8 @@ func GetRankingList(c *gin.Context) {
 	}
 	// 获取参加比赛的所有人员, 并按照user_id进行排序
 	results := make([]model.Result, 0)
-	//global.DB.Where("problem_id in (?) AND created_time > ?", problemIDs, contest.StartTime).Order("user_id, problem_id, created_time asc").Find(&results)
-	global.DB.Where("problem_id in (?) ", problemIDs).Order("user_id, problem_id, created_time asc").Find(&results)
+	global.DB.Where("problem_id in (?) AND created_time > ?", problemIDs, contest.StartTime).Order("user_id, problem_id, created_time asc").Find(&results)
+	//global.DB.Where("problem_id in (?) ", problemIDs).Order("user_id, problem_id, created_time asc").Find(&results)
 
 	// 获取参加比赛的全部用户
 	users := make([]model.User, 0)
@@ -343,7 +343,8 @@ func GetRankingList(c *gin.Context) {
 	for _, result := range results {
 		userMap[result.UserID] = 1
 	}
-	// could faster
+	// faster
+	global.DB.Where("user_id in (?) ", utils.GetKeys(userMap)).Find(&users)
 	for key := range userMap {
 		user, _ := service.GetUserByID(key)
 		users = append(users, user)
