@@ -4,7 +4,7 @@
 
 - PhoeniX 后台服务器，用于集中管理、存储用户信息
 - 项目使用 Golang 作为主要语言，使用 Gin 框架以及 Golang 的其他第三方库制作
-- 本项目为服务端，Shell 客户端位于[这里](https://github.com/phoenix-next/phoenix-shell)，而桌面客户端位于[这里](https://github.com/phoenix-next/phoenix)
+- 本项目为服务端，而桌面客户端位于[这里](https://github.com/phoenix-next/phoenix)
 
 ## Development
 
@@ -64,5 +64,5 @@ P.S. 若以非Debug模式运行服务器，则服务器将使用HTTPS协议进�
 ## Credits
 
 - 项目的结构参考了[Slime 学术分享平台](https://github.com/BFlameSwift/SlimeScholar-Go)，以及[Gin-Vue 代码框架](https://github.com/flipped-aurora/gin-vue-admin)
-- 感谢 [Golang](https://github.com/golang/go) 项目以及 [Gin](https://github.com/gin-gonic/gin) 框架，这是本项目的基石
-- 另外，还要感谢 [viper](https://github.com/spf13/viper), [logrus](https://github.com/sirupsen/logrus), [swag](https://github.com/swaggo/swag) 等第三方库的作者，这加快了项目的开发
+- [Golang](https://github.com/golang/go) 项目以及 [Gin](https://github.com/gin-gonic/gin) 框架
+- [viper](https://github.com/spf13/viper), [logrus](https://github.com/sirupsen/logrus), [swag](https://github.com/swaggo/swag) 等第三方库
